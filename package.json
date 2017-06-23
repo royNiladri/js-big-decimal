@@ -1,0 +1,33 @@
+{
+  "name": "js-big-decimal",
+  "version": "1.0.0",
+  "description": "Work with large numbers on the client side. Round them off to any required precission.",
+  "main": "index.js",
+  "scripts": {
+    "test": "jasmine",
+    "test-random": "node test/randomtest.js"
+  },
+  "keywords": [
+    "arithmetic",
+    "number",
+    "large",
+    "round",
+    "add",
+    "substract",
+    "multiply",
+    "divide"
+  ],
+  "author": "Niladri Roy <callniladri.pro@gmail.com> (https://github.com/royNiladri)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/royNiladri/angular-round-off.git"
+  },
+  "bugs": {
+    "url": "https://github.com/royNiladri/angular-round-off/issues"
+  },
+  "homepage": "https://github.com/royNiladri/angular-round-off#readme",
+  "devDependencies": {
+    "jasmine": "^2.6.0"
+  }
+}
