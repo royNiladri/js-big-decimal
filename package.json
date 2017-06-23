@@ -4,7 +4,8 @@
   "description": "Work with large numbers on the client side. Round them off to any required precission.",
   "main": "index.js",
   "scripts": {
-    "test": "jasmine",
+    "test": "karma start --single-run",
+    "test-dev": "krama start",
     "test-random": "node test/randomtest.js"
   },
   "keywords": [
@@ -28,6 +29,10 @@
   },
   "homepage": "https://github.com/royNiladri/angular-round-off#readme",
   "devDependencies": {
-    "jasmine": "^2.6.0"
+    "jasmine-core": "^2.6.4",
+    "karma": "^1.7.0",
+    "karma-chrome-launcher": "^2.2.0",
+    "karma-coverage": "^1.1.1",
+    "karma-jasmine": "^1.1.0"
   }
 }

@@ -1,5 +1,5 @@
 describe('big-decimal', () => {
-    let bigDecimal = require('../src/big-decimal');
+    //let bigDecimal = require('./big-decimal');
 
     it('should be defined', () => {
         expect(bigDecimal).toBeDefined();

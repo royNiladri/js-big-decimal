@@ -1,4 +1,4 @@
-var round = require('./round');
+//var round = require('./round');
 
 function bigDecimal(number){
     if(isNaN(number))
@@ -40,7 +40,7 @@ bigDecimal.prototype.round = function(precision) {
     else if(isNaN(precision))
         throw Error("Precision is not a number: "+precision);
 
-    return round(value, precision);
+    return roundOff(value, precision);
 }
 
-module.exports = bigDecimal;
+//module.exports = bigDecimal;

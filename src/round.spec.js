@@ -1,5 +1,4 @@
 describe('round', ()=>{
-    var roundOff = require('../src/round');
 
     it('should return integer unchanged', ()=>{
         expect(roundOff(123456)).toBe('123456');
