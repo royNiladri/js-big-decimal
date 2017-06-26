@@ -62,4 +62,4 @@ var bigDecimal = (function () {
     }
 
     return bigDecimal;
-})();
+})()();
