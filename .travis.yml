@@ -1,4 +1,7 @@
 language: node_js
+env:
+  global:
+    - COMMIT_AUTHOR_EMAIL: "royNiladri@users.noreply.github.com"
 node_js:
   - "node"
 cache:
