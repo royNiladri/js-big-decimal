@@ -58,3 +58,4 @@ typings/
 .env
 
 deploy_key
+deploy_key.pub
