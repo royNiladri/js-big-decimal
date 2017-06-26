@@ -13,6 +13,8 @@ before_script:
 script: gulp bundle
 after_success:
 - git config user.email "royNiladri@users.noreply.github.com"
+- git config user.name "royNiladri"
+- git config --global push.default matching
 - eval $(ssh-agent -s)
 - ssh-add deploy_key
 - git add dist/*
