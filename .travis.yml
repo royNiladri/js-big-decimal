@@ -1,6 +1,10 @@
 language: node_js
 node_js:
 - node
+env:
+  global:
+  - ENCRYPTION_LABEL: "3c0a008cf0db"
+  - COMMIT_AUTHOR_EMAIL: "royNiladri@users.noreply.github.com"
 cache:
   directories:
   - node_modules
@@ -9,7 +13,6 @@ before_script:
 script: gulp bundle
 after_success:
 - git config user.email "royNiladri@users.noreply.github.com"
-- git config user.name "royNiladri"
 - eval $(ssh-agent -s)
 - ssh-add deploy_key
 - git add dist/*
