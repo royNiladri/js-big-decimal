@@ -53,4 +53,29 @@ describe('big-decimal', function() {
         var n = new bigDecimal('1234567890123456');
         expect(n.getPrettyValue(4, '-')).toBe('1234-5678-9012-3456');
     });
+
+    it('should produce 23.678+67.34=91.018', function(){
+        expect(bigDecimal.add('23.678', '67.34')).toBe('91.018');
+    });
+
+    it('should produce -23.678+67.34=43.662', function(){
+        expect(bigDecimal.add('-23.678', '67.34')).toBe('43.662');
+    });
+    
+    it('should produce -23.678-67.34=-91.018', function(){
+        expect(bigDecimal.add('-23.678', '-67.34')).toBe('-91.018');
+    });
+
+    it('should produce -23.678=-23.678', function(){
+        expect(bigDecimal.add('-23.678')).toBe('-23.678');
+    });
+
+    it('should not take non-numeric argument', function() {
+        try{
+            var sum = bigDecimal.add('notAnumber', '89');
+            expect(true).toBe(false);
+        }catch(e){
+            expect(e.toString()).toMatch('Parameter is not a number');
+        }
+    });
 })

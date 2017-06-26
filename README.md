@@ -9,6 +9,9 @@ Work with large numbers on the client side with high precision.
 
 ### bigDecimal(number)
 Create a new objet of type BigDecimal. Supports parameters of type `number` and `string`. If string passed cannot be parsed as a number error is thrown. It is recommended to use string as it circumvents the issue of precision with JS native `float` implementation and max limit for `integer`.
+
+This does not support exponentiation as of yet. `12.456e3` will throw an error.
+
 ```javascript
 var n1 = new bigDecimal(12.6789);
 var n2 = new bigDecimal("12345.6789");
@@ -34,4 +37,11 @@ Returns the rounded value to the specified precission (number of digits after de
 ```javascript
 var n3 = n1.round(2); // n3 = "12.68"
 var n4 = n2.round(); // n4 = "12346" 
+```
+
+### add(number1, number2)
+Add two numbers. Pass in negative for substraction. ensure parameters are `strings`. 
+```javascript
+var sum = bigDecimal.add("23.678", "67.34"); // sum = "91.018"
+var diff = bigDecimal.add("67.34", "-23.678"); // diff = "43.662"
 ```
