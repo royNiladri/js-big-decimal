@@ -16,6 +16,8 @@ after_success:
 - git push
 before_install:
 - openssl aes-256-cbc -K $encrypted_47b6d602f476_key -iv $encrypted_47b6d602f476_iv
+  -in deploy_rsa.enc -out deploy_rsa -d
+- openssl aes-256-cbc -K $encrypted_47b6d602f476_key -iv $encrypted_47b6d602f476_iv
   -in deploy_key.enc -out deploy_key -d
 - chmod 600 deploy_key
 - eval $(ssh-agent -s)

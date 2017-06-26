@@ -57,5 +57,5 @@ typings/
 # dotenv environment variables file
 .env
 
-deploy_key
-deploy_key.pub
+deploy_rsa
+deploy_rsa.pub
