@@ -1,5 +1,5 @@
 var bigDecimal = (function () {
-    bigDecimal = function (number) {
+    function bigDecimal(number) {
 
         validate = function (number) {
             if (number) {
