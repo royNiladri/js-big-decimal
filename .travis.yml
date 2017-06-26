@@ -1,10 +1,6 @@
 language: node_js
 node_js:
 - node
-env:
-  global:
-  - ENCRYPTION_LABEL: "3c0a008cf0db"
-  - COMMIT_AUTHOR_EMAIL: "royNiladri@users.noreply.github.com"
 cache:
   directories:
   - node_modules
