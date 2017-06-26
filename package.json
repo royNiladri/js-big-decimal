@@ -22,12 +22,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/royNiladri/angular-round-off.git"
+    "url": "git+https://github.com/royNiladri/js-big-decimal.git"
   },
   "bugs": {
-    "url": "https://github.com/royNiladri/angular-round-off/issues"
+    "url": "https://github.com/royNiladri/js-big-decimal/issues"
   },
-  "homepage": "https://github.com/royNiladri/angular-round-off#readme",
+  "homepage": "https://github.com/royNiladri/js-big-decimal#readme",
   "devDependencies": {
     "gulp": "^3.9.1",
     "gulp-concat": "^2.6.1",
