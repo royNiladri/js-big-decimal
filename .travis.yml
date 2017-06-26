@@ -7,3 +7,7 @@ cache:
 before_script:
   - npm install -g gulp-cli
 script: gulp bundle
+after_success:
+  - git add dist/*
+  - git commit -m "refresh dist folder"
+  - git push
