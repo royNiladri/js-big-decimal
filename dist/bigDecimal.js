@@ -187,6 +187,7 @@ var bigDecimal = (function () {
 
     return bigDecimal;
 })();
+bigDecimal();
 
 var roundOff = (function () {
     function roundOff(input, n) {
