@@ -6,19 +6,4 @@ cache:
   - node_modules
 before_script:
 - npm install -g gulp-cli
-script: gulp bundle
-after_success:
-- git config user.email "royNiladri@users.noreply.github.com"
-- git config user.name "royNiladri"
-- git config --global push.default matching
-- git add dist/*
-- git commit -m "refresh dist folder"
-- git push
-before_install:
-- openssl aes-256-cbc -K $encrypted_47b6d602f476_key -iv $encrypted_47b6d602f476_iv
-  -in deploy_rsa.enc -out deploy_rsa -d
-- openssl aes-256-cbc -K $encrypted_47b6d602f476_key -iv $encrypted_47b6d602f476_iv
-  -in deploy_key.enc -out deploy_key -d
-- chmod 600 deploy_key
-- eval $(ssh-agent -s)
-- ssh-add deploy_key
+script: gulp test
