@@ -10,6 +10,7 @@ script: gulp bundle
 after_success:
 - git config user.email "royNiladri@users.noreply.github.com"
 - git config user.name "royNiladri"
+- ssh-add deploy_key
 - git add dist/*
 - git commit -m "refresh dist folder"
 - git push
