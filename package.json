@@ -31,7 +31,8 @@
   "homepage": "https://github.com/royNiladri/js-big-decimal#readme",
   "devDependencies": {
     "jasmine": "^2.6.0",
-    "typescript": "^2.4.1"
+    "typescript": "^2.4.1",
+    "glob": "^7.1.2"
   },
   "false": {}
 }
