@@ -6,6 +6,21 @@
 
 Work with large numbers on the client side with high precision.
 
+## Installation
+```javascript
+npm install --save js-big-decimal
+```
+
+### Usage
+Require in `javascript` as
+```jsavascript
+var bigDecimal = require(bigDecimal).bigDecimal;
+```
+For `typescript`, use
+```jsavascript
+import { bigDecimal } from 'bigDecimal';
+```
+
 ## Operations
 
 ### bigDecimal(number)
