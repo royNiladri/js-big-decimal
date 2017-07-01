@@ -1,6 +1,6 @@
 {
   "name": "js-big-decimal",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Work with large numbers on the client side. Round them off to any required precission.",
   "main": "lib/big-decimal",
   "types": "lib/big-decimal",
