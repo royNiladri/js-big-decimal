@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "declaration": true,
+    "noImplicitAny": false,
+    "outDir": "lib"
+  },
+    "include": [
+        "src/"
+    ],
+    "exclude": [
+        "node_modules",
+        "**/*.spec.ts"
+    ]
+}

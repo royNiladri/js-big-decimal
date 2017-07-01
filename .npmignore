@@ -64,3 +64,4 @@ test/
 
 deploy_rsa
 deploy_rsa.pub
+deploy_rsa.enc

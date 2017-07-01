@@ -2,11 +2,12 @@
   "name": "js-big-decimal",
   "version": "1.0.0",
   "description": "Work with large numbers on the client side. Round them off to any required precission.",
-  "main": "index.js",
+  "main": "lib/big-decimal",
+  "types": "lib/big-decimal",
   "scripts": {
-    "test": "./node_modules/.bin/karma start --single-run --browsers PhantomJS",
-    "test-dev": "./node_modules/.bin/karma start --browsers PhantomJS",
-    "test-random": "node test/randomtest.js"
+    "test": "./node_modules/.bin/jasmine JASMINE_CONFIG_PATH=jasmine.json",
+    "test-random": "node test/randomtest.js",
+    "compile": "./node_modules/.bin/tsc --watch"
   },
   "keywords": [
     "arithmetic",
@@ -29,17 +30,8 @@
   },
   "homepage": "https://github.com/royNiladri/js-big-decimal#readme",
   "devDependencies": {
-    "gulp": "^3.9.1",
-    "gulp-concat": "^2.6.1",
-    "gulp-rename": "^1.2.2",
-    "gulp-sourcemaps": "^2.6.0",
-    "gulp-uglify": "^3.0.0",
-    "jasmine-core": "^2.6.4",
-    "karma": "^1.7.0",
-    "karma-chrome-launcher": "^2.2.0",
-    "karma-coverage": "^1.1.1",
-    "karma-jasmine": "^1.1.0",
-    "karma-phantomjs-launcher": "^1.0.4",
-    "phantomjs": "^2.1.7"
-  }
+    "jasmine": "^2.6.0",
+    "typescript": "^2.4.1"
+  },
+  "false": {}
 }

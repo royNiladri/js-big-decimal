@@ -1,4 +1,4 @@
-var roundOff = require('../src/round');
+var roundOff = require('../lib/round').roundOff;
 
 var count = 0;
 var res = [];
