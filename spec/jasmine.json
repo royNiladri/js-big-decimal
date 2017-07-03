@@ -3,9 +3,6 @@
     "spec_files": [
         "src/**/*[sS]pec.js"
     ],
-    "helpers": [
-        "spec/**/*.js"
-    ],
     "stopSpecOnExpectationFailure": false,
-    "ranom": false
+    "random": false
 }

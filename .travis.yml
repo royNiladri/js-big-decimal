@@ -6,7 +6,7 @@ cache:
   - node_modules
 before_script:
 - npm install -g jasmine
-script: npm test
+script: npm run travis-test
 deploy:
   provider: npm
   email: "callniladri.pro@gmail.com"

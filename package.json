@@ -5,7 +5,8 @@
   "main": "lib/big-decimal",
   "types": "lib/big-decimal",
   "scripts": {
-    "test": "./node_modules/.bin/jasmine JASMINE_CONFIG_PATH=spec/jasmine.json",
+    "test": "./node_modules/.bin/jasmine JASMINE_CONFIG_PATH=spec/jasmine.json --helper=spec/helper/*.js",
+    "travis-test": "./node_modules/.bin/jasmine JASMINE_CONFIG_PATH=spec/jasmine.json",
     "test-random": "node test/randomtest.js",
     "compile": "./node_modules/.bin/tsc --watch"
   },
