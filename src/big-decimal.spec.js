@@ -23,24 +23,87 @@ describe('BIG-DECIMAL', function () {
         });
 
         xdescribe('exponentiation', function () {
-            it('should transform 1.34567e6 to 1345670', function () {
-                var n = new bigDecimal('1.34567e6');
-                expect(n.getValue()).toBe('1345670');
-            });
-
-            it('should transform 1.34567e3 to 1345.67', function () {
-                var n = new bigDecimal('1.34567e3');
-                expect(n.getValue()).toBe('1345.67');
-            });
-
-            it('should transform 13456.7e-3 to 13.4567', function () {
-                var n = new bigDecimal('13456.7e-3');
-                expect(n.getValue()).toBe('13.4567');
-            });
-
             it('should transform 13.45e-5 to 0.0001345', function () {
                 var n = new bigDecimal('13.45e-5');
                 expect(n.getValue()).toBe('0.0001345');
+            });
+            it('should transform 13.45e-4 to 0.001345', function () {
+                var n = new bigDecimal('13.45e-4');
+                expect(n.getValue()).toBe('0.001345');
+            });
+            it('should transform 13.45e-3 to 0.01345', function () {
+                var n = new bigDecimal('13.45e-3');
+                expect(n.getValue()).toBe('0.01345');
+            });
+            it('should transform 13.45e-2 to 0.1345', function () {
+                var n = new bigDecimal('13.45e-2');
+                expect(n.getValue()).toBe('0.1345');
+            });
+            it('should transform 13.45e-1 to 1.345', function () {
+                var n = new bigDecimal('13.45e-1');
+                expect(n.getValue()).toBe('1.345');
+            });
+            it('should transform 13.45e0 to 13.45', function () {
+                var n = new bigDecimal('13.45e0');
+                expect(n.getValue()).toBe('13.45');
+            });
+            it('should transform 13.45e1 to 134.5', function () {
+                var n = new bigDecimal('13.45e1');
+                expect(n.getValue()).toBe('134.5');
+            });
+            it('should transform 13.45e2 to 1345', function () {
+                var n = new bigDecimal('13.45e2');
+                expect(n.getValue()).toBe('1345');
+            });
+            it('should transform 13.45e+3 to 13450', function () {
+                var n = new bigDecimal('13.45e+3');
+                expect(n.getValue()).toBe('13450');
+            });
+            it('should transform 13.45e4 to 134500', function () {
+                var n = new bigDecimal('13.45e4');
+                expect(n.getValue()).toBe('134500');
+            });
+
+            it('should transform 0.1345e2 to 13.45', function () {
+                var n = new bigDecimal('0.1345e2');
+                expect(n.getValue()).toBe('13.45');
+            });
+            it('should transform 0.1345e1 to 1.345', function () {
+                var n = new bigDecimal('0.1345e1');
+                expect(n.getValue()).toBe('1.345');
+            });
+            it('should transform 0.1345e0 to 0.1345', function () {
+                var n = new bigDecimal('0.1345e0');
+                expect(n.getValue()).toBe('0.1345');
+            });
+            it('should transform 0.1345e-1 to 0.01345', function () {
+                var n = new bigDecimal('0.1345e-1');
+                expect(n.getValue()).toBe('0.01345');
+            });
+            it('should transform 0.1345e-2 to 0.001345', function () {
+                var n = new bigDecimal('0.1345e-2');
+                expect(n.getValue()).toBe('0.001345');
+            });
+
+            it('should transform 0.0134e2 to 1.34', function () {
+                var n = new bigDecimal('0.0134e2');
+                expect(n.getValue()).toBe('1.34');
+            });
+            it('should transform 0.0134e1 to 0.1345', function () {
+                var n = new bigDecimal('0.0134e1');
+                expect(n.getValue()).toBe('0.134');
+            });
+            it('should transform 0.0134e0 to 0.0134', function () {
+                var n = new bigDecimal('0.0134e0');
+                expect(n.getValue()).toBe('0.0134');
+            });
+            it('should transform 0.0134e-1 to 0.00134', function () {
+                var n = new bigDecimal('0.0134e-1');
+                expect(n.getValue()).toBe('0.00134');
+            });
+            it('should transform 0.0134e-2 to 0.000134', function () {
+                var n = new bigDecimal('0.0134e-2');
+                expect(n.getValue()).toBe('0.000134');
             });
         });
     });
