@@ -22,7 +22,7 @@ describe('BIG-DECIMAL', function () {
             }
         });
 
-        xdescribe('exponentiation', function () {
+        describe('exponentiation', function () {
             it('should transform 13.45e-5 to 0.0001345', function () {
                 var n = new bigDecimal('13.45e-5');
                 expect(n.getValue()).toBe('0.0001345');

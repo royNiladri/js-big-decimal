@@ -1,4 +1,4 @@
-import { add } from './add';
+import { add, trim } from './add';
 import { roundOff } from './round';
 
 export class bigDecimal {
@@ -8,7 +8,7 @@ export class bigDecimal {
     private static validate(number) {
         if (number) {
             number = number.toString();
-            if (isNaN(number) || number.indexOf('e') > -1)
+            if (isNaN(number))
                 throw Error("Parameter is not a number: " + number);
 
             if (number[0] == '+')
@@ -16,11 +16,27 @@ export class bigDecimal {
         } else
             number = '0';
 
+        //handle exponentiation
+        if (/e/i.test(number)) {
+            let [mantisa, exponent] = number.split(/[eE]/);
+            mantisa = trim(mantisa);
+            exponent = parseInt(exponent) + mantisa.indexOf('.');
+            mantisa = mantisa.replace('.', '');
+            console.log(mantisa + "X" + exponent);
+            if (mantisa.length < exponent) {
+                number = mantisa + (new Array(exponent - mantisa.length + 1)).join('0');
+            } else if (mantisa.length >= exponent && exponent > 0) {
+                number = trim(mantisa.substring(0, exponent)) +
+                    ((mantisa.length > exponent) ? ('.' + mantisa.substring(exponent)) : '');
+            } else {
+                number = '0.' + (new Array(-exponent + 1)).join('0') + mantisa;
+            }
+        }
+
         return number;
     }
 
     constructor(number = '0') {
-        this.value = '0';
         this.value = bigDecimal.validate(number);
     }
 

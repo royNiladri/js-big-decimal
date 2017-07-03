@@ -61,7 +61,7 @@ function compliment(number: string) {
     return addCore(s, one);
 }
 
-function trim(number: string) {
+export function trim(number: string) {
     let parts = number.split('.');
 
     if (!parts[0])
