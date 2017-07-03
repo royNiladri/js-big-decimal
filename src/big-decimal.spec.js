@@ -21,6 +21,28 @@ describe('BIG-DECIMAL', function () {
                 expect(e.toString()).toMatch('Parameter is not a number');
             }
         });
+
+        xdescribe('exponentiation', function () {
+            it('should transform 1.34567e6 to 1345670', function () {
+                var n = new bigDecimal('1.34567e6');
+                expect(n.getValue()).toBe('1345670');
+            });
+
+            it('should transform 1.34567e3 to 1345.67', function () {
+                var n = new bigDecimal('1.34567e3');
+                expect(n.getValue()).toBe('1345.67');
+            });
+
+            it('should transform 13456.7e-3 to 13.4567', function () {
+                var n = new bigDecimal('13456.7e-3');
+                expect(n.getValue()).toBe('13.4567');
+            });
+
+            it('should transform 13.45e-5 to 0.0001345', function () {
+                var n = new bigDecimal('13.45e-5');
+                expect(n.getValue()).toBe('0.0001345');
+            });
+        });
     });
 
     describe('round', function () {
