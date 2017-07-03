@@ -22,7 +22,6 @@ export class bigDecimal {
             mantisa = trim(mantisa);
             exponent = parseInt(exponent) + mantisa.indexOf('.');
             mantisa = mantisa.replace('.', '');
-            console.log(mantisa + "X" + exponent);
             if (mantisa.length < exponent) {
                 number = mantisa + (new Array(exponent - mantisa.length + 1)).join('0');
             } else if (mantisa.length >= exponent && exponent > 0) {
