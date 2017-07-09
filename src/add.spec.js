@@ -40,4 +40,16 @@ describe('add', function () {
     it('should: 12.67+.13 = 12.80', function () {
         expect(add('12.67', '.13')).toBe('12.80');
     });
+
+    it('should: 100-12 = 88', function () {
+        expect(add('100', '-12')).toBe('88');
+    });
+
+    it('should: 126.7-13 = 113.7', function () {
+        expect(add('126.7', '-13')).toBe('113.7');
+    });
+    it('should: 12.67-130.7 = -118.03', function () {
+        expect(add('12.67', '-130.7')).toBe('-118.03');
+    });
+
 })

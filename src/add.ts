@@ -1,26 +1,25 @@
 //function add {
 export function add(number1, number2 = "0") {
-    let neg = 0, ind = -1;
+    let neg = 0, ind = -1, neg_len;
 
     //check for negatives
     if (number1[0] == '-') {
         neg++;
         ind = 1;
         number1 = number1.substring(1);
+        neg_len = number1.length;
     }
     if (number2[0] == '-') {
         neg++;
         ind = 2;
         number2 = number2.substring(1);
+        neg_len = number2.length;
     }
 
-    let parts1 = number1.split('.'),
-        parts2 = number2.split('.');
+    number1 = trim(number1);
+    number2 = trim(number2);
 
-    let li = Math.max(parts1[0].length, parts2[0].length),
-        ld1 = parts1[1] ? parts1[1].length : 0,
-        ld2 = parts2[1] ? parts2[1].length : 0,
-        ld = Math.max(ld1, ld2);
+    [number1, number2] = pad(trim(number1), trim(number2));
 
     if (neg == 1) {
         if (ind == 1)
@@ -30,13 +29,12 @@ export function add(number1, number2 = "0") {
     }
 
     let res = addCore(number1, number2);
-
     if (!neg)
         return trim(res);
     else if (neg == 2)
         return ('-' + trim(res));
     else {
-        if (res.length == li + ld + 1 + (ld ? 1 : 0))
+        if (number1.length<(res.length))
             return trim(res.substring(1));
         else
             return ('-' + trim(compliment(res)));
@@ -73,7 +71,7 @@ export function trim(number: string) {
     return parts[0] + (parts[1] ? ('.' + parts[1]) : '');
 }
 
-function addCore(number1: string, number2: string) {
+function pad(number1:string, number2:string){
     let parts1 = number1.split('.'),
         parts2 = number2.split('.');
 
@@ -100,6 +98,12 @@ function addCore(number1: string, number2: string) {
     number1 = parts1[0] + ((parts1[1]) ? ('.' + parts1[1]) : '');
     number2 = parts2[0] + ((parts2[1]) ? ('.' + parts2[1]) : '');
 
+    return [number1, number2];
+}
+
+function addCore(number1: string, number2: string) {
+    [number1, number2] = pad(number1, number2);
+
     let sum = '',
         carry = 0;
 
@@ -113,5 +117,5 @@ function addCore(number1: string, number2: string) {
         carry = Math.floor(temp / 10);
     }
 
-    return carry ? ('1' + sum) : sum;
+    return carry ? (carry.toString() + sum) : sum;
 }
