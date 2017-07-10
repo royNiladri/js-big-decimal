@@ -7,4 +7,5 @@ export declare class bigDecimal {
     round(precision: any): any;
     static add(number1: any, number2: any): string;
     static multiply(number1: any, number2: any): string;
+    static compareTo(number1: any, number2: any): 0 | 1 | -1;
 }
