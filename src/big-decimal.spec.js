@@ -160,6 +160,11 @@ describe('BIG-DECIMAL', function () {
             expect(bigDecimal.add('-23.678', '-67.34')).toBe('-91.018');
         });
 
+        it('should produce -23.678-67.34=-91.018', function () {
+            let bigDecimal1 = new bigDecimal('-23.678');
+            expect(new bigDecimal('-23.678').add(new bigDecimal('-67.34')).getValue()).toBe(new bigDecimal('-91.018').getValue());
+        });
+
         it('should produce -23.678=-23.678', function () {
             expect(bigDecimal.add('-23.678')).toBe('-23.678');
         });
@@ -171,6 +176,80 @@ describe('BIG-DECIMAL', function () {
             } catch (e) {
                 expect(e.toString()).toMatch('Parameter is not a number');
             }
+        });
+    });
+
+
+
+    describe('compareTo', function () {
+        it('should produce 23.678, 67.34= -1', function () {
+            expect(bigDecimal.compareTo('23.678', '67.34')).toBe(-1);
+        });
+        it('should produce 23.678, -67.34= 1', function () {
+            expect(bigDecimal.compareTo('23.678', '-67.34')).toBe(1);
+        });
+        it('should produce .678, 0.67800= 0', function () {
+            expect(bigDecimal.compareTo('.678', '0.67800')).toBe(0);
+        });
+        it('should produce 23.678, 67.34= -1', function () {
+            expect(new bigDecimal('23.678').compareTo(new bigDecimal('67.34'))).toBe(-1);
+        });
+        it('should produce 23.678, -67.34= 1', function () {
+            expect(new bigDecimal('23.678').compareTo(new bigDecimal('-67.34'))).toBe(1);
+        });
+        it('should produce .678, 0.67800= 0', function () {
+            expect(new bigDecimal('.678').compareTo(new bigDecimal('0.67800'))).toBe(0);
+        });
+    });
+
+
+    describe('multiply', function () {
+        it('should: -12 * 0 = 0', function () {
+            expect(new bigDecimal('-12').multiply(new bigDecimal('0')).getValue()).toBe('0');
+        });
+
+        it('should: 12 * -0 = 0', function () {
+            expect(new bigDecimal('12').multiply(new bigDecimal('-0')).getValue()).toBe('0');
+        });
+
+
+        it('should: -12 * -0 = 0', function () {
+            expect(new bigDecimal('-12').multiply(new bigDecimal('-0')).getValue()).toBe('0');
+        });
+        it('should: -0.0000005 * 13 = -0.0000065', function () {
+            expect(new bigDecimal('-0.0000005').multiply(new bigDecimal('13')).getValue()).toBe('-0.0000065');
+        });
+
+        it('should: 12 * 13 = 156', function () {
+            expect(new bigDecimal('12').multiply(new bigDecimal('13')).getValue()).toBe('156');
+        });
+
+        it('should: 13 * 130 = 1690', function () {
+            expect(new bigDecimal('13').multiply(new bigDecimal('130')).getValue()).toBe('1690');
+        });
+
+        it('should: 0.13 * 0.00130 = 0.000169', function () {
+            expect(new bigDecimal('0.13').multiply(new bigDecimal('0.00130')).getValue()).toBe('0.000169');
+        });
+
+        it('should: 0.5 * 0.2 = 0.1', function () {
+            expect(new bigDecimal('0.5').multiply(new bigDecimal('0.2')).getValue()).toBe('0.1');
+        });
+
+        it('should: -0.13 * 0.00130 = -0.000169', function () {
+            expect(new bigDecimal('-0.13').multiply(new bigDecimal('0.00130')).getValue()).toBe('-0.000169');
+        });
+
+        it('should: 13.0 * 0.00130 = 0.000169', function () {
+            expect(bigDecimal.multiply('13.0', '0.00130')).toBe('0.0169');
+        });
+
+        it('should: -0.05 * -0.02 = 0.001', function () {
+            expect(new bigDecimal('-0.05').multiply(new bigDecimal('-0.02')).getValue()).toBe('0.001');
+        });
+
+        it('should: .05 * .02 = 0.001', function () {
+            expect(new bigDecimal('.05').multiply(new bigDecimal('.02')).getValue()).toBe('0.001');
         });
     });
 })
