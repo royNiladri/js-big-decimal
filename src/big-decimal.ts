@@ -1,7 +1,8 @@
 import { add, trim } from './add';
 import { roundOff } from './round';
 import { multiply } from './multiply';
-import { compareTo } from './compareTo'
+import { divide } from './divide'
+import { compareTo } from './compareTo';
 
 export class bigDecimal {
 
@@ -95,6 +96,16 @@ export class bigDecimal {
 
     multiply(number : bigDecimal) {
         return new bigDecimal(multiply(this.value, number.getValue()));
+    }
+
+    static divide(number1, number2){
+        number1 = bigDecimal.validate(number1);
+        number2 = bigDecimal.validate(number2);
+        return divide(number1, number2);
+    }
+
+    divide(number : bigDecimal) {
+        return new bigDecimal(divide(this.value, number.getValue()));
     }
 
     static compareTo(number1, number2){
