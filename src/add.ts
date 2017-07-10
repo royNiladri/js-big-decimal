@@ -71,7 +71,7 @@ export function trim(number: string) {
     return parts[0] + (parts[1] ? ('.' + parts[1]) : '');
 }
 
-function pad(number1:string, number2:string){
+export function pad(number1:string, number2:string){
     let parts1 = number1.split('.'),
         parts2 = number2.split('.');
 
