@@ -252,4 +252,24 @@ describe('BIG-DECIMAL', function () {
             expect(new bigDecimal('.05').multiply(new bigDecimal('.02')).getValue()).toBe('0.001');
         });
     });
+
+
+
+    describe('subtract', function () {
+        it('should: -12 - 0 = -12', function () {
+            expect(new bigDecimal('-12').subtract(new bigDecimal('0')).getValue()).toBe('-12');
+        });
+        it('should: 0 - 12 = -12', function () {
+            expect(new bigDecimal('0').subtract(new bigDecimal('12')).getValue()).toBe('-12');
+        });
+        it('should: 12 - 12 = 0', function () {
+            expect(new bigDecimal('12').subtract(new bigDecimal('12')).getValue()).toBe('0');
+        });
+        it('should: -12 - 12 = -24', function () {
+            expect(new bigDecimal('-12').subtract(new bigDecimal('12')).getValue()).toBe('-24');
+        });
+        it('should: 12 - -12 = 24', function () {
+            expect(new bigDecimal('12').subtract(new bigDecimal('-12')).getValue()).toBe('24');
+        });
+    });
 })
