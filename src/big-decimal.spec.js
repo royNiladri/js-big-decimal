@@ -173,4 +173,18 @@ describe('BIG-DECIMAL', function () {
             }
         });
     });
+
+
+
+    describe('compareTo', function () {
+        it('should produce 23.678, 67.34= -1', function () {
+            expect(bigDecimal.compareTo('23.678', '67.34')).toBe(-1);
+        });
+        it('should produce 23.678, -67.34= 1', function () {
+            expect(bigDecimal.compareTo('23.678', '-67.34')).toBe(1);
+        });
+        it('should produce .678, 0.67800= 0', function () {
+            expect(bigDecimal.compareTo('.678', '0.67800')).toBe(0);
+        });
+    });
 })

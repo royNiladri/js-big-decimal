@@ -1,6 +1,7 @@
 import { add, trim } from './add';
 import { roundOff } from './round';
-import { multiply } from './multiply'
+import { multiply } from './multiply';
+import { compareTo } from './compareTo'
 
 export class bigDecimal {
 
@@ -86,5 +87,11 @@ export class bigDecimal {
         number1 = bigDecimal.validate(number1);
         number2 = bigDecimal.validate(number2);
         return multiply(number1, number2);
+    }
+
+    static compareTo(number1, number2){
+        number1 = bigDecimal.validate(number1);
+        number2 = bigDecimal.validate(number2);
+        return compareTo(number1, number2);
     }
 }
