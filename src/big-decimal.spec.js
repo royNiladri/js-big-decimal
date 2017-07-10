@@ -271,5 +271,8 @@ describe('BIG-DECIMAL', function () {
         it('should: 12 - -12 = 24', function () {
             expect(new bigDecimal('12').subtract(new bigDecimal('-12')).getValue()).toBe('24');
         });
+        it('should: 12 - -12.0 = 24', function () {
+            expect(new bigDecimal('12').subtract(new bigDecimal('-12.0')).getValue()).toBe('24.0');
+        });
     });
 })
