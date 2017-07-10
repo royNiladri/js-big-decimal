@@ -17,13 +17,13 @@ export function roundOff(input, n: number = 0) {
     if (!parts[1]) {
         return partInt + '.' + (new Array(n + 1).join('0'));
     } else if (parts[1].length < n) {
-        return parseInt + '.' + (new Array(n - parts[1].length + 1).join('0'));
+        return partInt + '.' + parts[1]+(new Array(n - parts[1].length + 1).join('0'));
     }
 
     let partDec = parts[1].substring(0, n),
         rem = parts[1].substring(n);
 
-    if (greaterThanFive(rem, partDec)) {
+    if (rem && greaterThanFive(rem, partDec)) {
         partDec = increment(partDec);
         if (partDec.length > n) {
             return increment(partInt, parseInt(partDec[0])) + '.' + partDec.substring(1);
