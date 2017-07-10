@@ -3,7 +3,7 @@ import { roundOff } from './round';
 import { multiply } from './multiply';
 import { divide } from './divide'
 import { compareTo } from './compareTo';
-import { subtract } from './subtract';
+import { subtract, negate } from './subtract';
 
 export class bigDecimal {
 
@@ -127,5 +127,14 @@ export class bigDecimal {
 
     compareTo(number : bigDecimal) {
         return compareTo(this.value, number.getValue());
+    }
+
+    static negate(number){
+        number = bigDecimal.validate(number);
+        return negate(number);
+    }
+
+    negate() {
+        return negate(this.value);
     }
 }

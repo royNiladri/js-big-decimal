@@ -15,4 +15,6 @@ export declare class bigDecimal {
     divide(number: bigDecimal): bigDecimal;
     static compareTo(number1: any, number2: any): 0 | 1 | -1;
     compareTo(number: bigDecimal): 0 | 1 | -1;
+    static negate(number: any): string;
+    negate(): string;
 }
