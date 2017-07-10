@@ -1,4 +1,7 @@
 export function multiply(number1, number2){
+	number1 = number1.toString();
+    number2 = number2.toString();
+
 	/*Filter numbers*/
 	let negative = 0;
 	if(number1[0] == '-'){
