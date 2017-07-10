@@ -6,6 +6,9 @@ export declare class bigDecimal {
     getPrettyValue(digits: any, separator: any): string;
     round(precision: any): any;
     static add(number1: any, number2: any): string;
+    add(number: bigDecimal): bigDecimal;
     static multiply(number1: any, number2: any): string;
+    multiply(number: bigDecimal): bigDecimal;
     static compareTo(number1: any, number2: any): 0 | 1 | -1;
+    compareTo(number: bigDecimal): 0 | 1 | -1;
 }

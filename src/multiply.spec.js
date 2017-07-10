@@ -17,7 +17,7 @@ describe('multiply', function () {
         expect(multiply('13', '130')).toBe('1690');
     });
 
-    it('should: 13.0 * 0.00130 = 0.000169', function () {
+    it('should: 0.13 * 0.00130 = 0.000169', function () {
         expect(multiply('0.13', '0.00130')).toBe('0.000169');
     });
 
@@ -34,7 +34,7 @@ describe('multiply', function () {
     });
 
 
-    it('should: -13.0 * 0.00130 = -0.000169', function () {
+    it('should: -0.13 * 0.00130 = -0.000169', function () {
         expect(multiply('-0.13', '0.00130')).toBe('-0.000169');
     });
 

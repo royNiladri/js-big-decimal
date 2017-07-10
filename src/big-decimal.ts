@@ -83,15 +83,27 @@ export class bigDecimal {
         return add(number1, number2);
     }
 
+    add(number : bigDecimal) {
+        return new bigDecimal(add(this.value, number.getValue()));
+    }
+
     static multiply(number1, number2){
         number1 = bigDecimal.validate(number1);
         number2 = bigDecimal.validate(number2);
         return multiply(number1, number2);
     }
 
+    multiply(number : bigDecimal) {
+        return new bigDecimal(multiply(this.value, number.getValue()));
+    }
+
     static compareTo(number1, number2){
         number1 = bigDecimal.validate(number1);
         number2 = bigDecimal.validate(number2);
         return compareTo(number1, number2);
+    }
+
+    compareTo(number : bigDecimal) {
+        return compareTo(this.value, number.getValue());
     }
 }
