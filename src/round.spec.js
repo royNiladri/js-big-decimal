@@ -15,4 +15,7 @@ describe('round', function () {
     it('should return float with padded zeros is second argument is non-zero and first is integer', function () {
         expect(roundOff('044909.987', 5)).toBe('044909.98700');
     })
+    it('should return float with padded zeros is second argument is non-zero and first is integer', function () {
+        expect(roundOff('96227983951.7293581', 5)).toBe('96227983951.72936');
+    })
 })

@@ -1,8 +1,11 @@
 var divide = require('../lib/divide').divide;
 
 describe('divide', function(){
-    it('should return correct result', function(){
-        let count = 1000, err = 0;
+    it('test failing scenario', function(){
+        expect(divide('509365950.27576', '0.003802940215600348', 16)).toBe('133940036234.6609666927392804');
+    })
+    xit('should return correct result', function(){
+        let count = 2000, err = 0;
         while(count-- > 0){
             let dividend = (Math.random()*(Math.pow(10, Math.floor(Math.random()*10)))).toFixed(5);
             let divisor = (Math.random()*(Math.pow(10, Math.floor(Math.random()*10))));
@@ -11,9 +14,9 @@ describe('divide', function(){
                 continue;
             }
             let jsOut = dividend/divisor;
-            let myOut = parseFloat(divide(dividend, divisor, 5));
+            let myOut = parseFloat(divide(dividend.toString(), divisor.toString(), 5));
             if(isNaN(myOut) || Math.abs(jsOut-myOut)>0.00001){
-                //console.log(`${dividend}/${divisor} = ${jsOut} != ${myOut}`);
+                console.log(`${dividend}/${divisor} = ${jsOut} != ${myOut}`);
                 err++;
             }else
             {
