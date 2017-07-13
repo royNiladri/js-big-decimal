@@ -26,11 +26,12 @@ import { bigDecimal } from 'bigDecimal';
 ### bigDecimal(number)
 Create a new objet of type BigDecimal. Supports parameters of type `number` and `string`. If string passed cannot be parsed as a number error is thrown. It is recommended to use string as it circumvents the issue of precision with JS native `float` implementation and max limit for `integer`.
 
-This does not support exponentiation as of yet. `12.456e3` will throw an error.
+It supports exponentiation, but only with integral exponent.
 
 ```javascript
 var n1 = new bigDecimal(12.6789);
 var n2 = new bigDecimal("12345.6789");
+var n3 = new bigDecimal('12.456e3'); // 12456
 ```
 
 ### getValue()
@@ -56,8 +57,24 @@ var n4 = n2.round(); // n4 = "12346"
 ```
 
 ### add(number1, number2)
-Add two numbers. Pass in negative for substraction. ensure parameters are `strings`. 
+Add two numbers. Pass in negative for substraction. Ensure parameters are `strings`. 
 ```javascript
 var sum = bigDecimal.add("23.678", "67.34"); // sum = "91.018"
 var diff = bigDecimal.add("67.34", "-23.678"); // diff = "43.662"
 ```
+Alternately, use the instance property. It returns the result as new `bigDecimal`.
+```javascript
+var n1 = new bigDecimal('1234');
+var n2 = new bigDecimal('8765');
+var sum = n1.add(n2); // sum = new bigDecimal('9999')
+```
+
+### divide(dividend, divisor, precission)
+Divide two numbers. Pass arguments as `string` if calling on bigDecimal or pass an instance of bigDecimal if calling on object. `precission` is an optional parameter with default value of 8.
+```javascript
+var out = bigDecimal.divide('45', '4', 2); // out = 11.25
+
+var n1 = new bigDecimal('45');
+var n2 = new bigDecimal('4');
+var out2 = n1.divide(n2); // out2 = new bigDecimal('11.25')
+``` 
