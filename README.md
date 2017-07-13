@@ -50,14 +50,39 @@ var card = num.getPrettyValue(4, '-'); // cardNumber = "1234-5678-9012-3456"
 ```
 
 ### round(precision)
-Returns the rounded value to the specified precission (number of digits after decimal). The default is set to 0 if no argument is passed.
+Returns the rounded value to the specified precision (number of digits after decimal). The default is set to 0 if no argument is passed.
 ```javascript
 var n3 = n1.round(2); // n3 = "12.68"
-var n4 = n2.round(); // n4 = "12346" 
+var n4 = n2.round(); // n4 = "12346"
 ```
 
-### add(number1, number2)
-Add two numbers. Pass in negative for substraction. Ensure parameters are `strings`. 
+### compareTo(number1, number2)
+Compare two numbers. Returns `1, 0 and -1` if `number1 > number2, number1 == number2 and number1 < number2` respectively.
+```javascript
+var value = bigDecimal.compareTo("23.678", "67.34"); // value = -1
+var value = bigDecimal.compareTo("23.678", "23.6780"); // value = 0
+var value = bigDecimal.compareTo("123.678", "67.34"); // value = 1
+```
+Alternately, use the instance property. It returns the result as `Integer`.
+```javascript
+var n1 = new bigDecimal('1234');
+var n2 = new bigDecimal('8765');
+var value = n1.compareTo(n2); // value = -1
+```
+
+### negate(number)
+Returns negation of the given number.
+```javascript
+var value = bigDecimal.negate("123.678"); // value = "-123.678";
+```
+Alternately, use the instance property. It returns the result as new `bigDecimal`.
+```javascript
+var n = new bigDecimal('-1234');
+var value = n.negate(); // value = new bigDecimal('1234')
+```
+
+### add(augend, addend)
+Add two numbers. Pass in negative for substraction. Ensure parameters are `strings`.
 ```javascript
 var sum = bigDecimal.add("23.678", "67.34"); // sum = "91.018"
 var diff = bigDecimal.add("67.34", "-23.678"); // diff = "43.662"
@@ -69,12 +94,38 @@ var n2 = new bigDecimal('8765');
 var sum = n1.add(n2); // sum = new bigDecimal('9999')
 ```
 
-### divide(dividend, divisor, precission)
-Divide two numbers. Pass arguments as `string` if calling on bigDecimal or pass an instance of bigDecimal if calling on object. `precission` is an optional parameter with default value of 8.
+### subtract(minuend, subtrahend)
+Subtract one number from another
 ```javascript
-var out = bigDecimal.divide('45', '4', 2); // out = 11.25
+var diff = bigDecimal.subtract("67.34", "23.678"); // diff = "43.662"
+```
+Alternately, use the instance property. It returns the result as new `bigDecimal`.
+```javascript
+var n1 = new bigDecimal('12.67');
+var n2 = new bigDecimal('130.7');
+var diff = n1.subtract(n2); // diff = new bigDecimal('-118.03')
+```
 
+### multiply(multiplicand, multiplier)
+Multiply two numbers. Ensure parameters are `string`
+```javascript
+var product = bigDecimal.multiply("-0.13", "0.00130"); // product = "-0.000169"
+```
+Alternately, use the instance property. It returns the result as new `bigDecimal`.
+```javascript
+var n1 = new bigDecimal('-0.13');
+var n2 = new bigDecimal('0.00130');
+var product = n1.multiply(n2); // product = new bigDecimal('-0.000169')
+```
+
+### divide(dividend, divisor, precision)
+Divide two numbers. Pass arguments as `string` if calling on bigDecimal or pass an instance of bigDecimal if calling on object. `precision` is an optional parameter with default value of 8.
+```javascript
+var quotient = bigDecimal.divide('45', '4', 2); // quotient = 11.25
+```
+Alternately, use the instance property. It returns the result as new `bigDecimal`.
+```javascript
 var n1 = new bigDecimal('45');
 var n2 = new bigDecimal('4');
-var out2 = n1.divide(n2); // out2 = new bigDecimal('11.25')
-``` 
+var quotient = n1.divide(n2); // quotient = new bigDecimal('11.25')
+```

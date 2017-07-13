@@ -135,6 +135,6 @@ export class bigDecimal {
     }
 
     negate() {
-        return negate(this.value);
+        return new bigDecimal(negate(this.value));
     }
 }
