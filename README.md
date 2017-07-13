@@ -71,7 +71,7 @@ var value = n1.compareTo(n2); // value = -1
 ```
 
 ### negate(number)
-Returns negation of the given number.
+Returns negation of a given number.
 ```javascript
 var value = bigDecimal.negate("123.678"); // value = "-123.678";
 ```
@@ -82,7 +82,7 @@ var value = n.negate(); // value = new bigDecimal('1234')
 ```
 
 ### add(augend, addend)
-Add two numbers. Pass in negative for substraction. Ensure parameters are `strings`.
+Add two numbers. Pass in negative for substraction. Ensure parameters are `string`s.
 ```javascript
 var sum = bigDecimal.add("23.678", "67.34"); // sum = "91.018"
 var diff = bigDecimal.add("67.34", "-23.678"); // diff = "43.662"
@@ -107,7 +107,7 @@ var diff = n1.subtract(n2); // diff = new bigDecimal('-118.03')
 ```
 
 ### multiply(multiplicand, multiplier)
-Multiply two numbers. Ensure parameters are `string`
+Multiply two numbers. Ensure parameters are `string`s.
 ```javascript
 var product = bigDecimal.multiply("-0.13", "0.00130"); // product = "-0.000169"
 ```
