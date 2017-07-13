@@ -1,6 +1,7 @@
 # JS Big Decimal
 
 [![Travis](https://img.shields.io/travis/royNiladri/js-big-decimal.svg?style=flat-square)](https://travis-ci.org/royNiladri/js-big-decimal)
+[![devDependencies Status](https://david-dm.org/royNiladri/js-big-decimal/dev-status.svg?style=flat-square)](https://david-dm.org/royNiladri/js-big-decimal?type=dev)
 [![license](https://img.shields.io/github/license/royNiladri/js-big-decimal.svg?style=flat-square)](https://github.com/royNiladri/js-big-decimal/blob/master/LICENSE)
 [![npm](https://img.shields.io/npm/v/js-big-decimal.svg?style=flat-square)](https://www.npmjs.com/package/js-big-decimal)
 
