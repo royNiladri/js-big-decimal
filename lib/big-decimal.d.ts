@@ -3,8 +3,10 @@ export declare class bigDecimal {
     private static validate(number);
     constructor(number?: string);
     getValue(): string;
+    static getPrettyValue(number: any, digits: any, separator: any): string;
     getPrettyValue(digits: any, separator: any): string;
-    round(precision: any): any;
+    static round(number: any, precision: any): any;
+    round(precision: any): bigDecimal;
     static add(number1: any, number2: any): string;
     add(number: bigDecimal): bigDecimal;
     static subtract(number1: any, number2: any): string;
@@ -16,5 +18,5 @@ export declare class bigDecimal {
     static compareTo(number1: any, number2: any): 0 | 1 | -1;
     compareTo(number: bigDecimal): 0 | 1 | -1;
     static negate(number: any): string;
-    negate(): string;
+    negate(): bigDecimal;
 }

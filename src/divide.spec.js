@@ -43,4 +43,19 @@ describe('divide', function(){
     it('should do basic floating point division', function(){
         expect(divide(-45, -4, 2)).toBe('11.25');
     });
+    it('1 / 25 = 0.04', function(){
+        expect(divide('1', '25', 2)).toBe('0.04');
+    });
+    it('-1 / 25 = -0.04', function(){
+        expect(divide('-1', '25', 2)).toBe('-0.04');
+    });
+    it('1 / -25 = -0.04', function(){
+        expect(divide('1', '-25', 2)).toBe('-0.04');
+    });
+    it('-1 / -25 = 0.04', function(){
+        expect(divide('-1', '-25', 2)).toBe('0.04');
+    });
+    it('-1 / -1 = 1', function(){
+        expect(divide('-1', '-1', 0)).toBe('1');
+    });
 })
