@@ -9,6 +9,9 @@ export function divide(dividend, divisor, precission = 8) {
     dividend = dividend.toString();
     divisor = divisor.toString();
 
+    if(dividend == 0)
+        return '0';
+
     let neg = 0;
     if (divisor[0] == '-') {
         divisor = divisor.substring(1);
