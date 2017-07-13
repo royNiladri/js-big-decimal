@@ -111,17 +111,16 @@ describe('BIG-DECIMAL', function () {
     describe('round', function () {
         it('should round off 12.678 to 12.68 if precision is set to 2', function () {
             var n = new bigDecimal('12.678');
-            expect(n.round(2)).toBe('12.68');
+            expect(n.round(2).getValue()).toBe('12.68');
         });
 
         it('should round off 12.678 to 13 if precision is not passed', function () {
             var n = new bigDecimal('12.678');
-            expect(n.round()).toBe('13');
+            expect(n.round().getValue()).toBe('13');
         });
 
         it('should round off 12.2678 to 12 if precision is set to 0', function () {
-            var n = new bigDecimal('12.2678');
-            expect(n.round(0)).toBe('12');
+            expect(bigDecimal.round('12.2678',0)).toBe('12');
         });
 
         it('should round off to throw error if precision is not a number', function () {
@@ -144,6 +143,13 @@ describe('BIG-DECIMAL', function () {
         it('should transform 1234567890123456 to 1234-5678-9012-3456 if pretty is called with 4, -', function () {
             var n = new bigDecimal('1234567890123456');
             expect(n.getPrettyValue(4, '-')).toBe('1234-5678-9012-3456');
+        });
+        it('should transform 1567866522.26567 to 1,567,866,522.26567 if pretty is called without arguments', function () {
+            expect(bigDecimal.getPrettyValue('1567866522.26567')).toBe('1,567,866,522.26567');
+        });
+
+        it('should transform 1234567890123456 to 1234-5678-9012-3456 if pretty is called with 4, -', function () {
+            expect(bigDecimal.getPrettyValue('1234567890123456', 4, '-')).toBe('1234-5678-9012-3456');
         });
     });
 
