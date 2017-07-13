@@ -6,11 +6,4 @@ cache:
   - node_modules
 before_script:
 - npm install -g jasmine
-script: npm test
-deploy:
-  provider: npm
-  email: "callniladri.pro@gmail.com"
-  api_key: "fa2de746-780d-467a-952e-fad4f2f213a0"
-  on:
-    branch: master
-    tags: true
+script: npm run travis-test
