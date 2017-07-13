@@ -14,11 +14,11 @@ npm install --save js-big-decimal
 ### Usage
 Require in `javascript` as
 ```jsavascript
-var bigDecimal = require('bigDecimal').bigDecimal;
+var bigDecimal = require('js-big-decimal').bigDecimal;
 ```
 For `typescript`, use
 ```jsavascript
-import { bigDecimal } from 'bigDecimal';
+import { bigDecimal } from 'js-big-decimal';
 ```
 
 ## Operations
