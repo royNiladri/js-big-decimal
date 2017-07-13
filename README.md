@@ -40,8 +40,12 @@ Returns the string value of the decimal.
 console.log(n2.getValue()); // "12345.6789"
 ```
 
-### getPrettyValue(digits, separator)
+### getPrettyValue(number, digits, separator)
 By default this returns the number in standard number format, comma after every three digts. Both arguments, `digits` - the number of digits (of the integral part) to group by, and `separator` - the character to mark the separation. Example of this can be to format a 16 digit number as _credit card_.
+```javascript
+var value = bigDecimal.getPrettyValue("12345.6789"); // value = "12,345.6789"
+```
+Alternately, use the instance property. It returns the result as `string`.
 ```javascript
 var n3 = n2.getPrettyValue(); // n4 = "12,345.6789"
 
@@ -49,11 +53,15 @@ var num = new bigDecimal(1234567890123456)
 var card = num.getPrettyValue(4, '-'); // cardNumber = "1234-5678-9012-3456"
 ```
 
-### round(precision)
+### round(number, precision)
 Returns the rounded value to the specified precision (number of digits after decimal). The default is set to 0 if no argument is passed.
 ```javascript
-var n3 = n1.round(2); // n3 = "12.68"
-var n4 = n2.round(); // n4 = "12346"
+var value = bigDecimal.round("123.678", 2); // value = "123.68"
+```
+Alternately, use the instance property. It returns the result as `bigDecimal`.
+```javascript
+var n3 = n1.round(2); // n3 = new bigDecimal("12.68")
+var n4 = n2.round(); // n4 = new bigDecimal("12346")
 ```
 
 ### compareTo(number1, number2)
