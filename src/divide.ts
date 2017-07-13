@@ -9,6 +9,16 @@ export function divide(dividend, divisor, precission = 8) {
     dividend = dividend.toString();
     divisor = divisor.toString();
 
+    let neg = 0;
+    if (divisor[0] == '-') {
+        divisor = divisor.substring(1);
+        neg++;
+    }
+    if (dividend[0] == '-') {
+        dividend = dividend.substring(1);
+        neg++;
+    }
+
     var pt_dvsr = divisor.indexOf('.') > 0 ? divisor.length - divisor.indexOf('.') - 1 : -1;
 
     divisor = trim(divisor.replace('.', ''));
@@ -61,5 +71,5 @@ export function divide(dividend, divisor, precission = 8) {
         }
     }
 
-    return roundOff(quotent, precission - 2);
+    return ((neg == 1) ? '-' : '') + roundOff(quotent, precission - 2);
 }

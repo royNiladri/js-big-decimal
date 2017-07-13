@@ -1,1 +1,1 @@
-export declare function divide(dividend: any, divisor: any, precission?: number): any;
+export declare function divide(dividend: any, divisor: any, precission?: number): string;
