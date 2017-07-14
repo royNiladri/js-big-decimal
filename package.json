@@ -9,7 +9,7 @@
     "travis-test": "./node_modules/.bin/jasmine JASMINE_CONFIG_PATH=spec/jasmine.json",
     "test-random": "node test/randomtest.js",
     "compile": "./node_modules/.bin/tsc --watch",
-    "toc": "doctoc --title '**Contents**' ./README.md"
+    "toc": "doctoc --title **Contents** ./README.md"
   },
   "keywords": [
     "arithmetic",
