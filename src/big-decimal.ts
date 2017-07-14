@@ -54,7 +54,7 @@ export class bigDecimal {
         } else if (!(digits && separator)) {
             throw Error('Illegal Arguments. Should pass both digits and separator or pass none');
         }
-
+        number = bigDecimal.validate(number);
         var len = number.indexOf('.');
         len = len > 0 ? len : (number.length);
         var temp = '';
@@ -94,6 +94,7 @@ export class bigDecimal {
     }
 
     static round(number, precision) {
+        number = bigDecimal.validate(number);
         if (!precision)
             precision = 0;
         else if (isNaN(precision))
