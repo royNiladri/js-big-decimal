@@ -5,6 +5,7 @@
 [![license](https://img.shields.io/github/license/royNiladri/js-big-decimal.svg?style=flat-square)](https://github.com/royNiladri/js-big-decimal/blob/master/LICENSE)
 [![npm](https://img.shields.io/npm/v/js-big-decimal.svg?style=flat-square)](https://www.npmjs.com/package/js-big-decimal)
 [![npm](https://img.shields.io/npm/dt/js-big-decimal.svg?style=flat-square)](https://www.npmjs.com/package/js-big-decimal)
+<!-- [![Github file size](https://img.shields.io/github/size/royNiladri/js-big-decimal/dist/web/js-big-decimal.min.js.svg?style=flat-square)]() -->
 
 Work with large numbers on the client side with high precision.
 
