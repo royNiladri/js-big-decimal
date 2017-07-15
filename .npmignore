@@ -60,8 +60,12 @@ typings/
 # dev deirectories and tools
 src/
 test/
+lib/
+spec/
 /*.js
-
+/*config*
+/*.yml
+.vscode/
 deploy_rsa
 deploy_rsa.pub
 deploy_rsa.enc

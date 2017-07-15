@@ -5,7 +5,7 @@ import { divide } from './divide'
 import { compareTo } from './compareTo';
 import { subtract, negate } from './subtract';
 
-export class bigDecimal {
+class bigDecimal {
 
     private value: string;
 
@@ -69,7 +69,6 @@ export class bigDecimal {
         }
         return temp + number.substring(len);
     }
-
     getPrettyValue(digits, separator) {
         if (!(digits || separator)) {
             digits = 3;
@@ -171,3 +170,4 @@ export class bigDecimal {
         return new bigDecimal(negate(this.value));
     }
 }
+ export = bigDecimal;

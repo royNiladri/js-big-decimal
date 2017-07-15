@@ -2,26 +2,34 @@
   "name": "js-big-decimal",
   "version": "1.1.2",
   "description": "Work with large numbers on the client side. Round them off to any required precission.",
-  "main": "lib/big-decimal",
-  "types": "lib/big-decimal",
+  "main": "dist/node/big-decimal",
+  "types": "dist/node/big-decimal",
   "scripts": {
     "test": "./node_modules/.bin/jasmine JASMINE_CONFIG_PATH=spec/jasmine.json --helper=spec/helper/*.js",
     "travis-test": "./node_modules/.bin/jasmine JASMINE_CONFIG_PATH=spec/jasmine.json",
     "test-random": "node test/randomtest.js",
-    "compile": "./node_modules/.bin/tsc --watch",
-    "toc": "doctoc --title **Contents** ./README.md"
+    "compile": "tsc --watch",
+    "toc": "doctoc --title \"## Contents\" ./README.md"
   },
   "keywords": [
     "arithmetic",
+    "operators",
+    "precise",
     "number",
+    "decimal",
+    "big",
     "large",
     "round",
     "add",
     "substract",
     "multiply",
-    "divide"
+    "divide",
+    "format"
   ],
-  "author": "Niladri Roy <callniladri.pro@gmail.com> (https://github.com/royNiladri)",
+  "contributors": [
+    "Niladri Roy <callniladri.pro@gmail.com> (https://github.com/royNiladri)",
+    "Sushanto Halder <snhalder300@gmail.com> (https://github.com/Sushanto)"
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -32,10 +40,11 @@
   },
   "homepage": "https://github.com/royNiladri/js-big-decimal#readme",
   "devDependencies": {
+    "del": "^3.0.0",
     "glob": "^7.1.2",
-    "jasmine": "^2.6.0",
-    "jasmine-spec-reporter": "^4.1.1",
-    "typescript": "^2.4.1"
+    "gulp": "^3.9.1",
+    "gulp-run": "^1.7.1",
+    "jasmine-spec-reporter": "^4.1.1"
   },
   "false": {},
   "dependencies": {}
