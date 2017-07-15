@@ -4,12 +4,13 @@
 [![devDependencies Status](https://david-dm.org/royNiladri/js-big-decimal/dev-status.svg?style=flat-square)](https://david-dm.org/royNiladri/js-big-decimal?type=dev)
 [![license](https://img.shields.io/github/license/royNiladri/js-big-decimal.svg?style=flat-square)](https://github.com/royNiladri/js-big-decimal/blob/master/LICENSE)
 [![npm](https://img.shields.io/npm/v/js-big-decimal.svg?style=flat-square)](https://www.npmjs.com/package/js-big-decimal)
+[![npm](https://img.shields.io/npm/dt/js-big-decimal.svg?style=flat-square)](https://www.npmjs.com/package/js-big-decimal)
 
 Work with large numbers on the client side with high precision.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-**Contents**
+## Contents
 
 - [Installation](#installation)
   - [Usage](#usage)
@@ -37,11 +38,18 @@ npm install --save js-big-decimal
 ### Usage
 Require in `javascript` as
 ```jsavascript
-var bigDecimal = require('js-big-decimal').bigDecimal;
+var bigDecimal = require('js-big-decimal');
 ```
 For `typescript`, use
 ```jsavascript
-import { bigDecimal } from 'js-big-decimal';
+import bigDecimal require('js-big-decimal');
+```
+For `web`, when used with script tag, a variable on `Window` object is created.
+```html
+<script src="node_modules/js-big-decimal/dist/web/js-big-decimal.min.js"></script>
+```
+```javascript
+console.log(bigDecimal.add('12', '45'));
 ```
 
 ## Operations
