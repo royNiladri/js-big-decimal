@@ -185,8 +185,6 @@ describe('BIG-DECIMAL', function () {
         });
     });
 
-
-
     describe('compareTo', function () {
         it('should produce 23.678, 67.34= -1', function () {
             expect(bigDecimal.compareTo('23.678', '67.34')).toBe(-1);
@@ -207,7 +205,6 @@ describe('BIG-DECIMAL', function () {
             expect(new bigDecimal('.678').compareTo(new bigDecimal('0.67800'))).toBe(0);
         });
     });
-
 
     describe('multiply', function () {
         it('should: -12 * 0 = 0', function () {
@@ -259,7 +256,17 @@ describe('BIG-DECIMAL', function () {
         });
     });
 
-
+    describe('divide', function(){
+        it('should: 22 / 7 = 3.1428571429', function(){
+            expect(bigDecimal.divide('22', '7', 10)).toBe('3.1428571429');
+        });
+        it('should: 72 / 13 = 5.53846153846154', function(){
+            expect(bigDecimal.divide('72', '13')).toBe('5.53846154');
+        });
+        it('should: 24 / 120 = 0.2', function(){
+            expect(new bigDecimal('24').divide(new bigDecimal('120'), 2).getValue()).toBe('0.20');
+        });
+    })
 
     describe('subtract', function () {
         it('should: -12 - 0 = -12', function () {
