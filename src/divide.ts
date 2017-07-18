@@ -74,5 +74,5 @@ export function divide(dividend, divisor, precission = 8) {
         }
     }
 
-    return ((neg == 1) ? '-' : '') + roundOff(quotent, precission - 2);
+    return ((neg == 1) ? '-' : '') + trim(roundOff(quotent, precission - 2));
 }

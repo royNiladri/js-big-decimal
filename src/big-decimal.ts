@@ -141,14 +141,15 @@ class bigDecimal {
         return new bigDecimal(multiply(this.value, number.getValue()));
     }
 
-    static divide(number1, number2){
+    static divide(number1, number2, precision){
         number1 = bigDecimal.validate(number1);
         number2 = bigDecimal.validate(number2);
-        return divide(number1, number2);
+        return divide(number1, number2, precision);
     }
 
-    divide(number : bigDecimal) {
-        return new bigDecimal(divide(this.value, number.getValue()));
+    divide(number : bigDecimal, precision) {
+        console.log(precision);
+        return new bigDecimal(divide(this.value, number.getValue(), precision));
     }
 
     static compareTo(number1, number2){
