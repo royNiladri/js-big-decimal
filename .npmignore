@@ -60,7 +60,12 @@ typings/
 # dev deirectories and tools
 src/
 test/
+lib/
+spec/
 /*.js
+/*config*
+/*.yml
+.vscode/
 
 /*.yml
 spec

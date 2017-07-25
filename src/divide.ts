@@ -9,7 +9,7 @@ export function divide(dividend, divisor, precission = 8) {
     dividend = dividend.toString();
     divisor = divisor.toString();
 
-    if(dividend == 0)
+    if (dividend == 0)
         return '0';
 
     let neg = 0;
@@ -45,8 +45,20 @@ export function divide(dividend, divisor, precission = 8) {
     }
 
     let prec = 0, dl = divisor.length, rem = '0', quotent = '';
-    let dvnd = dividend.substring(0, dl);
-    dividend = dividend.substring(dl);
+    let dvnd = (dividend.indexOf('.') > -1 && dividend.indexOf('.') < dl) ? dividend.substring(0, dl + 1) : dividend.substring(0, dl);
+    dividend = (dividend.indexOf('.') > -1 && dividend.indexOf('.') < dl) ? dividend.substring(dl + 1) : dividend.substring(dl);
+    
+    if (dvnd.indexOf('.') > -1) {
+        let shift = dvnd.length - dvnd.indexOf('.') - 1;
+        dvnd = dvnd.replace('.', '');
+        if (dl > dvnd.length) {
+            shift += dl - dvnd.length;
+            dvnd = dvnd + (new Array(dl - dvnd.length + 1)).join('0');
+        }
+        prec = shift;
+        quotent = '0.' + (new Array(shift)).join('0');
+
+    }
 
     precission = precission + 2;
 

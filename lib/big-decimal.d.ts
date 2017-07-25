@@ -1,4 +1,4 @@
-export declare class bigDecimal {
+declare class bigDecimal {
     private value;
     private static validate(number);
     constructor(number?: string);
@@ -20,3 +20,4 @@ export declare class bigDecimal {
     static negate(number: any): string;
     negate(): bigDecimal;
 }
+export = bigDecimal;
