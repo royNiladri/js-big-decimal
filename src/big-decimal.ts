@@ -9,7 +9,7 @@ class bigDecimal {
 
     private value: string;
 
-    private static validate(number) {
+    private static validate(number): string {
         if (number) {
             number = number.toString();
             if (isNaN(number))
@@ -47,7 +47,7 @@ class bigDecimal {
         return this.value;
     }
 
-    static getPrettyValue(number, digits, separator) {
+    static getPrettyValue(number, digits, separator): string {
         if (!(digits || separator)) {
             digits = 3;
             separator = ',';
@@ -55,6 +55,9 @@ class bigDecimal {
             throw Error('Illegal Arguments. Should pass both digits and separator or pass none');
         }
         number = bigDecimal.validate(number);
+        let neg = number.charAt(0) == '-';
+        if (neg)
+            number = number.substring(1);
         var len = number.indexOf('.');
         len = len > 0 ? len : (number.length);
         var temp = '';
@@ -67,29 +70,10 @@ class bigDecimal {
 
             temp = number.substring(i, i + digits) + ((i < (len - digits) && i >= 0) ? separator : '') + temp;
         }
-        return temp + number.substring(len);
+        return (neg ? '-' : '') + temp + number.substring(len);
     }
     getPrettyValue(digits, separator) {
-        if (!(digits || separator)) {
-            digits = 3;
-            separator = ',';
-        } else if (!(digits && separator)) {
-            throw Error('Illegal Arguments. Should pass both digits and separator or pass none');
-        }
-
-        var len = this.value.indexOf('.');
-        len = len > 0 ? len : (this.value.length);
-        var temp = '';
-        for (var i = len; i > 0;) {
-            if (i < digits) {
-                digits = i;
-                i = 0;
-            } else
-                i -= digits;
-
-            temp = this.value.substring(i, i + digits) + ((i < (len - digits) && i >= 0) ? separator : '') + temp;
-        }
-        return temp + this.value.substring(len);
+        return bigDecimal.getPrettyValue(this.value, digits, separator);
     }
 
     static round(number, precision) {
@@ -117,7 +101,7 @@ class bigDecimal {
         return add(number1, number2);
     }
 
-    add(number : bigDecimal) {
+    add(number: bigDecimal) {
         return new bigDecimal(add(this.value, number.getValue()));
     }
 
@@ -127,42 +111,41 @@ class bigDecimal {
         return subtract(number1, number2);
     }
 
-    subtract(number : bigDecimal) {
+    subtract(number: bigDecimal) {
         return new bigDecimal(subtract(this.value, number.getValue()));
     }
 
-    static multiply(number1, number2){
+    static multiply(number1, number2) {
         number1 = bigDecimal.validate(number1);
         number2 = bigDecimal.validate(number2);
         return multiply(number1, number2);
     }
 
-    multiply(number : bigDecimal) {
+    multiply(number: bigDecimal) {
         return new bigDecimal(multiply(this.value, number.getValue()));
     }
 
-    static divide(number1, number2, precision){
+    static divide(number1, number2, precision) {
         number1 = bigDecimal.validate(number1);
         number2 = bigDecimal.validate(number2);
         return divide(number1, number2, precision);
     }
 
-    divide(number : bigDecimal, precision) {
-        console.log(precision);
+    divide(number: bigDecimal, precision) {
         return new bigDecimal(divide(this.value, number.getValue(), precision));
     }
 
-    static compareTo(number1, number2){
+    static compareTo(number1, number2) {
         number1 = bigDecimal.validate(number1);
         number2 = bigDecimal.validate(number2);
         return compareTo(number1, number2);
     }
 
-    compareTo(number : bigDecimal) {
+    compareTo(number: bigDecimal) {
         return compareTo(this.value, number.getValue());
     }
 
-    static negate(number){
+    static negate(number) {
         number = bigDecimal.validate(number);
         return negate(number);
     }

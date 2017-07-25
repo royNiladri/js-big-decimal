@@ -66,6 +66,11 @@ spec/
 /*config*
 /*.yml
 .vscode/
+
+/*.yml
+spec
+ci
+
 deploy_rsa
 deploy_rsa.pub
 deploy_rsa.enc

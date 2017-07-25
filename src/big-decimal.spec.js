@@ -151,6 +151,15 @@ describe('BIG-DECIMAL', function () {
         it('should transform 1234567890123456 to 1234-5678-9012-3456 if pretty is called with 4, -', function () {
             expect(bigDecimal.getPrettyValue('1234567890123456', 4, '-')).toBe('1234-5678-9012-3456');
         });
+        it('should transform -12.69 to -12.69', function(){
+            expect(bigDecimal.getPrettyValue('-12.69')).toBe('-12.69');
+        });
+        it('should transform -123.69 to -123.69', function(){
+            expect(bigDecimal.getPrettyValue('-123.69')).toBe('-123.69');
+        });
+        it('should transform -1234.69 to -1,234.69', function(){
+            expect(bigDecimal.getPrettyValue('-1234.69')).toBe('-1,234.69');
+        })
     });
 
     describe('add', function () {

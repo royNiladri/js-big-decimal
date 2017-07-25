@@ -58,4 +58,16 @@ describe('divide', function(){
     it('-1 / -1 = 1', function(){
         expect(divide('-1', '-1', 0)).toBe('1');
     });
+    it('10.8 / 10 = 1.08', function(){
+        expect(divide('10.8', '10')).toBe('1.08000000');
+    });
+    it('10.8 / 100 = 0.108', function(){
+        expect(divide('10.8', '100')).toBe('0.10800000');
+    });
+    it('10.8 / 1000 = 0.0108', function(){
+        expect(divide('10.8', '1000')).toBe('0.01080000');
+    });
+    it('10.8 / 10000 = 0.00108', function(){
+        expect(divide('10.8', '10000')).toBe('0.00108000');
+    });
 })
