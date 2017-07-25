@@ -154,4 +154,4 @@ class bigDecimal {
         return new bigDecimal(negate(this.value));
     }
 }
- export = bigDecimal;
+export = bigDecimal;

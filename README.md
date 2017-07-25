@@ -37,6 +37,9 @@ npm install --save js-big-decimal
 ```
 
 ### Usage
+
+:heavy_exclamation_mark: **Note:** Usage has changed since **version 1.1.4**
+
 Require in `javascript` as
 ```jsavascript
 var bigDecimal = require('js-big-decimal');
