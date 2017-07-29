@@ -89,7 +89,7 @@ var card = num.getPrettyValue(4, '-'); // cardNumber = "1234-5678-9012-3456"
 ```
 
 ### round(number, precision)
-Returns the rounded value to the specified precision (number of digits after decimal). The default is set to 0 if no argument is passed.
+Returns the rounded value to the specified precision (number of digits after decimal). The default is set to 0 if no argument is passed. 
 ```javascript
 var value = bigDecimal.round("123.678", 2); // value = "123.68"
 ```
@@ -97,6 +97,12 @@ Alternately, use the instance property. It returns the result as `bigDecimal`.
 ```javascript
 var n3 = n1.round(2); // n3 = new bigDecimal("12.68")
 var n4 = n2.round(); // n4 = new bigDecimal("12346")
+```
+Passing in a negative argument for digits to round off to returns the nearest multiple of power of 10. If the magnitude of the argument is larger than or equal to the number of digits in the integral part of the number to round, `zero` is returned.
+```javascript
+var val1 = bigDecimal.round("123.78", -2); // val1 = "100"
+var val2 = bigDecimal.round("587", -1); // val2 = "590"
+var val3 = bigDecimal.round("123.78", -4); // val3 = "0"
 ```
 
 ### compareTo(number1, number2)
