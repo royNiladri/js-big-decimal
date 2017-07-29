@@ -7,6 +7,7 @@
   "scripts": {
     "test": "./node_modules/.bin/jasmine JASMINE_CONFIG_PATH=spec/jasmine.json --helper=spec/helper/*.js",
     "test:watch": "chokidar \"lib/**/*.js\" -c \"npm run travis-test\"",
+    "pretravis-test": "tsc",
     "travis-test": "./node_modules/.bin/jasmine JASMINE_CONFIG_PATH=spec/jasmine.json",
     "test-random": "node test/randomtest.js",
     "compile": "tsc",
