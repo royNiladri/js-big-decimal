@@ -1,8 +1,8 @@
 {
   "name": "js-big-decimal",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "description": "Work with large numbers on the client side. Round them off to any required precission.",
-  "main": "dist/node/big-decimal",
+  "main": "dist/node/js-big-decimal",
   "types": "dist/node/big-decimal",
   "scripts": {
     "test": "./node_modules/.bin/jasmine JASMINE_CONFIG_PATH=spec/jasmine.json --helper=spec/helper/*.js",
