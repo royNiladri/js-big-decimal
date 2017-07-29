@@ -6,9 +6,12 @@
   "types": "dist/node/big-decimal",
   "scripts": {
     "test": "./node_modules/.bin/jasmine JASMINE_CONFIG_PATH=spec/jasmine.json --helper=spec/helper/*.js",
+    "test:watch": "chokidar \"lib/**/*.js\" -c \"npm run travis-test\"",
     "travis-test": "./node_modules/.bin/jasmine JASMINE_CONFIG_PATH=spec/jasmine.json",
     "test-random": "node test/randomtest.js",
-    "compile": "tsc --watch",
+    "compile": "tsc",
+    "compile:watch": "chokidar \"src/**/*.ts\" -c \"npm run compile\"",
+    "start": "npm-run-all -s --parallel compile:watch test:watch",
     "toc": "doctoc --title \"## Contents\" ./README.md"
   },
   "keywords": [
