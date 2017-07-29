@@ -11,7 +11,9 @@
     "test-random": "node test/randomtest.js",
     "compile": "tsc",
     "compile:watch": "chokidar \"src/**/*.ts\" -c \"npm run compile\"",
-    "start": "npm-run-all -s --parallel compile:watch test:watch",
+    "dist": "gulp dist",
+    "dist:watch": "chokidar \"lib/**/*.js\" -c \"npm run dist\"",
+    "start": "npm-run-all -s --parallel compile:watch test:watch dist:watch",
     "toc": "doctoc --title \"## Contents\" ./README.md"
   },
   "keywords": [
