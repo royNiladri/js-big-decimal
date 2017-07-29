@@ -1,14 +1,19 @@
 {
   "name": "js-big-decimal",
-  "version": "1.1.6",
+  "version": "1.1.7",
   "description": "Work with large numbers on the client side. Round them off to any required precission.",
   "main": "dist/node/js-big-decimal",
   "types": "dist/node/big-decimal",
   "scripts": {
     "test": "./node_modules/.bin/jasmine JASMINE_CONFIG_PATH=spec/jasmine.json --helper=spec/helper/*.js",
+    "test:watch": "chokidar \"lib/**/*.js\" -c \"npm run travis-test\"",
     "travis-test": "./node_modules/.bin/jasmine JASMINE_CONFIG_PATH=spec/jasmine.json",
     "test-random": "node test/randomtest.js",
-    "compile": "tsc --watch",
+    "compile": "tsc",
+    "compile:watch": "chokidar \"src/**/*.ts\" -c \"npm run compile\"",
+    "dist": "gulp dist",
+    "dist:watch": "chokidar \"lib/**/*.js\" -c \"npm run dist\"",
+    "start": "npm-run-all -s --parallel compile:watch test:watch dist:watch",
     "toc": "doctoc --title \"## Contents\" ./README.md"
   },
   "keywords": [

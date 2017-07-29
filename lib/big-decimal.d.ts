@@ -5,7 +5,7 @@ declare class bigDecimal {
     getValue(): string;
     static getPrettyValue(number: any, digits: any, separator: any): string;
     getPrettyValue(digits: any, separator: any): string;
-    static round(number: any, precision: any): any;
+    static round(number: any, precision: any): string;
     round(precision: any): bigDecimal;
     static add(number1: any, number2: any): string;
     add(number: bigDecimal): bigDecimal;

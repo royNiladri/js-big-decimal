@@ -1,1 +1,1 @@
-export declare function roundOff(input: any, n?: number): any;
+export declare function roundOff(input: number | string, n?: number): string;
