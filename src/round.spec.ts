@@ -1,4 +1,4 @@
-var roundOff = require('../lib/round').roundOff;
+var roundOff = require('./big-decimal').round;
 
 describe('round', function () {
 

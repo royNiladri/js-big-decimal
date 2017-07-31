@@ -1,4 +1,4 @@
-var multiply = require('../lib/multiply').multiply;
+var multiply = require('./big-decimal').multiply;
 
 describe('multiply', function () {
     xit('should return correct result', function(){

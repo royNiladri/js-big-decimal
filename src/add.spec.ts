@@ -1,4 +1,4 @@
-var add = require('../lib/add').add;
+var add = require('./big-decimal').add;
 
 describe('add', function () {
     it('should be defined', function () {

@@ -6,9 +6,9 @@
   "types": "dist/node/big-decimal",
   "scripts": {
     "test": "./node_modules/.bin/jasmine JASMINE_CONFIG_PATH=spec/jasmine.json --helper=spec/helper/*.js",
-    "test:watch": "chokidar \"lib/**/*.js\" -c \"npm run travis-test\"",
+    "test:watch": "chokidar \"src/**/*.ts\" -c \"npm run travis-test\"",
     "pretravis-test": "tsc",
-    "travis-test": "./node_modules/.bin/jasmine JASMINE_CONFIG_PATH=spec/jasmine.json",
+    "travis-test": "jasmine-ts JASMINE_CONFIG_PATH=spec/jasmine.json",
     "test-random": "node test/randomtest.js",
     "compile": "tsc",
     "compile:watch": "chokidar \"src/**/*.ts\" -c \"npm run compile\"",
@@ -46,11 +46,14 @@
   },
   "homepage": "https://github.com/royNiladri/js-big-decimal#readme",
   "devDependencies": {
+    "@types/jasmine": "^2.5.53",
+    "@types/node": "^8.0.17",
     "del": "^3.0.0",
     "glob": "^7.1.2",
     "gulp": "^3.9.1",
     "gulp-run": "^1.7.1",
     "jasmine-spec-reporter": "^4.1.1",
+    "jasmine-ts": "^0.2.0",
     "webpack": "^3.4.0"
   },
   "false": {},

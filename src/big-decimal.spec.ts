@@ -1,4 +1,4 @@
-var bigDecimal = require('../lib/big-decimal');
+var bigDecimal = require('./big-decimal');
 
 describe('BIG-DECIMAL', function () {
     //var bigDecimal = require('./big-decimal');
