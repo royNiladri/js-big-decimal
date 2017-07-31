@@ -3,7 +3,7 @@ var del = require('del');
 var run = require('gulp-run');
 
 const paths = {
-    src: ['./src/**/*.ts'],
+    src: ['./src/**/*.ts', '!./src/**/*.spec.ts'],
     entry: './src/big-decimal.ts',
     lib: './lib/',
     dist: './dist/'

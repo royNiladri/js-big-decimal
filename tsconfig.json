@@ -1,10 +1,10 @@
 {
-  "compilerOptions": {
-    "target": "es5",
-    "declaration": true,
-    "noImplicitAny": false,
-    "outDir": "lib"
-  },
+    "compilerOptions": {
+        "target": "es5",
+        "declaration": true,
+        "noImplicitAny": false,
+        "outDir": "lib"
+    },
     "include": [
         "src/"
     ],

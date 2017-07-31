@@ -1,4 +1,4 @@
-var divide = require('../lib/divide').divide;
+var divide = require('./big-decimal').divide;
 
 describe('divide', function(){
     it('test failing scenario', function(){
@@ -7,8 +7,8 @@ describe('divide', function(){
     xit('should return correct result', function(){
         let count = 2000, err = 0;
         while(count-- > 0){
-            let dividend = (Math.random()*(Math.pow(10, Math.floor(Math.random()*10)))).toFixed(5);
-            let divisor = (Math.random()*(Math.pow(10, Math.floor(Math.random()*10))));
+            let dividend:any = (Math.random()*(Math.pow(10, Math.floor(Math.random()*10)))).toFixed(5);
+            let divisor:any = (Math.random()*(Math.pow(10, Math.floor(Math.random()*10))));
             if(divisor==0){
                 count++;
                 continue;
