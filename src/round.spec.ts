@@ -1,4 +1,7 @@
-var roundOff = require('./big-decimal').round;
+let big = require('./big-decimal'),
+    roundOff = big.round,
+    floor = big.floor,
+    ceil = big.ceil;
 
 describe('round', function () {
 
@@ -35,5 +38,35 @@ describe('round', function () {
     })
     it("should round(82, -1) = 80", function(){
         expect(roundOff('82', -1)).toBe('80');
+    })
+    it("should ceil(13) = 13", function(){
+        expect(ceil(13)).toBe('13');
+    })
+    it("should floor(13) = 13", function(){
+        expect(floor(13)).toBe('13');
+    })
+    it("should ceil(13.3) = 14", function(){
+        expect(ceil(13.3)).toBe('14');
+    })
+    it("should floor(13.3) = 13", function(){
+        expect(floor(13.3)).toBe('13');
+    })
+    it("should ceil(13.8) = 14", function(){
+        expect(ceil(13.8)).toBe('14');
+    })
+    it("should floor(13.8) = 13", function(){
+        expect(floor(13.8)).toBe('13');
+    })
+    it("should ceil(-13.3) = -13", function(){
+        expect(ceil(-13.3)).toBe('-13');
+    })
+    it("should floor(-13.3) = -14", function(){
+        expect(floor(-13.3)).toBe('-14');
+    })
+    it("should ceil(-13.8) = -13", function(){
+        expect(ceil(-13.8)).toBe('-13');
+    })
+    it("should floor(-13.8) = -14", function(){
+        expect(floor(-13.8)).toBe('-14');
     })
 })

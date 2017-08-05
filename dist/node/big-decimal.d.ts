@@ -1,12 +1,16 @@
 declare class bigDecimal {
     private value;
     private static validate(number);
-    constructor(number?: string);
+    constructor(number?: number | string);
     getValue(): string;
     static getPrettyValue(number: any, digits: any, separator: any): string;
     getPrettyValue(digits: any, separator: any): string;
-    static round(number: any, precision: any): string;
-    round(precision: any): bigDecimal;
+    static round(number: any, precision?: number): string;
+    round(precision?: number): bigDecimal;
+    static floor(number: any): any;
+    floor(): bigDecimal;
+    static ceil(number: any): any;
+    ceil(): bigDecimal;
     static add(number1: any, number2: any): string;
     add(number: bigDecimal): bigDecimal;
     static subtract(number1: any, number2: any): string;
