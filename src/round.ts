@@ -2,11 +2,17 @@ export function roundOff(input: number | string, n: number = 0) {
     if (typeof (input) == 'number')
         input = input.toString();
 
+    let neg = false;
+    if (input[0] === '-') {
+        neg = true;
+        input = input.substring(1);
+    }
+
     let parts = input.split('.'),
         partInt = parts[0],
         partDec = parts[1];
 
-    //handle case of -ve input
+    //handle case of -ve n
     if (n < 0) {
         n = -n;
         if (partInt.length <= n)
@@ -15,7 +21,7 @@ export function roundOff(input: number | string, n: number = 0) {
             let prefix = partInt.substr(0, partInt.length - n);
             input = prefix + '.' + partInt.substr(partInt.length - n) + partDec;
             prefix = roundOff(input);
-            return prefix + (new Array(n + 1).join('0'));
+            return (neg ? '-' : '') + prefix + (new Array(n + 1).join('0'));
         }
     }
 
@@ -24,15 +30,15 @@ export function roundOff(input: number | string, n: number = 0) {
         let l = partInt.length;
 
         if (greaterThanFive(parts[1], partInt)) {
-            return increment(partInt);
+            return (neg ? '-' : '') + increment(partInt);
         }
-        return partInt;
+        return (neg ? '-' : '') + partInt;
     }
 
     if (!parts[1]) {
-        return partInt + '.' + (new Array(n + 1).join('0'));
+        return (neg ? '-' : '') + partInt + '.' + (new Array(n + 1).join('0'));
     } else if (parts[1].length < n) {
-        return partInt + '.' + parts[1] + (new Array(n - parts[1].length + 1).join('0'));
+        return (neg ? '-' : '') + partInt + '.' + parts[1] + (new Array(n - parts[1].length + 1).join('0'));
     }
 
     partDec = parts[1].substring(0, n);
@@ -44,7 +50,7 @@ export function roundOff(input: number | string, n: number = 0) {
             return increment(partInt, parseInt(partDec[0])) + '.' + partDec.substring(1);
         }
     }
-    return partInt + '.' + partDec;
+    return (neg ? '-' : '') + partInt + '.' + partDec;
 }
 
 function greaterThanFive(part: string, pre: string) {
