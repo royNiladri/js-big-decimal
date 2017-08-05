@@ -39,7 +39,7 @@ class bigDecimal {
         return number;
     }
 
-    constructor(number = '0') {
+    constructor(number: number | string = '0') {
         this.value = bigDecimal.validate(number);
     }
 
@@ -76,24 +76,47 @@ class bigDecimal {
         return bigDecimal.getPrettyValue(this.value, digits, separator);
     }
 
-    static round(number, precision) {
+    static round(number, precision = 0) {
         number = bigDecimal.validate(number);
-        if (!precision)
-            precision = 0;
-        else if (isNaN(precision))
+        if (isNaN(precision))
             throw Error("Precision is not a number: " + precision);
 
         return roundOff(number, precision);
     }
 
-    round(precision) {
-        if (!precision)
-            precision = 0;
-        else if (isNaN(precision))
+    round(precision = 0) {
+        if (isNaN(precision))
             throw Error("Precision is not a number: " + precision);
 
         return new bigDecimal(roundOff(this.value, precision));
     }
+
+    static floor(number) {
+        number = bigDecimal.validate(number);
+        if(number.indexOf('.') === -1)
+            return number;
+        return bigDecimal.round(bigDecimal.subtract(number, 0.5));
+    }
+
+    floor() {
+        if(this.value.indexOf('.') === -1)
+            return new bigDecimal(this.value);
+        return this.subtract(new bigDecimal(0.5)).round();
+    }
+
+    static ceil(number) {
+        number = bigDecimal.validate(number);
+        if(number.indexOf('.') === -1)
+            return number;
+        return bigDecimal.round(bigDecimal.add(number, 0.5));
+    }
+
+    ceil() {
+        if(this.value.indexOf('.') === -1)
+            return new bigDecimal(this.value);
+        return this.add(new bigDecimal(0.5)).round();
+    }
+
 
     static add(number1, number2) {
         number1 = bigDecimal.validate(number1);
