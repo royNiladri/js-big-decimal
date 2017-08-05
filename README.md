@@ -20,6 +20,8 @@ Work with large numbers on the client side with high precision.
   - [getValue()](#getvalue)
   - [getPrettyValue(number, digits, separator)](#getprettyvaluenumber-digits-separator)
   - [round(number, precision)](#roundnumber-precision)
+  - [floor(number)](#floornumber)
+  - [ceil(number)](#ceilnumber)
   - [compareTo(number1, number2)](#comparetonumber1-number2)
   - [negate(number)](#negatenumber)
   - [add(augend, addend)](#addaugend-addend)
@@ -103,6 +105,30 @@ Passing in a negative argument for digits to round off to returns the nearest mu
 var val1 = bigDecimal.round("123.78", -2); // val1 = "100"
 var val2 = bigDecimal.round("587", -1); // val2 = "590"
 var val3 = bigDecimal.round("123.78", -4); // val3 = "0"
+```
+
+### floor(number)
+Returns the whole number nearest but not greater than the input number.
+```javascript
+var n1 = bigDecimal.floor(12.8) // "12"
+var n2 = bigDecimal.floor(-12.3) // "-13"
+```
+The instance function returns the result as a new `bigDecimal`
+```javascript
+var n1 = new bigDecimal(12.8).floor() // bigDecimal(12)
+var n2 = bigDecimal(-12.3).floor() // bigDecimal(-13)
+```
+
+### ceil(number)
+Returns the whole number nearest but not lesser than the input number.
+```javascript
+var n1 = bigDecimal.ceil(12.8) // "13"
+var n2 = bigDecimal.ceil(-12.3) // "-12"
+```
+The instance function returns the result as a new `bigDecimal`
+```javascript
+var n1 = new bigDecimal(12.8).ceil() // bigDecimal(13)
+var n2 = bigDecimal(-12.3).ceil() // bigDecimal(-12)
 ```
 
 ### compareTo(number1, number2)
