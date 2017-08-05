@@ -11,5 +11,5 @@ It will:
 3. Bundles the code into single files under `dist` folder.
 
 Use typescript to write your source files and link it to the base class BigDecimal.ts appropriately. Write enough specs to test your code.
-[Try to write tests before writing the implementation]. Test files have an ectention of `.spec.js`.
+[Try to write tests before writing the implementation]. Test files have an ectention of `.spec.ts`.
 
