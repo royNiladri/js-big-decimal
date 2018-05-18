@@ -90,8 +90,8 @@ var num = new bigDecimal(1234567890123456)
 var card = num.getPrettyValue(4, '-'); // cardNumber = "1234-5678-9012-3456"
 ```
 
-### round(number, precision)
-Returns the rounded value to the specified precision (number of digits after decimal). The default is set to 0 if no argument is passed. 
+### round(number, precision, roundingMode)
+Returns the rounded value to the specified precision (number of digits after decimal). The default precision is set to 0 and rounding mode set to `HALF_EVEN` if no argument is passed. 
 ```javascript
 var value = bigDecimal.round("123.678", 2); // value = "123.68"
 ```
@@ -105,6 +105,24 @@ Passing in a negative argument for digits to round off to returns the nearest mu
 var val1 = bigDecimal.round("123.78", -2); // val1 = "100"
 var val2 = bigDecimal.round("587", -1); // val2 = "590"
 var val3 = bigDecimal.round("123.78", -4); // val3 = "0"
+```
+
+Round also supports the following rounding modes (These are same as that of Java 8):
+* `CEILING` - Rounding mode to round towards positive infinity.
+* `DOWN` - Rounding mode to round towards zero.
+* `FLOOR` - Rounding mode to round towards negative infinity.
+* `HALF_DOWN` - Rounding mode to round towards "nearest neighbor" unless both neighbors are equidistant, in which case round down.
+* `HALF_EVEN` - Rounding mode to round towards the "nearest neighbor" unless both neighbors are equidistant, in which case, round towards the even neighbor.
+* `HALF_UP` - Rounding mode to round towards "nearest neighbor" unless both neighbors are equidistant, in which case round up.
+* `UNNECESSARY` (!Not Implemented!)- Rounding mode to assert that the requested operation has an exact result, hence no rounding is necessary.
+* `UP` - Rounding mode to round away from zero.
+
+Extensive description of the modes can be found at [Rounding Modes](https://docs.oracle.com/javase/8/docs/api/java/math/RoundingMode.html)
+
+```javascript
+var num = new bigDecimal("123.657");
+var numRound1 = num.round(1, bigDecimal.RoundingModes.DOWN); // "123.6"
+var numRound2 = num.round(2, bigDecimal.RoundingModes.CEILING); // "123.66"
 ```
 
 ### floor(number)

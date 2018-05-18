@@ -70,7 +70,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 2);
+/******/ 	return __webpack_require__(__webpack_require__.s = 3);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -190,8 +190,19 @@ function addCore(number1, number2) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-function roundOff(input, n) {
+var roundingModes_1 = __webpack_require__(2);
+/**
+ *
+ * @param input the number to round
+ * @param n precision
+ * @param mode Rounding Mode
+ */
+function roundOff(input, n, mode) {
     if (n === void 0) { n = 0; }
+    if (mode === void 0) { mode = roundingModes_1.RoundingModes.HALF_EVEN; }
+    if (mode === roundingModes_1.RoundingModes.UNNECESSARY) {
+        throw new Error("UNNECESSARY Rounding Mode has not yet been implemented");
+    }
     if (typeof (input) == 'number')
         input = input.toString();
     var neg = false;
@@ -200,7 +211,7 @@ function roundOff(input, n) {
         input = input.substring(1);
     }
     var parts = input.split('.'), partInt = parts[0], partDec = parts[1];
-    //handle case of -ve n
+    //handle case of -ve n: roundOff(12564,-2)=12600
     if (n < 0) {
         n = -n;
         if (partInt.length <= n)
@@ -208,17 +219,19 @@ function roundOff(input, n) {
         else {
             var prefix = partInt.substr(0, partInt.length - n);
             input = prefix + '.' + partInt.substr(partInt.length - n) + partDec;
-            prefix = roundOff(input);
+            prefix = roundOff(input, 0, mode);
             return (neg ? '-' : '') + prefix + (new Array(n + 1).join('0'));
         }
     }
+    // handle case when integer output is desired
     if (n == 0) {
         var l = partInt.length;
-        if (greaterThanFive(parts[1], partInt)) {
+        if (greaterThanFive(parts[1], partInt, neg, mode)) {
             return (neg ? '-' : '') + increment(partInt);
         }
         return (neg ? '-' : '') + partInt;
     }
+    // handle case when n>0
     if (!parts[1]) {
         return (neg ? '-' : '') + partInt + '.' + (new Array(n + 1).join('0'));
     }
@@ -227,7 +240,7 @@ function roundOff(input, n) {
     }
     partDec = parts[1].substring(0, n);
     var rem = parts[1].substring(n);
-    if (rem && greaterThanFive(rem, partDec)) {
+    if (rem && greaterThanFive(rem, partDec, neg, mode)) {
         partDec = increment(partDec);
         if (partDec.length > n) {
             return increment(partInt, parseInt(partDec[0])) + '.' + partDec.substring(1);
@@ -236,11 +249,30 @@ function roundOff(input, n) {
     return (neg ? '-' : '') + partInt + '.' + partDec;
 }
 exports.roundOff = roundOff;
-function greaterThanFive(part, pre) {
-    if (!part)
+function greaterThanFive(part, pre, neg, mode) {
+    if (!part || part === new Array(part.length + 1).join('0'))
         return false;
-    var five = '5' + (new Array(part.length + 1).join('0'));
-    return (part > five || (part == '5' && parseInt(pre[pre.length - 1]) % 2 == 1));
+    // #region UP, DOWN, CEILING, FLOOR 
+    if (mode === roundingModes_1.RoundingModes.DOWN || (!neg && mode === roundingModes_1.RoundingModes.FLOOR) ||
+        (neg && mode === roundingModes_1.RoundingModes.CEILING))
+        return false;
+    if (mode === roundingModes_1.RoundingModes.UP || (neg && mode === roundingModes_1.RoundingModes.FLOOR) ||
+        (!neg && mode === roundingModes_1.RoundingModes.CEILING))
+        return true;
+    // #endregion
+    // case when part !== five
+    var five = '5' + (new Array(part.length).join('0'));
+    if (part > five)
+        return true;
+    else if (part < five)
+        return false;
+    // case when part === five
+    switch (mode) {
+        case roundingModes_1.RoundingModes.HALF_DOWN: return false;
+        case roundingModes_1.RoundingModes.HALF_UP: return true;
+        case roundingModes_1.RoundingModes.HALF_EVEN:
+        default: return (parseInt(pre[pre.length - 1]) % 2 == 1);
+    }
 }
 function increment(part, c) {
     if (c === void 0) { c = 0; }
@@ -272,12 +304,54 @@ function increment(part, c) {
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * CEILING
+ * Rounding mode to round towards positive infinity.
+ * DOWN
+ * Rounding mode to round towards zero.
+ * FLOOR
+ * Rounding mode to round towards negative infinity.
+ * HALF_DOWN
+ * Rounding mode to round towards "nearest neighbor" unless both neighbors are equidistant,
+ * in which case round down.
+ * HALF_EVEN
+ * Rounding mode to round towards the "nearest neighbor" unless both neighbors are equidistant,
+ * in which case, round towards the even neighbor.
+ * HALF_UP
+ * Rounding mode to round towards "nearest neighbor" unless both neighbors are equidistant,
+ * in which case round up.
+ * UNNECESSARY
+ * Rounding mode to assert that the requested operation has an exact result, hence no rounding is necessary.
+ * UP
+ * Rounding mode to round away from zero.
+ */
+var RoundingModes;
+(function (RoundingModes) {
+    RoundingModes[RoundingModes["CEILING"] = 0] = "CEILING";
+    RoundingModes[RoundingModes["DOWN"] = 1] = "DOWN";
+    RoundingModes[RoundingModes["FLOOR"] = 2] = "FLOOR";
+    RoundingModes[RoundingModes["HALF_DOWN"] = 3] = "HALF_DOWN";
+    RoundingModes[RoundingModes["HALF_EVEN"] = 4] = "HALF_EVEN";
+    RoundingModes[RoundingModes["HALF_UP"] = 5] = "HALF_UP";
+    RoundingModes[RoundingModes["UNNECESSARY"] = 6] = "UNNECESSARY";
+    RoundingModes[RoundingModes["UP"] = 7] = "UP";
+})(RoundingModes = exports.RoundingModes || (exports.RoundingModes = {}));
+
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
 var add_1 = __webpack_require__(0);
 var round_1 = __webpack_require__(1);
-var multiply_1 = __webpack_require__(3);
-var divide_1 = __webpack_require__(4);
-var compareTo_1 = __webpack_require__(5);
-var subtract_1 = __webpack_require__(6);
+var multiply_1 = __webpack_require__(4);
+var divide_1 = __webpack_require__(5);
+var compareTo_1 = __webpack_require__(6);
+var subtract_1 = __webpack_require__(7);
+var roundingModes_1 = __webpack_require__(2);
 var bigDecimal = (function () {
     function bigDecimal(number) {
         if (number === void 0) { number = '0'; }
@@ -344,18 +418,20 @@ var bigDecimal = (function () {
     bigDecimal.prototype.getPrettyValue = function (digits, separator) {
         return bigDecimal.getPrettyValue(this.value, digits, separator);
     };
-    bigDecimal.round = function (number, precision) {
+    bigDecimal.round = function (number, precision, mode) {
         if (precision === void 0) { precision = 0; }
+        if (mode === void 0) { mode = roundingModes_1.RoundingModes.HALF_EVEN; }
         number = bigDecimal.validate(number);
         if (isNaN(precision))
             throw Error("Precision is not a number: " + precision);
-        return round_1.roundOff(number, precision);
+        return round_1.roundOff(number, precision, mode);
     };
-    bigDecimal.prototype.round = function (precision) {
+    bigDecimal.prototype.round = function (precision, mode) {
         if (precision === void 0) { precision = 0; }
+        if (mode === void 0) { mode = roundingModes_1.RoundingModes.HALF_EVEN; }
         if (isNaN(precision))
             throw Error("Precision is not a number: " + precision);
-        return new bigDecimal(round_1.roundOff(this.value, precision));
+        return new bigDecimal(round_1.roundOff(this.value, precision, mode));
     };
     bigDecimal.floor = function (number) {
         number = bigDecimal.validate(number);
@@ -426,13 +502,14 @@ var bigDecimal = (function () {
     bigDecimal.prototype.negate = function () {
         return new bigDecimal(subtract_1.negate(this.value));
     };
+    bigDecimal.RoundingModes = roundingModes_1.RoundingModes;
     return bigDecimal;
 }());
 module.exports = bigDecimal;
 
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -541,7 +618,7 @@ function trailZero(number) {
 
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -632,7 +709,7 @@ exports.divide = divide;
 
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -684,7 +761,7 @@ exports.compareTo = compareTo;
 
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

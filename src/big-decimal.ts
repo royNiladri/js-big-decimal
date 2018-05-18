@@ -4,10 +4,12 @@ import { multiply } from './multiply';
 import { divide } from './divide'
 import { compareTo } from './compareTo';
 import { subtract, negate } from './subtract';
+import { RoundingModes as Modes } from './roundingModes';
 
 class bigDecimal {
 
     private value: string;
+    static RoundingModes = Modes;
 
     private static validate(number): string {
         if (number) {
@@ -76,43 +78,42 @@ class bigDecimal {
         return bigDecimal.getPrettyValue(this.value, digits, separator);
     }
 
-    static round(number, precision = 0) {
+    static round(number, precision = 0, mode = Modes.HALF_EVEN) {
         number = bigDecimal.validate(number);
         if (isNaN(precision))
             throw Error("Precision is not a number: " + precision);
-
-        return roundOff(number, precision);
+        return roundOff(number, precision, mode);
     }
 
-    round(precision = 0) {
+    round(precision = 0, mode = Modes.HALF_EVEN) {
         if (isNaN(precision))
             throw Error("Precision is not a number: " + precision);
 
-        return new bigDecimal(roundOff(this.value, precision));
+        return new bigDecimal(roundOff(this.value, precision, mode));
     }
 
     static floor(number) {
         number = bigDecimal.validate(number);
-        if(number.indexOf('.') === -1)
+        if (number.indexOf('.') === -1)
             return number;
         return bigDecimal.round(bigDecimal.subtract(number, 0.5));
     }
 
     floor() {
-        if(this.value.indexOf('.') === -1)
+        if (this.value.indexOf('.') === -1)
             return new bigDecimal(this.value);
         return this.subtract(new bigDecimal(0.5)).round();
     }
 
     static ceil(number) {
         number = bigDecimal.validate(number);
-        if(number.indexOf('.') === -1)
+        if (number.indexOf('.') === -1)
             return number;
         return bigDecimal.round(bigDecimal.add(number, 0.5));
     }
 
     ceil() {
-        if(this.value.indexOf('.') === -1)
+        if (this.value.indexOf('.') === -1)
             return new bigDecimal(this.value);
         return this.add(new bigDecimal(0.5)).round();
     }
