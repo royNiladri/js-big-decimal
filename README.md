@@ -19,7 +19,7 @@ Work with large numbers on the client side with high precision.
   - [bigDecimal(number)](#bigdecimalnumber)
   - [getValue()](#getvalue)
   - [getPrettyValue(number, digits, separator)](#getprettyvaluenumber-digits-separator)
-  - [round(number, precision, roundingMode)](#roundnumber-precision-roundingMode)
+  - [round(number, precision, roundingMode)](#roundnumber-precision-roundingmode)
   - [floor(number)](#floornumber)
   - [ceil(number)](#ceilnumber)
   - [compareTo(number1, number2)](#comparetonumber1-number2)
