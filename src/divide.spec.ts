@@ -4,7 +4,7 @@ describe('divide', function(){
     it('test failing scenario', function(){
         expect(divide('509365950.27576', '0.003802940215600348', 16)).toBe('133940036234.6609666927392804');
     })
-    xit('should return correct result', function(){
+    xit('STRESS TEST - should return correct result', function(){
         let count = 2000, err = 0;
         while(count-- > 0){
             let dividend:any = (Math.random()*(Math.pow(10, Math.floor(Math.random()*10)))).toFixed(5);
