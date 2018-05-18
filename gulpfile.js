@@ -17,7 +17,7 @@ gulp.task('clean', function () {
 
 gulp.task('dist', ['clean'], function () {
 
-    var cmd = new run.Command('webpack', { usePowerShell: true, silent: true });
+    var cmd = new run.Command('webpack-cli', { usePowerShell: true, silent: true });
 
     //web non-prod
     process.env.USE_ENV = 'web';

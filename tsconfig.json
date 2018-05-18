@@ -1,5 +1,6 @@
 {
     "compilerOptions": {
+        "lib": ["es5", "es2015.symbol", "es2015.symbol.wellknown"],
         "target": "es5",
         "declaration": true,
         "noImplicitAny": false,

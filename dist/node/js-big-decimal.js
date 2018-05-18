@@ -7,7 +7,7 @@
 		exports["bigDecimal"] = factory();
 	else
 		root["bigDecimal"] = factory();
-})(this, function() {
+})(global, function() {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -54,6 +54,11 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 		}
 /******/ 	};
 /******/
+/******/ 	// define __esModule on exports
+/******/ 	__webpack_require__.r = function(exports) {
+/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 	};
+/******/
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
 /******/ 	__webpack_require__.n = function(module) {
 /******/ 		var getter = module && module.__esModule ?
@@ -69,8 +74,9 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// __webpack_public_path__
 /******/ 	__webpack_require__.p = "";
 /******/
+/******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 2);
+/******/ 	return __webpack_require__(__webpack_require__.s = 7);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -190,8 +196,60 @@ function addCore(number1, number2) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-function roundOff(input, n) {
+/**
+ * CEILING
+ * Rounding mode to round towards positive infinity.
+ * DOWN
+ * Rounding mode to round towards zero.
+ * FLOOR
+ * Rounding mode to round towards negative infinity.
+ * HALF_DOWN
+ * Rounding mode to round towards "nearest neighbor" unless both neighbors are equidistant,
+ * in which case round down.
+ * HALF_EVEN
+ * Rounding mode to round towards the "nearest neighbor" unless both neighbors are equidistant,
+ * in which case, round towards the even neighbor.
+ * HALF_UP
+ * Rounding mode to round towards "nearest neighbor" unless both neighbors are equidistant,
+ * in which case round up.
+ * UNNECESSARY
+ * Rounding mode to assert that the requested operation has an exact result, hence no rounding is necessary.
+ * UP
+ * Rounding mode to round away from zero.
+ */
+var RoundingModes;
+(function (RoundingModes) {
+    RoundingModes[RoundingModes["CEILING"] = 0] = "CEILING";
+    RoundingModes[RoundingModes["DOWN"] = 1] = "DOWN";
+    RoundingModes[RoundingModes["FLOOR"] = 2] = "FLOOR";
+    RoundingModes[RoundingModes["HALF_DOWN"] = 3] = "HALF_DOWN";
+    RoundingModes[RoundingModes["HALF_EVEN"] = 4] = "HALF_EVEN";
+    RoundingModes[RoundingModes["HALF_UP"] = 5] = "HALF_UP";
+    RoundingModes[RoundingModes["UNNECESSARY"] = 6] = "UNNECESSARY";
+    RoundingModes[RoundingModes["UP"] = 7] = "UP";
+})(RoundingModes = exports.RoundingModes || (exports.RoundingModes = {}));
+
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var roundingModes_1 = __webpack_require__(1);
+/**
+ *
+ * @param input the number to round
+ * @param n precision
+ * @param mode Rounding Mode
+ */
+function roundOff(input, n, mode) {
     if (n === void 0) { n = 0; }
+    if (mode === void 0) { mode = roundingModes_1.RoundingModes.HALF_EVEN; }
+    if (mode === roundingModes_1.RoundingModes.UNNECESSARY) {
+        throw new Error("UNNECESSARY Rounding Mode has not yet been implemented");
+    }
     if (typeof (input) == 'number')
         input = input.toString();
     var neg = false;
@@ -200,7 +258,7 @@ function roundOff(input, n) {
         input = input.substring(1);
     }
     var parts = input.split('.'), partInt = parts[0], partDec = parts[1];
-    //handle case of -ve n
+    //handle case of -ve n: roundOff(12564,-2)=12600
     if (n < 0) {
         n = -n;
         if (partInt.length <= n)
@@ -208,17 +266,19 @@ function roundOff(input, n) {
         else {
             var prefix = partInt.substr(0, partInt.length - n);
             input = prefix + '.' + partInt.substr(partInt.length - n) + partDec;
-            prefix = roundOff(input);
+            prefix = roundOff(input, 0, mode);
             return (neg ? '-' : '') + prefix + (new Array(n + 1).join('0'));
         }
     }
+    // handle case when integer output is desired
     if (n == 0) {
         var l = partInt.length;
-        if (greaterThanFive(parts[1], partInt)) {
+        if (greaterThanFive(parts[1], partInt, neg, mode)) {
             return (neg ? '-' : '') + increment(partInt);
         }
         return (neg ? '-' : '') + partInt;
     }
+    // handle case when n>0
     if (!parts[1]) {
         return (neg ? '-' : '') + partInt + '.' + (new Array(n + 1).join('0'));
     }
@@ -227,7 +287,7 @@ function roundOff(input, n) {
     }
     partDec = parts[1].substring(0, n);
     var rem = parts[1].substring(n);
-    if (rem && greaterThanFive(rem, partDec)) {
+    if (rem && greaterThanFive(rem, partDec, neg, mode)) {
         partDec = increment(partDec);
         if (partDec.length > n) {
             return increment(partInt, parseInt(partDec[0])) + '.' + partDec.substring(1);
@@ -236,11 +296,30 @@ function roundOff(input, n) {
     return (neg ? '-' : '') + partInt + '.' + partDec;
 }
 exports.roundOff = roundOff;
-function greaterThanFive(part, pre) {
-    if (!part)
+function greaterThanFive(part, pre, neg, mode) {
+    if (!part || part === new Array(part.length + 1).join('0'))
         return false;
-    var five = '5' + (new Array(part.length + 1).join('0'));
-    return (part > five || (part == '5' && parseInt(pre[pre.length - 1]) % 2 == 1));
+    // #region UP, DOWN, CEILING, FLOOR 
+    if (mode === roundingModes_1.RoundingModes.DOWN || (!neg && mode === roundingModes_1.RoundingModes.FLOOR) ||
+        (neg && mode === roundingModes_1.RoundingModes.CEILING))
+        return false;
+    if (mode === roundingModes_1.RoundingModes.UP || (neg && mode === roundingModes_1.RoundingModes.FLOOR) ||
+        (!neg && mode === roundingModes_1.RoundingModes.CEILING))
+        return true;
+    // #endregion
+    // case when part !== five
+    var five = '5' + (new Array(part.length).join('0'));
+    if (part > five)
+        return true;
+    else if (part < five)
+        return false;
+    // case when part === five
+    switch (mode) {
+        case roundingModes_1.RoundingModes.HALF_DOWN: return false;
+        case roundingModes_1.RoundingModes.HALF_UP: return true;
+        case roundingModes_1.RoundingModes.HALF_EVEN:
+        default: return (parseInt(pre[pre.length - 1]) % 2 == 1);
+    }
 }
 function increment(part, c) {
     if (c === void 0) { c = 0; }
@@ -267,172 +346,177 @@ function increment(part, c) {
 
 
 /***/ }),
-/* 2 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
 var add_1 = __webpack_require__(0);
-var round_1 = __webpack_require__(1);
-var multiply_1 = __webpack_require__(3);
-var divide_1 = __webpack_require__(4);
-var compareTo_1 = __webpack_require__(5);
-var subtract_1 = __webpack_require__(6);
-var bigDecimal = (function () {
-    function bigDecimal(number) {
-        if (number === void 0) { number = '0'; }
-        this.value = bigDecimal.validate(number);
+function subtract(number1, number2) {
+    number1 = number1.toString();
+    number2 = number2.toString();
+    number2 = negate(number2);
+    return add_1.add(number1, number2);
+}
+exports.subtract = subtract;
+function negate(number) {
+    if (number[0] == '-') {
+        number = number.substr(1);
     }
-    bigDecimal.validate = function (number) {
-        if (number) {
-            number = number.toString();
-            if (isNaN(number))
-                throw Error("Parameter is not a number: " + number);
-            if (number[0] == '+')
-                number = number.substring(1);
-        }
-        else
-            number = '0';
-        //handle exponentiation
-        if (/e/i.test(number)) {
-            var _a = number.split(/[eE]/), mantisa = _a[0], exponent = _a[1];
-            mantisa = add_1.trim(mantisa);
-            exponent = parseInt(exponent) + mantisa.indexOf('.');
-            mantisa = mantisa.replace('.', '');
-            if (mantisa.length < exponent) {
-                number = mantisa + (new Array(exponent - mantisa.length + 1)).join('0');
-            }
-            else if (mantisa.length >= exponent && exponent > 0) {
-                number = add_1.trim(mantisa.substring(0, exponent)) +
-                    ((mantisa.length > exponent) ? ('.' + mantisa.substring(exponent)) : '');
-            }
-            else {
-                number = '0.' + (new Array(-exponent + 1)).join('0') + mantisa;
-            }
-        }
-        return number;
-    };
-    bigDecimal.prototype.getValue = function () {
-        return this.value;
-    };
-    bigDecimal.getPrettyValue = function (number, digits, separator) {
-        if (!(digits || separator)) {
-            digits = 3;
-            separator = ',';
-        }
-        else if (!(digits && separator)) {
-            throw Error('Illegal Arguments. Should pass both digits and separator or pass none');
-        }
-        number = bigDecimal.validate(number);
-        var neg = number.charAt(0) == '-';
-        if (neg)
-            number = number.substring(1);
-        var len = number.indexOf('.');
-        len = len > 0 ? len : (number.length);
-        var temp = '';
-        for (var i = len; i > 0;) {
-            if (i < digits) {
-                digits = i;
-                i = 0;
-            }
-            else
-                i -= digits;
-            temp = number.substring(i, i + digits) + ((i < (len - digits) && i >= 0) ? separator : '') + temp;
-        }
-        return (neg ? '-' : '') + temp + number.substring(len);
-    };
-    bigDecimal.prototype.getPrettyValue = function (digits, separator) {
-        return bigDecimal.getPrettyValue(this.value, digits, separator);
-    };
-    bigDecimal.round = function (number, precision) {
-        if (precision === void 0) { precision = 0; }
-        number = bigDecimal.validate(number);
-        if (isNaN(precision))
-            throw Error("Precision is not a number: " + precision);
-        return round_1.roundOff(number, precision);
-    };
-    bigDecimal.prototype.round = function (precision) {
-        if (precision === void 0) { precision = 0; }
-        if (isNaN(precision))
-            throw Error("Precision is not a number: " + precision);
-        return new bigDecimal(round_1.roundOff(this.value, precision));
-    };
-    bigDecimal.floor = function (number) {
-        number = bigDecimal.validate(number);
-        if (number.indexOf('.') === -1)
-            return number;
-        return bigDecimal.round(bigDecimal.subtract(number, 0.5));
-    };
-    bigDecimal.prototype.floor = function () {
-        if (this.value.indexOf('.') === -1)
-            return new bigDecimal(this.value);
-        return this.subtract(new bigDecimal(0.5)).round();
-    };
-    bigDecimal.ceil = function (number) {
-        number = bigDecimal.validate(number);
-        if (number.indexOf('.') === -1)
-            return number;
-        return bigDecimal.round(bigDecimal.add(number, 0.5));
-    };
-    bigDecimal.prototype.ceil = function () {
-        if (this.value.indexOf('.') === -1)
-            return new bigDecimal(this.value);
-        return this.add(new bigDecimal(0.5)).round();
-    };
-    bigDecimal.add = function (number1, number2) {
-        number1 = bigDecimal.validate(number1);
-        number2 = bigDecimal.validate(number2);
-        return add_1.add(number1, number2);
-    };
-    bigDecimal.prototype.add = function (number) {
-        return new bigDecimal(add_1.add(this.value, number.getValue()));
-    };
-    bigDecimal.subtract = function (number1, number2) {
-        number1 = bigDecimal.validate(number1);
-        number2 = bigDecimal.validate(number2);
-        return subtract_1.subtract(number1, number2);
-    };
-    bigDecimal.prototype.subtract = function (number) {
-        return new bigDecimal(subtract_1.subtract(this.value, number.getValue()));
-    };
-    bigDecimal.multiply = function (number1, number2) {
-        number1 = bigDecimal.validate(number1);
-        number2 = bigDecimal.validate(number2);
-        return multiply_1.multiply(number1, number2);
-    };
-    bigDecimal.prototype.multiply = function (number) {
-        return new bigDecimal(multiply_1.multiply(this.value, number.getValue()));
-    };
-    bigDecimal.divide = function (number1, number2, precision) {
-        number1 = bigDecimal.validate(number1);
-        number2 = bigDecimal.validate(number2);
-        return divide_1.divide(number1, number2, precision);
-    };
-    bigDecimal.prototype.divide = function (number, precision) {
-        return new bigDecimal(divide_1.divide(this.value, number.getValue(), precision));
-    };
-    bigDecimal.compareTo = function (number1, number2) {
-        number1 = bigDecimal.validate(number1);
-        number2 = bigDecimal.validate(number2);
-        return compareTo_1.compareTo(number1, number2);
-    };
-    bigDecimal.prototype.compareTo = function (number) {
-        return compareTo_1.compareTo(this.value, number.getValue());
-    };
-    bigDecimal.negate = function (number) {
-        number = bigDecimal.validate(number);
-        return subtract_1.negate(number);
-    };
-    bigDecimal.prototype.negate = function () {
-        return new bigDecimal(subtract_1.negate(this.value));
-    };
-    return bigDecimal;
-}());
-module.exports = bigDecimal;
+    else {
+        number = '-' + number;
+    }
+    return number;
+}
+exports.negate = negate;
 
 
 /***/ }),
-/* 3 */
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var add_1 = __webpack_require__(0);
+function compareTo(number1, number2) {
+    var negative = false;
+    if (number1[0] == '-' && number2[0] != "-") {
+        return -1;
+    }
+    else if (number1[0] != '-' && number2[0] == '-') {
+        return 1;
+    }
+    else if (number1[0] == '-' && number2[0] == '-') {
+        number1 = number1.substr(1);
+        number2 = number2.substr(1);
+        negative = true;
+    }
+    _a = add_1.pad(number1, number2), number1 = _a[0], number2 = _a[1];
+    if (number1.localeCompare(number2) == 0) {
+        return 0;
+    }
+    for (var i = 0; i < number1.length; i++) {
+        if (number1[i] == number2[i]) {
+            continue;
+        }
+        else if (number1[i] > number2[i]) {
+            if (negative) {
+                return -1;
+            }
+            else {
+                return 1;
+            }
+        }
+        else {
+            if (negative) {
+                return 1;
+            }
+            else {
+                return -1;
+            }
+        }
+    }
+    return 0;
+    var _a;
+}
+exports.compareTo = compareTo;
+
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var add_1 = __webpack_require__(0);
+var round_1 = __webpack_require__(2);
+function divide(dividend, divisor, precission) {
+    if (precission === void 0) { precission = 8; }
+    if (divisor == 0) {
+        throw new Error('Cannot divide by 0');
+    }
+    dividend = dividend.toString();
+    divisor = divisor.toString();
+    if (dividend == 0)
+        return '0';
+    var neg = 0;
+    if (divisor[0] == '-') {
+        divisor = divisor.substring(1);
+        neg++;
+    }
+    if (dividend[0] == '-') {
+        dividend = dividend.substring(1);
+        neg++;
+    }
+    var pt_dvsr = divisor.indexOf('.') > 0 ? divisor.length - divisor.indexOf('.') - 1 : -1;
+    divisor = add_1.trim(divisor.replace('.', ''));
+    if (pt_dvsr >= 0) {
+        var pt_dvnd = dividend.indexOf('.') > 0 ? dividend.length - dividend.indexOf('.') - 1 : -1;
+        if (pt_dvnd == -1) {
+            dividend = add_1.trim(dividend + (new Array(pt_dvsr + 1)).join('0'));
+        }
+        else {
+            if (pt_dvsr > pt_dvnd) {
+                dividend = dividend.replace('.', '');
+                dividend = add_1.trim(dividend + (new Array(pt_dvsr - pt_dvnd + 1)).join('0'));
+            }
+            else if (pt_dvsr < pt_dvnd) {
+                dividend = dividend.replace('.', '');
+                var loc = dividend.length - pt_dvsr + pt_dvsr;
+                dividend = add_1.trim(dividend.substring(0, loc) + '.' + dividend.substring(loc));
+            }
+            else if (pt_dvsr == pt_dvnd) {
+                dividend = add_1.trim(dividend.replace('.', ''));
+            }
+        }
+    }
+    var prec = 0, dl = divisor.length, rem = '0', quotent = '';
+    var dvnd = (dividend.indexOf('.') > -1 && dividend.indexOf('.') < dl) ? dividend.substring(0, dl + 1) : dividend.substring(0, dl);
+    dividend = (dividend.indexOf('.') > -1 && dividend.indexOf('.') < dl) ? dividend.substring(dl + 1) : dividend.substring(dl);
+    if (dvnd.indexOf('.') > -1) {
+        var shift = dvnd.length - dvnd.indexOf('.') - 1;
+        dvnd = dvnd.replace('.', '');
+        if (dl > dvnd.length) {
+            shift += dl - dvnd.length;
+            dvnd = dvnd + (new Array(dl - dvnd.length + 1)).join('0');
+        }
+        prec = shift;
+        quotent = '0.' + (new Array(shift)).join('0');
+    }
+    precission = precission + 2;
+    while (prec <= precission) {
+        var qt = 0;
+        while (parseInt(dvnd) >= parseInt(divisor)) {
+            dvnd = add_1.add(dvnd, '-' + divisor);
+            qt++;
+        }
+        quotent += qt;
+        if (!dividend) {
+            if (!prec)
+                quotent += '.';
+            prec++;
+            dvnd = dvnd + '0';
+        }
+        else {
+            if (dividend[0] == '.') {
+                quotent += '.';
+                prec++;
+                dividend = dividend.substring(1);
+            }
+            dvnd = dvnd + dividend.substring(0, 1);
+            dividend = dividend.substring(1);
+        }
+    }
+    return ((neg == 1) ? '-' : '') + add_1.trim(round_1.roundOff(quotent, precission - 2));
+}
+exports.divide = divide;
+
+
+/***/ }),
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -541,173 +625,172 @@ function trailZero(number) {
 
 
 /***/ }),
-/* 4 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-Object.defineProperty(exports, "__esModule", { value: true });
 var add_1 = __webpack_require__(0);
-var round_1 = __webpack_require__(1);
-function divide(dividend, divisor, precission) {
-    if (precission === void 0) { precission = 8; }
-    if (divisor == 0) {
-        throw new Error('Cannot divide by 0');
+var round_1 = __webpack_require__(2);
+var multiply_1 = __webpack_require__(6);
+var divide_1 = __webpack_require__(5);
+var compareTo_1 = __webpack_require__(4);
+var subtract_1 = __webpack_require__(3);
+var roundingModes_1 = __webpack_require__(1);
+var bigDecimal = /** @class */ (function () {
+    function bigDecimal(number) {
+        if (number === void 0) { number = '0'; }
+        this.value = bigDecimal.validate(number);
     }
-    dividend = dividend.toString();
-    divisor = divisor.toString();
-    if (dividend == 0)
-        return '0';
-    var neg = 0;
-    if (divisor[0] == '-') {
-        divisor = divisor.substring(1);
-        neg++;
-    }
-    if (dividend[0] == '-') {
-        dividend = dividend.substring(1);
-        neg++;
-    }
-    var pt_dvsr = divisor.indexOf('.') > 0 ? divisor.length - divisor.indexOf('.') - 1 : -1;
-    divisor = add_1.trim(divisor.replace('.', ''));
-    if (pt_dvsr >= 0) {
-        var pt_dvnd = dividend.indexOf('.') > 0 ? dividend.length - dividend.indexOf('.') - 1 : -1;
-        if (pt_dvnd == -1) {
-            dividend = add_1.trim(dividend + (new Array(pt_dvsr + 1)).join('0'));
+    bigDecimal.validate = function (number) {
+        if (number) {
+            number = number.toString();
+            if (isNaN(number))
+                throw Error("Parameter is not a number: " + number);
+            if (number[0] == '+')
+                number = number.substring(1);
         }
-        else {
-            if (pt_dvsr > pt_dvnd) {
-                dividend = dividend.replace('.', '');
-                dividend = add_1.trim(dividend + (new Array(pt_dvsr - pt_dvnd + 1)).join('0'));
+        else
+            number = '0';
+        //handle exponentiation
+        if (/e/i.test(number)) {
+            var _a = number.split(/[eE]/), mantisa = _a[0], exponent = _a[1];
+            mantisa = add_1.trim(mantisa);
+            exponent = parseInt(exponent) + mantisa.indexOf('.');
+            mantisa = mantisa.replace('.', '');
+            if (mantisa.length < exponent) {
+                number = mantisa + (new Array(exponent - mantisa.length + 1)).join('0');
             }
-            else if (pt_dvsr < pt_dvnd) {
-                dividend = dividend.replace('.', '');
-                var loc = dividend.length - pt_dvsr + pt_dvsr;
-                dividend = add_1.trim(dividend.substring(0, loc) + '.' + dividend.substring(loc));
-            }
-            else if (pt_dvsr == pt_dvnd) {
-                dividend = add_1.trim(dividend.replace('.', ''));
-            }
-        }
-    }
-    var prec = 0, dl = divisor.length, rem = '0', quotent = '';
-    var dvnd = (dividend.indexOf('.') > -1 && dividend.indexOf('.') < dl) ? dividend.substring(0, dl + 1) : dividend.substring(0, dl);
-    dividend = (dividend.indexOf('.') > -1 && dividend.indexOf('.') < dl) ? dividend.substring(dl + 1) : dividend.substring(dl);
-    if (dvnd.indexOf('.') > -1) {
-        var shift = dvnd.length - dvnd.indexOf('.') - 1;
-        dvnd = dvnd.replace('.', '');
-        if (dl > dvnd.length) {
-            shift += dl - dvnd.length;
-            dvnd = dvnd + (new Array(dl - dvnd.length + 1)).join('0');
-        }
-        prec = shift;
-        quotent = '0.' + (new Array(shift)).join('0');
-    }
-    precission = precission + 2;
-    while (prec <= precission) {
-        var qt = 0;
-        while (parseInt(dvnd) >= parseInt(divisor)) {
-            dvnd = add_1.add(dvnd, '-' + divisor);
-            qt++;
-        }
-        quotent += qt;
-        if (!dividend) {
-            if (!prec)
-                quotent += '.';
-            prec++;
-            dvnd = dvnd + '0';
-        }
-        else {
-            if (dividend[0] == '.') {
-                quotent += '.';
-                prec++;
-                dividend = dividend.substring(1);
-            }
-            dvnd = dvnd + dividend.substring(0, 1);
-            dividend = dividend.substring(1);
-        }
-    }
-    return ((neg == 1) ? '-' : '') + add_1.trim(round_1.roundOff(quotent, precission - 2));
-}
-exports.divide = divide;
-
-
-/***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var add_1 = __webpack_require__(0);
-function compareTo(number1, number2) {
-    var negative = false;
-    if (number1[0] == '-' && number2[0] != "-") {
-        return -1;
-    }
-    else if (number1[0] != '-' && number2[0] == '-') {
-        return 1;
-    }
-    else if (number1[0] == '-' && number2[0] == '-') {
-        number1 = number1.substr(1);
-        number2 = number2.substr(1);
-        negative = true;
-    }
-    _a = add_1.pad(number1, number2), number1 = _a[0], number2 = _a[1];
-    if (number1.localeCompare(number2) == 0) {
-        return 0;
-    }
-    for (var i = 0; i < number1.length; i++) {
-        if (number1[i] == number2[i]) {
-            continue;
-        }
-        else if (number1[i] > number2[i]) {
-            if (negative) {
-                return -1;
+            else if (mantisa.length >= exponent && exponent > 0) {
+                number = add_1.trim(mantisa.substring(0, exponent)) +
+                    ((mantisa.length > exponent) ? ('.' + mantisa.substring(exponent)) : '');
             }
             else {
-                return 1;
+                number = '0.' + (new Array(-exponent + 1)).join('0') + mantisa;
             }
         }
-        else {
-            if (negative) {
-                return 1;
-            }
-            else {
-                return -1;
-            }
+        return number;
+    };
+    bigDecimal.prototype.getValue = function () {
+        return this.value;
+    };
+    bigDecimal.getPrettyValue = function (number, digits, separator) {
+        if (!(digits || separator)) {
+            digits = 3;
+            separator = ',';
         }
-    }
-    return 0;
-    var _a;
-}
-exports.compareTo = compareTo;
-
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var add_1 = __webpack_require__(0);
-function subtract(number1, number2) {
-    number1 = number1.toString();
-    number2 = number2.toString();
-    number2 = negate(number2);
-    return add_1.add(number1, number2);
-}
-exports.subtract = subtract;
-function negate(number) {
-    if (number[0] == '-') {
-        number = number.substr(1);
-    }
-    else {
-        number = '-' + number;
-    }
-    return number;
-}
-exports.negate = negate;
+        else if (!(digits && separator)) {
+            throw Error('Illegal Arguments. Should pass both digits and separator or pass none');
+        }
+        number = bigDecimal.validate(number);
+        var neg = number.charAt(0) == '-';
+        if (neg)
+            number = number.substring(1);
+        var len = number.indexOf('.');
+        len = len > 0 ? len : (number.length);
+        var temp = '';
+        for (var i = len; i > 0;) {
+            if (i < digits) {
+                digits = i;
+                i = 0;
+            }
+            else
+                i -= digits;
+            temp = number.substring(i, i + digits) + ((i < (len - digits) && i >= 0) ? separator : '') + temp;
+        }
+        return (neg ? '-' : '') + temp + number.substring(len);
+    };
+    bigDecimal.prototype.getPrettyValue = function (digits, separator) {
+        return bigDecimal.getPrettyValue(this.value, digits, separator);
+    };
+    bigDecimal.round = function (number, precision, mode) {
+        if (precision === void 0) { precision = 0; }
+        if (mode === void 0) { mode = roundingModes_1.RoundingModes.HALF_EVEN; }
+        number = bigDecimal.validate(number);
+        if (isNaN(precision))
+            throw Error("Precision is not a number: " + precision);
+        return round_1.roundOff(number, precision, mode);
+    };
+    bigDecimal.prototype.round = function (precision, mode) {
+        if (precision === void 0) { precision = 0; }
+        if (mode === void 0) { mode = roundingModes_1.RoundingModes.HALF_EVEN; }
+        if (isNaN(precision))
+            throw Error("Precision is not a number: " + precision);
+        return new bigDecimal(round_1.roundOff(this.value, precision, mode));
+    };
+    bigDecimal.floor = function (number) {
+        number = bigDecimal.validate(number);
+        if (number.indexOf('.') === -1)
+            return number;
+        return bigDecimal.round(bigDecimal.subtract(number, 0.5));
+    };
+    bigDecimal.prototype.floor = function () {
+        if (this.value.indexOf('.') === -1)
+            return new bigDecimal(this.value);
+        return this.subtract(new bigDecimal(0.5)).round();
+    };
+    bigDecimal.ceil = function (number) {
+        number = bigDecimal.validate(number);
+        if (number.indexOf('.') === -1)
+            return number;
+        return bigDecimal.round(bigDecimal.add(number, 0.5));
+    };
+    bigDecimal.prototype.ceil = function () {
+        if (this.value.indexOf('.') === -1)
+            return new bigDecimal(this.value);
+        return this.add(new bigDecimal(0.5)).round();
+    };
+    bigDecimal.add = function (number1, number2) {
+        number1 = bigDecimal.validate(number1);
+        number2 = bigDecimal.validate(number2);
+        return add_1.add(number1, number2);
+    };
+    bigDecimal.prototype.add = function (number) {
+        return new bigDecimal(add_1.add(this.value, number.getValue()));
+    };
+    bigDecimal.subtract = function (number1, number2) {
+        number1 = bigDecimal.validate(number1);
+        number2 = bigDecimal.validate(number2);
+        return subtract_1.subtract(number1, number2);
+    };
+    bigDecimal.prototype.subtract = function (number) {
+        return new bigDecimal(subtract_1.subtract(this.value, number.getValue()));
+    };
+    bigDecimal.multiply = function (number1, number2) {
+        number1 = bigDecimal.validate(number1);
+        number2 = bigDecimal.validate(number2);
+        return multiply_1.multiply(number1, number2);
+    };
+    bigDecimal.prototype.multiply = function (number) {
+        return new bigDecimal(multiply_1.multiply(this.value, number.getValue()));
+    };
+    bigDecimal.divide = function (number1, number2, precision) {
+        number1 = bigDecimal.validate(number1);
+        number2 = bigDecimal.validate(number2);
+        return divide_1.divide(number1, number2, precision);
+    };
+    bigDecimal.prototype.divide = function (number, precision) {
+        return new bigDecimal(divide_1.divide(this.value, number.getValue(), precision));
+    };
+    bigDecimal.compareTo = function (number1, number2) {
+        number1 = bigDecimal.validate(number1);
+        number2 = bigDecimal.validate(number2);
+        return compareTo_1.compareTo(number1, number2);
+    };
+    bigDecimal.prototype.compareTo = function (number) {
+        return compareTo_1.compareTo(this.value, number.getValue());
+    };
+    bigDecimal.negate = function (number) {
+        number = bigDecimal.validate(number);
+        return subtract_1.negate(number);
+    };
+    bigDecimal.prototype.negate = function () {
+        return new bigDecimal(subtract_1.negate(this.value));
+    };
+    bigDecimal.RoundingModes = roundingModes_1.RoundingModes;
+    return bigDecimal;
+}());
+module.exports = bigDecimal;
 
 
 /***/ })
