@@ -196,36 +196,43 @@ function addCore(number1, number2) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-/**
- * CEILING
- * Rounding mode to round towards positive infinity.
- * DOWN
- * Rounding mode to round towards zero.
- * FLOOR
- * Rounding mode to round towards negative infinity.
- * HALF_DOWN
- * Rounding mode to round towards "nearest neighbor" unless both neighbors are equidistant,
- * in which case round down.
- * HALF_EVEN
- * Rounding mode to round towards the "nearest neighbor" unless both neighbors are equidistant,
- * in which case, round towards the even neighbor.
- * HALF_UP
- * Rounding mode to round towards "nearest neighbor" unless both neighbors are equidistant,
- * in which case round up.
- * UNNECESSARY
- * Rounding mode to assert that the requested operation has an exact result, hence no rounding is necessary.
- * UP
- * Rounding mode to round away from zero.
- */
 var RoundingModes;
 (function (RoundingModes) {
+    /**
+     * Rounding mode to round towards positive infinity.
+     */
     RoundingModes[RoundingModes["CEILING"] = 0] = "CEILING";
+    /**
+     * Rounding mode to round towards zero.
+     */
     RoundingModes[RoundingModes["DOWN"] = 1] = "DOWN";
+    /**
+     * Rounding mode to round towards negative infinity.
+     */
     RoundingModes[RoundingModes["FLOOR"] = 2] = "FLOOR";
+    /**
+     * Rounding mode to round towards "nearest neighbor" unless both neighbors are equidistant,
+     * in which case round down.
+     */
     RoundingModes[RoundingModes["HALF_DOWN"] = 3] = "HALF_DOWN";
+    /**
+     * Rounding mode to round towards the "nearest neighbor" unless both neighbors are equidistant,
+     * in which case, round towards the even neighbor.
+     */
     RoundingModes[RoundingModes["HALF_EVEN"] = 4] = "HALF_EVEN";
+    /**
+     * Rounding mode to round towards "nearest neighbor" unless both neighbors are equidistant,
+     * in which case round up.
+     */
     RoundingModes[RoundingModes["HALF_UP"] = 5] = "HALF_UP";
+    /**
+     * Rounding mode to assert that the requested operation has an exact result, hence no rounding is necessary.
+     * UNIMPLEMENTED
+     */
     RoundingModes[RoundingModes["UNNECESSARY"] = 6] = "UNNECESSARY";
+    /**
+     * Rounding mode to round away from zero.
+     */
     RoundingModes[RoundingModes["UP"] = 7] = "UP";
 })(RoundingModes = exports.RoundingModes || (exports.RoundingModes = {}));
 

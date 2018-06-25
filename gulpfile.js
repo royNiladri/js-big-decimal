@@ -39,6 +39,6 @@ gulp.task('dist', ['clean'], function () {
     process.env.NODE_ENV = 'production';
     cmd.exec();
 
-    gulp.src([`${paths.lib}/big-decimal.d.ts`])
+    gulp.src([`${paths.lib}/big-decimal.d.ts`, `${paths.lib}/roundingModes.d.ts`])
         .pipe(gulp.dest(`${paths.dist}/node`));
 });
