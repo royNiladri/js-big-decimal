@@ -7,7 +7,7 @@
 		exports["bigDecimal"] = factory();
 	else
 		root["bigDecimal"] = factory();
-})(typeof self !== 'undefined' ? self : this, function() {
+})(global, function() {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -46,12 +46,32 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// define getter function for harmony exports
 /******/ 	__webpack_require__.d = function(exports, name, getter) {
 /******/ 		if(!__webpack_require__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, {
-/******/ 				configurable: false,
-/******/ 				enumerable: true,
-/******/ 				get: getter
-/******/ 			});
+/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
 /******/ 		}
+/******/ 	};
+/******/
+/******/ 	// define __esModule on exports
+/******/ 	__webpack_require__.r = function(exports) {
+/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 		}
+/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 	};
+/******/
+/******/ 	// create a fake namespace object
+/******/ 	// mode & 1: value is a module id, require it
+/******/ 	// mode & 2: merge all properties of value into the ns
+/******/ 	// mode & 4: return value when already ns object
+/******/ 	// mode & 8|1: behave like require
+/******/ 	__webpack_require__.t = function(value, mode) {
+/******/ 		if(mode & 1) value = __webpack_require__(value);
+/******/ 		if(mode & 8) return value;
+/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
+/******/ 		var ns = Object.create(null);
+/******/ 		__webpack_require__.r(ns);
+/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
+/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
+/******/ 		return ns;
 /******/ 	};
 /******/
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
@@ -69,6 +89,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// __webpack_public_path__
 /******/ 	__webpack_require__.p = "";
 /******/
+/******/
 /******/ 	// Load entry module and return exports
 /******/ 	return __webpack_require__(__webpack_require__.s = 3);
 /******/ })
@@ -82,6 +103,7 @@ return /******/ (function(modules) { // webpackBootstrap
 Object.defineProperty(exports, "__esModule", { value: true });
 //function add {
 function add(number1, number2) {
+    var _a;
     if (number2 === void 0) { number2 = "0"; }
     var neg = 0, ind = -1, neg_len;
     //check for negatives
@@ -117,7 +139,6 @@ function add(number1, number2) {
         else
             return ('-' + trim(compliment(res)));
     }
-    var _a;
 }
 exports.add = add;
 function compliment(number) {
@@ -167,6 +188,7 @@ function pad(number1, number2) {
 }
 exports.pad = pad;
 function addCore(number1, number2) {
+    var _a;
     _a = pad(number1, number2), number1 = _a[0], number2 = _a[1];
     var sum = '', carry = 0;
     for (var i = number1.length - 1; i >= 0; i--) {
@@ -179,7 +201,6 @@ function addCore(number1, number2) {
         carry = Math.floor(temp / 10);
     }
     return carry ? (carry.toString() + sum) : sum;
-    var _a;
 }
 
 
@@ -305,36 +326,43 @@ function increment(part, c) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-/**
- * CEILING
- * Rounding mode to round towards positive infinity.
- * DOWN
- * Rounding mode to round towards zero.
- * FLOOR
- * Rounding mode to round towards negative infinity.
- * HALF_DOWN
- * Rounding mode to round towards "nearest neighbor" unless both neighbors are equidistant,
- * in which case round down.
- * HALF_EVEN
- * Rounding mode to round towards the "nearest neighbor" unless both neighbors are equidistant,
- * in which case, round towards the even neighbor.
- * HALF_UP
- * Rounding mode to round towards "nearest neighbor" unless both neighbors are equidistant,
- * in which case round up.
- * UNNECESSARY
- * Rounding mode to assert that the requested operation has an exact result, hence no rounding is necessary.
- * UP
- * Rounding mode to round away from zero.
- */
 var RoundingModes;
 (function (RoundingModes) {
+    /**
+     * Rounding mode to round towards positive infinity.
+     */
     RoundingModes[RoundingModes["CEILING"] = 0] = "CEILING";
+    /**
+     * Rounding mode to round towards zero.
+     */
     RoundingModes[RoundingModes["DOWN"] = 1] = "DOWN";
+    /**
+     * Rounding mode to round towards negative infinity.
+     */
     RoundingModes[RoundingModes["FLOOR"] = 2] = "FLOOR";
+    /**
+     * Rounding mode to round towards "nearest neighbor" unless both neighbors are equidistant,
+     * in which case round down.
+     */
     RoundingModes[RoundingModes["HALF_DOWN"] = 3] = "HALF_DOWN";
+    /**
+     * Rounding mode to round towards the "nearest neighbor" unless both neighbors are equidistant,
+     * in which case, round towards the even neighbor.
+     */
     RoundingModes[RoundingModes["HALF_EVEN"] = 4] = "HALF_EVEN";
+    /**
+     * Rounding mode to round towards "nearest neighbor" unless both neighbors are equidistant,
+     * in which case round up.
+     */
     RoundingModes[RoundingModes["HALF_UP"] = 5] = "HALF_UP";
+    /**
+     * Rounding mode to assert that the requested operation has an exact result, hence no rounding is necessary.
+     * UNIMPLEMENTED
+     */
     RoundingModes[RoundingModes["UNNECESSARY"] = 6] = "UNNECESSARY";
+    /**
+     * Rounding mode to round away from zero.
+     */
     RoundingModes[RoundingModes["UP"] = 7] = "UP";
 })(RoundingModes = exports.RoundingModes || (exports.RoundingModes = {}));
 
@@ -352,7 +380,7 @@ var divide_1 = __webpack_require__(5);
 var compareTo_1 = __webpack_require__(6);
 var subtract_1 = __webpack_require__(7);
 var roundingModes_1 = __webpack_require__(2);
-var bigDecimal = (function () {
+var bigDecimal = /** @class */ (function () {
     function bigDecimal(number) {
         if (number === void 0) { number = '0'; }
         this.value = bigDecimal.validate(number);
@@ -633,6 +661,9 @@ function divide(dividend, divisor, precission) {
     }
     dividend = dividend.toString();
     divisor = divisor.toString();
+    // remove trailing zeros in decimal ISSUE#18
+    dividend = dividend.replace(/(\.\d*?[1-9])0+$/g, "$1").replace(/\.0+$/, "");
+    divisor = divisor.replace(/(\.\d*?[1-9])0+$/g, "$1").replace(/\.0+$/, "");
     if (dividend == 0)
         return '0';
     var neg = 0;
@@ -658,7 +689,7 @@ function divide(dividend, divisor, precission) {
             }
             else if (pt_dvsr < pt_dvnd) {
                 dividend = dividend.replace('.', '');
-                var loc = dividend.length - pt_dvsr + pt_dvsr;
+                var loc = dividend.length - pt_dvnd + pt_dvsr;
                 dividend = add_1.trim(dividend.substring(0, loc) + '.' + dividend.substring(loc));
             }
             else if (pt_dvsr == pt_dvnd) {
@@ -717,6 +748,7 @@ exports.divide = divide;
 Object.defineProperty(exports, "__esModule", { value: true });
 var add_1 = __webpack_require__(0);
 function compareTo(number1, number2) {
+    var _a;
     var negative = false;
     if (number1[0] == '-' && number2[0] != "-") {
         return -1;
@@ -755,7 +787,6 @@ function compareTo(number1, number2) {
         }
     }
     return 0;
-    var _a;
 }
 exports.compareTo = compareTo;
 
