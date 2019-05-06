@@ -15,7 +15,7 @@ gulp.task('clean', function () {
     return del(['./dist/*']);
 })
 
-gulp.task('dist', ['clean'], function () {
+gulp.task('dist', gulp.series('clean', function (done) {
 
     var cmd = new run.Command('webpack-cli', { usePowerShell: true, silent: true });
 
@@ -41,4 +41,6 @@ gulp.task('dist', ['clean'], function () {
 
     gulp.src([`${paths.lib}/big-decimal.d.ts`, `${paths.lib}/roundingModes.d.ts`])
         .pipe(gulp.dest(`${paths.dist}/node`));
-});
+    
+    done();
+}));

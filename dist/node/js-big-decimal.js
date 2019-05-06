@@ -46,17 +46,32 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// define getter function for harmony exports
 /******/ 	__webpack_require__.d = function(exports, name, getter) {
 /******/ 		if(!__webpack_require__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, {
-/******/ 				configurable: false,
-/******/ 				enumerable: true,
-/******/ 				get: getter
-/******/ 			});
+/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
 /******/ 		}
 /******/ 	};
 /******/
 /******/ 	// define __esModule on exports
 /******/ 	__webpack_require__.r = function(exports) {
+/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 		}
 /******/ 		Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 	};
+/******/
+/******/ 	// create a fake namespace object
+/******/ 	// mode & 1: value is a module id, require it
+/******/ 	// mode & 2: merge all properties of value into the ns
+/******/ 	// mode & 4: return value when already ns object
+/******/ 	// mode & 8|1: behave like require
+/******/ 	__webpack_require__.t = function(value, mode) {
+/******/ 		if(mode & 1) value = __webpack_require__(value);
+/******/ 		if(mode & 8) return value;
+/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
+/******/ 		var ns = Object.create(null);
+/******/ 		__webpack_require__.r(ns);
+/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
+/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
+/******/ 		return ns;
 /******/ 	};
 /******/
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
@@ -76,7 +91,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 7);
+/******/ 	return __webpack_require__(__webpack_require__.s = 3);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -88,6 +103,7 @@ return /******/ (function(modules) { // webpackBootstrap
 Object.defineProperty(exports, "__esModule", { value: true });
 //function add {
 function add(number1, number2) {
+    var _a;
     if (number2 === void 0) { number2 = "0"; }
     var neg = 0, ind = -1, neg_len;
     //check for negatives
@@ -123,7 +139,6 @@ function add(number1, number2) {
         else
             return ('-' + trim(compliment(res)));
     }
-    var _a;
 }
 exports.add = add;
 function compliment(number) {
@@ -173,6 +188,7 @@ function pad(number1, number2) {
 }
 exports.pad = pad;
 function addCore(number1, number2) {
+    var _a;
     _a = pad(number1, number2), number1 = _a[0], number2 = _a[1];
     var sum = '', carry = 0;
     for (var i = number1.length - 1; i >= 0; i--) {
@@ -185,7 +201,6 @@ function addCore(number1, number2) {
         carry = Math.floor(temp / 10);
     }
     return carry ? (carry.toString() + sum) : sum;
-    var _a;
 }
 
 
@@ -196,55 +211,7 @@ function addCore(number1, number2) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var RoundingModes;
-(function (RoundingModes) {
-    /**
-     * Rounding mode to round towards positive infinity.
-     */
-    RoundingModes[RoundingModes["CEILING"] = 0] = "CEILING";
-    /**
-     * Rounding mode to round towards zero.
-     */
-    RoundingModes[RoundingModes["DOWN"] = 1] = "DOWN";
-    /**
-     * Rounding mode to round towards negative infinity.
-     */
-    RoundingModes[RoundingModes["FLOOR"] = 2] = "FLOOR";
-    /**
-     * Rounding mode to round towards "nearest neighbor" unless both neighbors are equidistant,
-     * in which case round down.
-     */
-    RoundingModes[RoundingModes["HALF_DOWN"] = 3] = "HALF_DOWN";
-    /**
-     * Rounding mode to round towards the "nearest neighbor" unless both neighbors are equidistant,
-     * in which case, round towards the even neighbor.
-     */
-    RoundingModes[RoundingModes["HALF_EVEN"] = 4] = "HALF_EVEN";
-    /**
-     * Rounding mode to round towards "nearest neighbor" unless both neighbors are equidistant,
-     * in which case round up.
-     */
-    RoundingModes[RoundingModes["HALF_UP"] = 5] = "HALF_UP";
-    /**
-     * Rounding mode to assert that the requested operation has an exact result, hence no rounding is necessary.
-     * UNIMPLEMENTED
-     */
-    RoundingModes[RoundingModes["UNNECESSARY"] = 6] = "UNNECESSARY";
-    /**
-     * Rounding mode to round away from zero.
-     */
-    RoundingModes[RoundingModes["UP"] = 7] = "UP";
-})(RoundingModes = exports.RoundingModes || (exports.RoundingModes = {}));
-
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var roundingModes_1 = __webpack_require__(1);
+var roundingModes_1 = __webpack_require__(2);
 /**
  *
  * @param input the number to round
@@ -353,297 +320,66 @@ function increment(part, c) {
 
 
 /***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var RoundingModes;
+(function (RoundingModes) {
+    /**
+     * Rounding mode to round towards positive infinity.
+     */
+    RoundingModes[RoundingModes["CEILING"] = 0] = "CEILING";
+    /**
+     * Rounding mode to round towards zero.
+     */
+    RoundingModes[RoundingModes["DOWN"] = 1] = "DOWN";
+    /**
+     * Rounding mode to round towards negative infinity.
+     */
+    RoundingModes[RoundingModes["FLOOR"] = 2] = "FLOOR";
+    /**
+     * Rounding mode to round towards "nearest neighbor" unless both neighbors are equidistant,
+     * in which case round down.
+     */
+    RoundingModes[RoundingModes["HALF_DOWN"] = 3] = "HALF_DOWN";
+    /**
+     * Rounding mode to round towards the "nearest neighbor" unless both neighbors are equidistant,
+     * in which case, round towards the even neighbor.
+     */
+    RoundingModes[RoundingModes["HALF_EVEN"] = 4] = "HALF_EVEN";
+    /**
+     * Rounding mode to round towards "nearest neighbor" unless both neighbors are equidistant,
+     * in which case round up.
+     */
+    RoundingModes[RoundingModes["HALF_UP"] = 5] = "HALF_UP";
+    /**
+     * Rounding mode to assert that the requested operation has an exact result, hence no rounding is necessary.
+     * UNIMPLEMENTED
+     */
+    RoundingModes[RoundingModes["UNNECESSARY"] = 6] = "UNNECESSARY";
+    /**
+     * Rounding mode to round away from zero.
+     */
+    RoundingModes[RoundingModes["UP"] = 7] = "UP";
+})(RoundingModes = exports.RoundingModes || (exports.RoundingModes = {}));
+
+
+/***/ }),
 /* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-Object.defineProperty(exports, "__esModule", { value: true });
 var add_1 = __webpack_require__(0);
-function subtract(number1, number2) {
-    number1 = number1.toString();
-    number2 = number2.toString();
-    number2 = negate(number2);
-    return add_1.add(number1, number2);
-}
-exports.subtract = subtract;
-function negate(number) {
-    if (number[0] == '-') {
-        number = number.substr(1);
-    }
-    else {
-        number = '-' + number;
-    }
-    return number;
-}
-exports.negate = negate;
-
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var add_1 = __webpack_require__(0);
-function compareTo(number1, number2) {
-    var negative = false;
-    if (number1[0] == '-' && number2[0] != "-") {
-        return -1;
-    }
-    else if (number1[0] != '-' && number2[0] == '-') {
-        return 1;
-    }
-    else if (number1[0] == '-' && number2[0] == '-') {
-        number1 = number1.substr(1);
-        number2 = number2.substr(1);
-        negative = true;
-    }
-    _a = add_1.pad(number1, number2), number1 = _a[0], number2 = _a[1];
-    if (number1.localeCompare(number2) == 0) {
-        return 0;
-    }
-    for (var i = 0; i < number1.length; i++) {
-        if (number1[i] == number2[i]) {
-            continue;
-        }
-        else if (number1[i] > number2[i]) {
-            if (negative) {
-                return -1;
-            }
-            else {
-                return 1;
-            }
-        }
-        else {
-            if (negative) {
-                return 1;
-            }
-            else {
-                return -1;
-            }
-        }
-    }
-    return 0;
-    var _a;
-}
-exports.compareTo = compareTo;
-
-
-/***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var add_1 = __webpack_require__(0);
-var round_1 = __webpack_require__(2);
-function divide(dividend, divisor, precission) {
-    if (precission === void 0) { precission = 8; }
-    if (divisor == 0) {
-        throw new Error('Cannot divide by 0');
-    }
-    dividend = dividend.toString();
-    divisor = divisor.toString();
-    if (dividend == 0)
-        return '0';
-    var neg = 0;
-    if (divisor[0] == '-') {
-        divisor = divisor.substring(1);
-        neg++;
-    }
-    if (dividend[0] == '-') {
-        dividend = dividend.substring(1);
-        neg++;
-    }
-    var pt_dvsr = divisor.indexOf('.') > 0 ? divisor.length - divisor.indexOf('.') - 1 : -1;
-    divisor = add_1.trim(divisor.replace('.', ''));
-    if (pt_dvsr >= 0) {
-        var pt_dvnd = dividend.indexOf('.') > 0 ? dividend.length - dividend.indexOf('.') - 1 : -1;
-        if (pt_dvnd == -1) {
-            dividend = add_1.trim(dividend + (new Array(pt_dvsr + 1)).join('0'));
-        }
-        else {
-            if (pt_dvsr > pt_dvnd) {
-                dividend = dividend.replace('.', '');
-                dividend = add_1.trim(dividend + (new Array(pt_dvsr - pt_dvnd + 1)).join('0'));
-            }
-            else if (pt_dvsr < pt_dvnd) {
-                dividend = dividend.replace('.', '');
-                var loc = dividend.length - pt_dvsr + pt_dvsr;
-                dividend = add_1.trim(dividend.substring(0, loc) + '.' + dividend.substring(loc));
-            }
-            else if (pt_dvsr == pt_dvnd) {
-                dividend = add_1.trim(dividend.replace('.', ''));
-            }
-        }
-    }
-    var prec = 0, dl = divisor.length, rem = '0', quotent = '';
-    var dvnd = (dividend.indexOf('.') > -1 && dividend.indexOf('.') < dl) ? dividend.substring(0, dl + 1) : dividend.substring(0, dl);
-    dividend = (dividend.indexOf('.') > -1 && dividend.indexOf('.') < dl) ? dividend.substring(dl + 1) : dividend.substring(dl);
-    if (dvnd.indexOf('.') > -1) {
-        var shift = dvnd.length - dvnd.indexOf('.') - 1;
-        dvnd = dvnd.replace('.', '');
-        if (dl > dvnd.length) {
-            shift += dl - dvnd.length;
-            dvnd = dvnd + (new Array(dl - dvnd.length + 1)).join('0');
-        }
-        prec = shift;
-        quotent = '0.' + (new Array(shift)).join('0');
-    }
-    precission = precission + 2;
-    while (prec <= precission) {
-        var qt = 0;
-        while (parseInt(dvnd) >= parseInt(divisor)) {
-            dvnd = add_1.add(dvnd, '-' + divisor);
-            qt++;
-        }
-        quotent += qt;
-        if (!dividend) {
-            if (!prec)
-                quotent += '.';
-            prec++;
-            dvnd = dvnd + '0';
-        }
-        else {
-            if (dividend[0] == '.') {
-                quotent += '.';
-                prec++;
-                dividend = dividend.substring(1);
-            }
-            dvnd = dvnd + dividend.substring(0, 1);
-            dividend = dividend.substring(1);
-        }
-    }
-    return ((neg == 1) ? '-' : '') + add_1.trim(round_1.roundOff(quotent, precission - 2));
-}
-exports.divide = divide;
-
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-function multiply(number1, number2) {
-    number1 = number1.toString();
-    number2 = number2.toString();
-    /*Filter numbers*/
-    var negative = 0;
-    if (number1[0] == '-') {
-        negative++;
-        number1 = number1.substr(1);
-    }
-    if (number2[0] == '-') {
-        negative++;
-        number2 = number2.substr(1);
-    }
-    number1 = trailZero(number1);
-    number2 = trailZero(number2);
-    var decimalLength1 = 0;
-    var decimalLength2 = 0;
-    if (number1.indexOf('.') != -1) {
-        decimalLength1 = number1.length - number1.indexOf('.') - 1;
-    }
-    if (number2.indexOf('.') != -1) {
-        decimalLength2 = number2.length - number2.indexOf('.') - 1;
-    }
-    var decimalLength = decimalLength1 + decimalLength2;
-    number1 = trailZero(number1.replace('.', ''));
-    number2 = trailZero(number2.replace('.', ''));
-    if (number1.length < number2.length) {
-        var temp = number1;
-        number1 = number2;
-        number2 = temp;
-    }
-    if (number2 == '0') {
-        return '0';
-    }
-    /*
-    * Core multiplication
-    */
-    var length = number2.length;
-    var carry = 0;
-    var positionVector = [];
-    var currentPosition = length - 1;
-    var result = "";
-    for (var i = 0; i < length; i++) {
-        positionVector[i] = number1.length - 1;
-    }
-    for (var i = 0; i < 2 * number1.length; i++) {
-        var sum = 0;
-        for (var j = number2.length - 1; j >= currentPosition && j >= 0; j--) {
-            if (positionVector[j] > -1 && positionVector[j] < number1.length) {
-                sum += parseInt(number1[positionVector[j]--]) * parseInt(number2[j]);
-            }
-        }
-        sum += carry;
-        carry = Math.floor(sum / 10);
-        result = sum % 10 + result;
-        currentPosition--;
-    }
-    /*
-    * Formatting result
-    */
-    result = trailZero(adjustDecimal(result, decimalLength));
-    if (negative == 1) {
-        result = '-' + result;
-    }
-    return result;
-}
-exports.multiply = multiply;
-/*
-* Add decimal point
-*/
-function adjustDecimal(number, decimal) {
-    if (decimal == 0)
-        return number;
-    else {
-        number = (decimal >= number.length) ? ((new Array(decimal - number.length + 1)).join('0') + number) : number;
-        return number.substr(0, number.length - decimal) + '.' + number.substr(number.length - decimal, decimal);
-    }
-}
-/*
-* Removes zero from front and back*/
-function trailZero(number) {
-    while (number[0] == '0') {
-        number = number.substr(1);
-    }
-    if (number.indexOf('.') != -1) {
-        while (number[number.length - 1] == '0') {
-            number = number.substr(0, number.length - 1);
-        }
-    }
-    if (number == "" || number == ".") {
-        number = '0';
-    }
-    else if (number[number.length - 1] == '.') {
-        number = number.substr(0, number.length - 1);
-    }
-    if (number[0] == '.') {
-        number = '0' + number;
-    }
-    return number;
-}
-
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var add_1 = __webpack_require__(0);
-var round_1 = __webpack_require__(2);
-var multiply_1 = __webpack_require__(6);
+var round_1 = __webpack_require__(1);
+var multiply_1 = __webpack_require__(4);
 var divide_1 = __webpack_require__(5);
-var compareTo_1 = __webpack_require__(4);
-var subtract_1 = __webpack_require__(3);
-var roundingModes_1 = __webpack_require__(1);
+var compareTo_1 = __webpack_require__(6);
+var subtract_1 = __webpack_require__(7);
+var roundingModes_1 = __webpack_require__(2);
 var bigDecimal = /** @class */ (function () {
     function bigDecimal(number) {
         if (number === void 0) { number = '0'; }
@@ -798,6 +534,288 @@ var bigDecimal = /** @class */ (function () {
     return bigDecimal;
 }());
 module.exports = bigDecimal;
+
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+function multiply(number1, number2) {
+    number1 = number1.toString();
+    number2 = number2.toString();
+    /*Filter numbers*/
+    var negative = 0;
+    if (number1[0] == '-') {
+        negative++;
+        number1 = number1.substr(1);
+    }
+    if (number2[0] == '-') {
+        negative++;
+        number2 = number2.substr(1);
+    }
+    number1 = trailZero(number1);
+    number2 = trailZero(number2);
+    var decimalLength1 = 0;
+    var decimalLength2 = 0;
+    if (number1.indexOf('.') != -1) {
+        decimalLength1 = number1.length - number1.indexOf('.') - 1;
+    }
+    if (number2.indexOf('.') != -1) {
+        decimalLength2 = number2.length - number2.indexOf('.') - 1;
+    }
+    var decimalLength = decimalLength1 + decimalLength2;
+    number1 = trailZero(number1.replace('.', ''));
+    number2 = trailZero(number2.replace('.', ''));
+    if (number1.length < number2.length) {
+        var temp = number1;
+        number1 = number2;
+        number2 = temp;
+    }
+    if (number2 == '0') {
+        return '0';
+    }
+    /*
+    * Core multiplication
+    */
+    var length = number2.length;
+    var carry = 0;
+    var positionVector = [];
+    var currentPosition = length - 1;
+    var result = "";
+    for (var i = 0; i < length; i++) {
+        positionVector[i] = number1.length - 1;
+    }
+    for (var i = 0; i < 2 * number1.length; i++) {
+        var sum = 0;
+        for (var j = number2.length - 1; j >= currentPosition && j >= 0; j--) {
+            if (positionVector[j] > -1 && positionVector[j] < number1.length) {
+                sum += parseInt(number1[positionVector[j]--]) * parseInt(number2[j]);
+            }
+        }
+        sum += carry;
+        carry = Math.floor(sum / 10);
+        result = sum % 10 + result;
+        currentPosition--;
+    }
+    /*
+    * Formatting result
+    */
+    result = trailZero(adjustDecimal(result, decimalLength));
+    if (negative == 1) {
+        result = '-' + result;
+    }
+    return result;
+}
+exports.multiply = multiply;
+/*
+* Add decimal point
+*/
+function adjustDecimal(number, decimal) {
+    if (decimal == 0)
+        return number;
+    else {
+        number = (decimal >= number.length) ? ((new Array(decimal - number.length + 1)).join('0') + number) : number;
+        return number.substr(0, number.length - decimal) + '.' + number.substr(number.length - decimal, decimal);
+    }
+}
+/*
+* Removes zero from front and back*/
+function trailZero(number) {
+    while (number[0] == '0') {
+        number = number.substr(1);
+    }
+    if (number.indexOf('.') != -1) {
+        while (number[number.length - 1] == '0') {
+            number = number.substr(0, number.length - 1);
+        }
+    }
+    if (number == "" || number == ".") {
+        number = '0';
+    }
+    else if (number[number.length - 1] == '.') {
+        number = number.substr(0, number.length - 1);
+    }
+    if (number[0] == '.') {
+        number = '0' + number;
+    }
+    return number;
+}
+
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var add_1 = __webpack_require__(0);
+var round_1 = __webpack_require__(1);
+function divide(dividend, divisor, precission) {
+    if (precission === void 0) { precission = 8; }
+    if (divisor == 0) {
+        throw new Error('Cannot divide by 0');
+    }
+    dividend = dividend.toString();
+    divisor = divisor.toString();
+    // remove trailing zeros in decimal ISSUE#18
+    dividend = dividend.replace(/(\.\d*?[1-9])0+$/g, "$1").replace(/\.0+$/, "");
+    divisor = divisor.replace(/(\.\d*?[1-9])0+$/g, "$1").replace(/\.0+$/, "");
+    if (dividend == 0)
+        return '0';
+    var neg = 0;
+    if (divisor[0] == '-') {
+        divisor = divisor.substring(1);
+        neg++;
+    }
+    if (dividend[0] == '-') {
+        dividend = dividend.substring(1);
+        neg++;
+    }
+    var pt_dvsr = divisor.indexOf('.') > 0 ? divisor.length - divisor.indexOf('.') - 1 : -1;
+    divisor = add_1.trim(divisor.replace('.', ''));
+    if (pt_dvsr >= 0) {
+        var pt_dvnd = dividend.indexOf('.') > 0 ? dividend.length - dividend.indexOf('.') - 1 : -1;
+        if (pt_dvnd == -1) {
+            dividend = add_1.trim(dividend + (new Array(pt_dvsr + 1)).join('0'));
+        }
+        else {
+            if (pt_dvsr > pt_dvnd) {
+                dividend = dividend.replace('.', '');
+                dividend = add_1.trim(dividend + (new Array(pt_dvsr - pt_dvnd + 1)).join('0'));
+            }
+            else if (pt_dvsr < pt_dvnd) {
+                dividend = dividend.replace('.', '');
+                var loc = dividend.length - pt_dvnd + pt_dvsr;
+                dividend = add_1.trim(dividend.substring(0, loc) + '.' + dividend.substring(loc));
+            }
+            else if (pt_dvsr == pt_dvnd) {
+                dividend = add_1.trim(dividend.replace('.', ''));
+            }
+        }
+    }
+    var prec = 0, dl = divisor.length, rem = '0', quotent = '';
+    var dvnd = (dividend.indexOf('.') > -1 && dividend.indexOf('.') < dl) ? dividend.substring(0, dl + 1) : dividend.substring(0, dl);
+    dividend = (dividend.indexOf('.') > -1 && dividend.indexOf('.') < dl) ? dividend.substring(dl + 1) : dividend.substring(dl);
+    if (dvnd.indexOf('.') > -1) {
+        var shift = dvnd.length - dvnd.indexOf('.') - 1;
+        dvnd = dvnd.replace('.', '');
+        if (dl > dvnd.length) {
+            shift += dl - dvnd.length;
+            dvnd = dvnd + (new Array(dl - dvnd.length + 1)).join('0');
+        }
+        prec = shift;
+        quotent = '0.' + (new Array(shift)).join('0');
+    }
+    precission = precission + 2;
+    while (prec <= precission) {
+        var qt = 0;
+        while (parseInt(dvnd) >= parseInt(divisor)) {
+            dvnd = add_1.add(dvnd, '-' + divisor);
+            qt++;
+        }
+        quotent += qt;
+        if (!dividend) {
+            if (!prec)
+                quotent += '.';
+            prec++;
+            dvnd = dvnd + '0';
+        }
+        else {
+            if (dividend[0] == '.') {
+                quotent += '.';
+                prec++;
+                dividend = dividend.substring(1);
+            }
+            dvnd = dvnd + dividend.substring(0, 1);
+            dividend = dividend.substring(1);
+        }
+    }
+    return ((neg == 1) ? '-' : '') + add_1.trim(round_1.roundOff(quotent, precission - 2));
+}
+exports.divide = divide;
+
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var add_1 = __webpack_require__(0);
+function compareTo(number1, number2) {
+    var _a;
+    var negative = false;
+    if (number1[0] == '-' && number2[0] != "-") {
+        return -1;
+    }
+    else if (number1[0] != '-' && number2[0] == '-') {
+        return 1;
+    }
+    else if (number1[0] == '-' && number2[0] == '-') {
+        number1 = number1.substr(1);
+        number2 = number2.substr(1);
+        negative = true;
+    }
+    _a = add_1.pad(number1, number2), number1 = _a[0], number2 = _a[1];
+    if (number1.localeCompare(number2) == 0) {
+        return 0;
+    }
+    for (var i = 0; i < number1.length; i++) {
+        if (number1[i] == number2[i]) {
+            continue;
+        }
+        else if (number1[i] > number2[i]) {
+            if (negative) {
+                return -1;
+            }
+            else {
+                return 1;
+            }
+        }
+        else {
+            if (negative) {
+                return 1;
+            }
+            else {
+                return -1;
+            }
+        }
+    }
+    return 0;
+}
+exports.compareTo = compareTo;
+
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var add_1 = __webpack_require__(0);
+function subtract(number1, number2) {
+    number1 = number1.toString();
+    number2 = number2.toString();
+    number2 = negate(number2);
+    return add_1.add(number1, number2);
+}
+exports.subtract = subtract;
+function negate(number) {
+    if (number[0] == '-') {
+        number = number.substr(1);
+    }
+    else {
+        number = '-' + number;
+    }
+    return number;
+}
+exports.negate = negate;
 
 
 /***/ })

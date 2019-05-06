@@ -70,4 +70,10 @@ describe('divide', function(){
     it('10.8 / 10000 = 0.00108', function(){
         expect(divide('10.8', '10000')).toBe('0.00108000');
     });
+    it('2.00 / 0.5 = 4.00', function(){
+        expect(divide('2.00', '0.5', 2)).toBe('4.00');
+    });
+    it('0.11005 / 0.1 = 1.1005', function(){
+        expect(divide('0.11005', '0.1', 4)).toBe('1.1005');
+    });
 })

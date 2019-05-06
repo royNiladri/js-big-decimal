@@ -9,6 +9,10 @@ export function divide(dividend, divisor, precission = 8) {
     dividend = dividend.toString();
     divisor = divisor.toString();
 
+    // remove trailing zeros in decimal ISSUE#18
+    dividend = dividend.replace(/(\.\d*?[1-9])0+$/g, "$1").replace(/\.0+$/, "");
+    divisor = divisor.replace(/(\.\d*?[1-9])0+$/g, "$1").replace(/\.0+$/, "");
+
     if (dividend == 0)
         return '0';
 
@@ -36,7 +40,7 @@ export function divide(dividend, divisor, precission = 8) {
                 dividend = trim(dividend + (new Array(pt_dvsr - pt_dvnd + 1)).join('0'));
             } else if (pt_dvsr < pt_dvnd) {
                 dividend = dividend.replace('.', '');
-                let loc = dividend.length - pt_dvsr + pt_dvsr;
+                let loc = dividend.length - pt_dvnd + pt_dvsr;
                 dividend = trim(dividend.substring(0, loc) + '.' + dividend.substring(loc));
             } else if (pt_dvsr == pt_dvnd) {
                 dividend = trim(dividend.replace('.', ''));

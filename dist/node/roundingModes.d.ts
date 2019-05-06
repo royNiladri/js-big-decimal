@@ -34,5 +34,5 @@ export declare enum RoundingModes {
     /**
      * Rounding mode to round away from zero.
      */
-    UP = 7,
+    UP = 7
 }
