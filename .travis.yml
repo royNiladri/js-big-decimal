@@ -1,9 +1,9 @@
 language: node_js
 node_js:
 - node
-cache:
-  directories:
-  - node_modules
-before_script:
-- npm install -g jasmine typescript
+branches:
+  only:
+  - master
+  - development
+  - /^v\d+\.\d+(\.\d+)?(-\S*)?$/
 script: npm run travis-test
