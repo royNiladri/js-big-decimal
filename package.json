@@ -1,6 +1,10 @@
 {
   "name": "js-big-decimal",
+<<<<<<< HEAD
   "version": "1.2.1",
+=======
+  "version": "1.2.2",
+>>>>>>> 29166ef1d7131fcf7f9cfb4e4288e333754369ac
   "description": "Work with large numbers on the client side. Round them off to any required precission.",
   "main": "dist/node/js-big-decimal",
   "types": "dist/node/big-decimal",
