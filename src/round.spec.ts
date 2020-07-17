@@ -270,6 +270,23 @@ describe('round', function () {
     });
 
 
+    it("should ceil(0) = 0", function () {
+        expect(ceil(0)).toBe('0');
+    })
+    it("should floor(0) = 0", function () {
+        expect(floor(0)).toBe('0');
+    })
+
+    it("should ceil(0.00001341) = 1", function () {
+        expect(ceil('0.00001341')).toBe('1');
+    })
+    it("should floor('0.00001341') = 0", function () {
+        expect(floor('0.00001341')).toBe('0');
+    })
+    it("should floor(0.00001341) = 0", function () {
+        expect(floor(0.00001341)).toBe('0');
+    })
+
     it("should ceil(13) = 13", function () {
         expect(ceil(13)).toBe('13');
     })

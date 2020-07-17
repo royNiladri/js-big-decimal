@@ -4,7 +4,7 @@ import { multiply } from './multiply';
 import { divide } from './divide'
 import { compareTo } from './compareTo';
 import { subtract, negate } from './subtract';
-import { RoundingModes as Modes } from './roundingModes';
+import { RoundingModes as Modes, RoundingModes } from './roundingModes';
 
 class bigDecimal {
 
@@ -41,7 +41,7 @@ class bigDecimal {
         return number;
     }
 
-    constructor(number: number | string = '0') {
+    constructor(number: (number | string) = '0') {
         this.value = bigDecimal.validate(number);
     }
 
@@ -96,26 +96,26 @@ class bigDecimal {
         number = bigDecimal.validate(number);
         if (number.indexOf('.') === -1)
             return number;
-        return bigDecimal.round(bigDecimal.subtract(number, 0.5));
+        return bigDecimal.round(number, 0, RoundingModes.FLOOR);
     }
 
     floor() {
         if (this.value.indexOf('.') === -1)
             return new bigDecimal(this.value);
-        return this.subtract(new bigDecimal(0.5)).round();
+        return new bigDecimal(this.value).round(0, RoundingModes.FLOOR);
     }
 
     static ceil(number) {
         number = bigDecimal.validate(number);
         if (number.indexOf('.') === -1)
             return number;
-        return bigDecimal.round(bigDecimal.add(number, 0.5));
+        return bigDecimal.round(number, 0, RoundingModes.CEILING);
     }
 
     ceil() {
         if (this.value.indexOf('.') === -1)
             return new bigDecimal(this.value);
-        return this.add(new bigDecimal(0.5)).round();
+        return new bigDecimal(this.value).round(0, RoundingModes.CEILING);
     }
 
 

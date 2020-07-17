@@ -456,23 +456,23 @@ var bigDecimal = /** @class */ (function () {
         number = bigDecimal.validate(number);
         if (number.indexOf('.') === -1)
             return number;
-        return bigDecimal.round(bigDecimal.subtract(number, 0.5));
+        return bigDecimal.round(number, 0, roundingModes_1.RoundingModes.FLOOR);
     };
     bigDecimal.prototype.floor = function () {
         if (this.value.indexOf('.') === -1)
             return new bigDecimal(this.value);
-        return this.subtract(new bigDecimal(0.5)).round();
+        return new bigDecimal(this.value).round(0, roundingModes_1.RoundingModes.FLOOR);
     };
     bigDecimal.ceil = function (number) {
         number = bigDecimal.validate(number);
         if (number.indexOf('.') === -1)
             return number;
-        return bigDecimal.round(bigDecimal.add(number, 0.5));
+        return bigDecimal.round(number, 0, roundingModes_1.RoundingModes.CEILING);
     };
     bigDecimal.prototype.ceil = function () {
         if (this.value.indexOf('.') === -1)
             return new bigDecimal(this.value);
-        return this.add(new bigDecimal(0.5)).round();
+        return new bigDecimal(this.value).round(0, roundingModes_1.RoundingModes.CEILING);
     };
     bigDecimal.add = function (number1, number2) {
         number1 = bigDecimal.validate(number1);

@@ -57,6 +57,8 @@ typings/
 # dotenv environment variables file
 .env
 
+.npmrc
+
 # dev deirectories and tools
 src/
 test/
