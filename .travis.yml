@@ -6,4 +6,6 @@ branches:
   - master
   - development
   - /^v\d+\.\d+(\.\d+)?(-\S*)?$/
+before_install:
+  - npm i -g npm
 script: npm run travis-test

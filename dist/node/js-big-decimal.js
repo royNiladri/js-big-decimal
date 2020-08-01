@@ -101,6 +101,7 @@ return /******/ (function(modules) { // webpackBootstrap
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.pad = exports.trim = exports.add = void 0;
 //function add {
 function add(number1, number2) {
     var _a;
@@ -211,6 +212,7 @@ function addCore(number1, number2) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.roundOff = void 0;
 var roundingModes_1 = __webpack_require__(2);
 /**
  *
@@ -326,6 +328,7 @@ function increment(part, c) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.RoundingModes = void 0;
 var RoundingModes;
 (function (RoundingModes) {
     /**
@@ -543,6 +546,7 @@ module.exports = bigDecimal;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.multiply = void 0;
 function multiply(number1, number2) {
     number1 = number1.toString();
     number2 = number2.toString();
@@ -652,6 +656,7 @@ function trailZero(number) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.divide = void 0;
 var add_1 = __webpack_require__(0);
 var round_1 = __webpack_require__(1);
 function divide(dividend, divisor, precission) {
@@ -746,6 +751,7 @@ exports.divide = divide;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.compareTo = void 0;
 var add_1 = __webpack_require__(0);
 function compareTo(number1, number2) {
     var _a;
@@ -798,6 +804,7 @@ exports.compareTo = compareTo;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.negate = exports.subtract = void 0;
 var add_1 = __webpack_require__(0);
 function subtract(number1, number2) {
     number1 = number1.toString();
