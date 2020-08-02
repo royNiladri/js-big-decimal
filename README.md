@@ -2,6 +2,7 @@
 
 [![Travis](https://img.shields.io/travis/royNiladri/js-big-decimal.svg?style=flat-square)](https://travis-ci.org/royNiladri/js-big-decimal)
 [![devDependencies Status](https://img.shields.io/david/dev/royNiladri/js-big-decimal.svg?style=flat-square)](https://david-dm.org/royNiladri/js-big-decimal?type=dev)
+![Coveralls](https://img.shields.io/coveralls/github/royNiladri/js-big-decimal/master)
 [![license](https://img.shields.io/github/license/royNiladri/js-big-decimal.svg?style=flat-square)](https://github.com/royNiladri/js-big-decimal/blob/master/LICENSE)
 [![npm](https://img.shields.io/npm/v/js-big-decimal.svg?style=flat-square)](https://www.npmjs.com/package/js-big-decimal)
 [![npm](https://img.shields.io/npm/dt/js-big-decimal.svg?style=flat-square)](https://www.npmjs.com/package/js-big-decimal)
@@ -61,7 +62,7 @@ console.log(bigDecimal.add('12', '45'));
 ## Operations
 
 ### bigDecimal(number)
-Create a new objet of type BigDecimal. Supports parameters of type `number` and `string`. If string passed cannot be parsed as a number error is thrown. It is recommended to use string as it circumvents the issue of precision with JS native `float` implementation and max limit for `integer`.
+Create a new object of type BigDecimal. Supports parameters of type `number` and `string`. If string passed cannot be parsed as a number error is thrown. It is recommended to use string as it circumvents the issue of precision with JS native `float` implementation and max limit for `integer`.
 
 It supports exponentiation, but only with integral exponent.
 
@@ -78,7 +79,7 @@ console.log(n2.getValue()); // "12345.6789"
 ```
 
 ### getPrettyValue(number, digits, separator)
-By default this returns the number in standard number format, comma after every three digts. Both arguments, `digits` - the number of digits (of the integral part) to group by, and `separator` - the character to mark the separation. Example of this can be to format a 16 digit number as _credit card_.
+By default this returns the number in standard number format, comma after every three digits. Both arguments, `digits` - the number of digits (of the integral part) to group by, and `separator` - the character to mark the separation. Example of this can be to format a 16 digit number as _credit card_.
 ```javascript
 var value = bigDecimal.getPrettyValue("12345.6789"); // value = "12,345.6789"
 ```
@@ -175,7 +176,7 @@ var value = n.negate(); // value = new bigDecimal('1234')
 ```
 
 ### add(augend, addend)
-Add two numbers. Pass in negative for substraction. Ensure parameters are `string`s.
+Add two numbers. Pass in negative for subtraction. Ensure parameters are `string`s.
 ```javascript
 var sum = bigDecimal.add("23.678", "67.34"); // sum = "91.018"
 var diff = bigDecimal.add("67.34", "-23.678"); // diff = "43.662"
