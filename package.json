@@ -8,7 +8,7 @@
     "test": "ts-node node_modules/jasmine/bin/jasmine --config=spec/jasmine.json --helper=spec/helper/*.js",
     "test:watch": "chokidar \"src/**/*.ts\" -c \"npm run travis-test\"",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
-    "travis-test": "nyc ts-node node_modules/jasmine/bin/jasmine --config=spec/jasmine.json",
+    "travis-test": "nyc -x \"**/*.spec.ts\" ts-node node_modules/jasmine/bin/jasmine --config=spec/jasmine.json",
     "test-random": "node test/randomtest.js",
     "compile": "tsc",
     "compile:watch": "chokidar \"src/**/*.ts\" -c \"npm run compile\"",
