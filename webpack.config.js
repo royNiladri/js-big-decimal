@@ -1,6 +1,6 @@
 const path = require("path");
 const webpack = require('webpack');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 
 
 var PROD = (process.env.NODE_ENV === "production");
@@ -21,11 +21,12 @@ module.exports = {
     },
     optimization: {
         minimizer: PROD ? [
-            new UglifyJsPlugin({
-                uglifyOptions: {
-                    ecma: 5,
+            new TerserPlugin({
+                terserOptions: {
+                    ecma: undefined,
                     warnings: false,
                     sourceMap: true,
+                    mangle: true,
                     keep_classnames: true
                 },
                 sourceMap: true
