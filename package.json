@@ -5,10 +5,10 @@
   "main": "dist/node/js-big-decimal",
   "types": "dist/node/big-decimal",
   "scripts": {
-    "test": "./node_modules/.bin/jasmine JASMINE_CONFIG_PATH=spec/jasmine.json --helper=spec/helper/*.js",
+    "test": "ts-node node_modules/jasmine/bin/jasmine --config=spec/jasmine.json --helper=spec/helper/*.js",
     "test:watch": "chokidar \"src/**/*.ts\" -c \"npm run travis-test\"",
-    "pretravis-test": "tsc",
-    "travis-test": "cross-env JASMINE_CONFIG_PATH=spec/jasmine.json jasmine-ts",
+    "coverage": "nyc npm run travis-test",
+    "travis-test": "ts-node node_modules/jasmine/bin/jasmine --config=spec/jasmine.json",
     "test-random": "node test/randomtest.js",
     "compile": "tsc",
     "compile:watch": "chokidar \"src/**/*.ts\" -c \"npm run compile\"",
@@ -56,13 +56,14 @@
     "gulp-run": "^1.7.1",
     "jasmine": "^3.6.1",
     "jasmine-spec-reporter": "^5.0.2",
-    "jasmine-ts": "^0.3.0",
+    "terser-webpack-plugin": "^3.0.8",
     "ts-node": "^8.10.2",
     "typescript": "^3.9.7",
-    "uglifyjs-webpack-plugin": "^2.2.0",
     "webpack": "^4.44.1",
     "webpack-cli": "^3.3.12"
   },
   "false": {},
-  "dependencies": {}
+  "dependencies": {
+    "nyc": "^15.1.0"
+  }
 }

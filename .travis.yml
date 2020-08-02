@@ -8,4 +8,4 @@ branches:
   - /^v\d+\.\d+(\.\d+)?(-\S*)?$/
 before_install:
   - npm i -g npm
-script: npm run travis-test
+script: npm run coverage
