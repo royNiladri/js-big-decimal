@@ -2,7 +2,7 @@
 
 [![Travis](https://img.shields.io/travis/royNiladri/js-big-decimal.svg?style=flat-square)](https://travis-ci.org/royNiladri/js-big-decimal)
 [![devDependencies Status](https://img.shields.io/david/dev/royNiladri/js-big-decimal.svg?style=flat-square)](https://david-dm.org/royNiladri/js-big-decimal?type=dev)
-![Coveralls](https://img.shields.io/coveralls/github/royNiladri/js-big-decimal/master)
+[![Coverage Status](https://img.shields.io/coveralls/github/royNiladri/js-big-decimal/master?style=flat-square)](https://coveralls.io/github/royNiladri/js-big-decimal?branch=master)
 [![license](https://img.shields.io/github/license/royNiladri/js-big-decimal.svg?style=flat-square)](https://github.com/royNiladri/js-big-decimal/blob/master/LICENSE)
 [![npm](https://img.shields.io/npm/v/js-big-decimal.svg?style=flat-square)](https://www.npmjs.com/package/js-big-decimal)
 [![npm](https://img.shields.io/npm/dt/js-big-decimal.svg?style=flat-square)](https://www.npmjs.com/package/js-big-decimal)
@@ -29,6 +29,7 @@ Work with large numbers on the client side with high precision.
   - [subtract(minuend, subtrahend)](#subtractminuend-subtrahend)
   - [multiply(multiplicand, multiplier)](#multiplymultiplicand-multiplier)
   - [divide(dividend, divisor, precision)](#dividedividend-divisor-precision)
+  - [modulus(dividend, divisor)](#modulusdividend-divisor)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -215,7 +216,7 @@ var product = n1.multiply(n2); // product = new bigDecimal('-0.000169')
 ### divide(dividend, divisor, precision)
 Divide two numbers. Pass arguments as `string` if calling on bigDecimal or pass an instance of bigDecimal if calling on object. `precision` is an optional parameter with default value of 8.
 ```javascript
-var quotient = bigDecimal.divide('45', '4', 2); // quotient = 11.25
+var quotient = bigDecimal.divide('45', '4', 2); // quotient = '11.25'
 ```
 Alternately, use the instance property. It returns the result as new `bigDecimal`.
 ```javascript
@@ -223,3 +224,16 @@ var n1 = new bigDecimal('45');
 var n2 = new bigDecimal('4');
 var quotient = n1.divide(n2); // quotient = new bigDecimal('11.25')
 ```
+
+### modulus(dividend, divisor)
+Get the modulus of two numbers, i.e., remainder when the dividend is divided by the divisor. Note that both divisor and dividend need to be integers.
+```javascript
+var remainder = bigDecimal.modulus('45', '4'); // remainder = '1'
+```
+Alternately, use the instance property. It returns the result as new `bigDecimal`.
+```javascript
+var n1 = new bigDecimal('45');
+var n2 = new bigDecimal('4');
+var remainder = n1.modulus(n2); // remainder = new bigDecimal('1')
+```
+Further, the result takes the sign of the dividend and the sign of the divisor is ignored. Note that this behaviour is the same as in Java and JavaScript.
