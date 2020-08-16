@@ -91,7 +91,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 3);
+/******/ 	return __webpack_require__(__webpack_require__.s = 6);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -376,12 +376,246 @@ var RoundingModes;
 
 "use strict";
 
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.multiply = void 0;
+function multiply(number1, number2) {
+    number1 = number1.toString();
+    number2 = number2.toString();
+    /*Filter numbers*/
+    var negative = 0;
+    if (number1[0] == '-') {
+        negative++;
+        number1 = number1.substr(1);
+    }
+    if (number2[0] == '-') {
+        negative++;
+        number2 = number2.substr(1);
+    }
+    number1 = trailZero(number1);
+    number2 = trailZero(number2);
+    var decimalLength1 = 0;
+    var decimalLength2 = 0;
+    if (number1.indexOf('.') != -1) {
+        decimalLength1 = number1.length - number1.indexOf('.') - 1;
+    }
+    if (number2.indexOf('.') != -1) {
+        decimalLength2 = number2.length - number2.indexOf('.') - 1;
+    }
+    var decimalLength = decimalLength1 + decimalLength2;
+    number1 = trailZero(number1.replace('.', ''));
+    number2 = trailZero(number2.replace('.', ''));
+    if (number1.length < number2.length) {
+        var temp = number1;
+        number1 = number2;
+        number2 = temp;
+    }
+    if (number2 == '0') {
+        return '0';
+    }
+    /*
+    * Core multiplication
+    */
+    var length = number2.length;
+    var carry = 0;
+    var positionVector = [];
+    var currentPosition = length - 1;
+    var result = "";
+    for (var i = 0; i < length; i++) {
+        positionVector[i] = number1.length - 1;
+    }
+    for (var i = 0; i < 2 * number1.length; i++) {
+        var sum = 0;
+        for (var j = number2.length - 1; j >= currentPosition && j >= 0; j--) {
+            if (positionVector[j] > -1 && positionVector[j] < number1.length) {
+                sum += parseInt(number1[positionVector[j]--]) * parseInt(number2[j]);
+            }
+        }
+        sum += carry;
+        carry = Math.floor(sum / 10);
+        result = sum % 10 + result;
+        currentPosition--;
+    }
+    /*
+    * Formatting result
+    */
+    result = trailZero(adjustDecimal(result, decimalLength));
+    if (negative == 1) {
+        result = '-' + result;
+    }
+    return result;
+}
+exports.multiply = multiply;
+/*
+* Add decimal point
+*/
+function adjustDecimal(number, decimal) {
+    if (decimal == 0)
+        return number;
+    else {
+        number = (decimal >= number.length) ? ((new Array(decimal - number.length + 1)).join('0') + number) : number;
+        return number.substr(0, number.length - decimal) + '.' + number.substr(number.length - decimal, decimal);
+    }
+}
+/*
+* Removes zero from front and back*/
+function trailZero(number) {
+    while (number[0] == '0') {
+        number = number.substr(1);
+    }
+    if (number.indexOf('.') != -1) {
+        while (number[number.length - 1] == '0') {
+            number = number.substr(0, number.length - 1);
+        }
+    }
+    if (number == "" || number == ".") {
+        number = '0';
+    }
+    else if (number[number.length - 1] == '.') {
+        number = number.substr(0, number.length - 1);
+    }
+    if (number[0] == '.') {
+        number = '0' + number;
+    }
+    return number;
+}
+
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.divide = void 0;
 var add_1 = __webpack_require__(0);
 var round_1 = __webpack_require__(1);
-var multiply_1 = __webpack_require__(4);
-var divide_1 = __webpack_require__(5);
-var compareTo_1 = __webpack_require__(6);
-var subtract_1 = __webpack_require__(7);
+function divide(dividend, divisor, precission) {
+    if (precission === void 0) { precission = 8; }
+    if (divisor == 0) {
+        throw new Error('Cannot divide by 0');
+    }
+    dividend = dividend.toString();
+    divisor = divisor.toString();
+    // remove trailing zeros in decimal ISSUE#18
+    dividend = dividend.replace(/(\.\d*?[1-9])0+$/g, "$1").replace(/\.0+$/, "");
+    divisor = divisor.replace(/(\.\d*?[1-9])0+$/g, "$1").replace(/\.0+$/, "");
+    if (dividend == 0)
+        return '0';
+    var neg = 0;
+    if (divisor[0] == '-') {
+        divisor = divisor.substring(1);
+        neg++;
+    }
+    if (dividend[0] == '-') {
+        dividend = dividend.substring(1);
+        neg++;
+    }
+    var pt_dvsr = divisor.indexOf('.') > 0 ? divisor.length - divisor.indexOf('.') - 1 : -1;
+    divisor = add_1.trim(divisor.replace('.', ''));
+    if (pt_dvsr >= 0) {
+        var pt_dvnd = dividend.indexOf('.') > 0 ? dividend.length - dividend.indexOf('.') - 1 : -1;
+        if (pt_dvnd == -1) {
+            dividend = add_1.trim(dividend + (new Array(pt_dvsr + 1)).join('0'));
+        }
+        else {
+            if (pt_dvsr > pt_dvnd) {
+                dividend = dividend.replace('.', '');
+                dividend = add_1.trim(dividend + (new Array(pt_dvsr - pt_dvnd + 1)).join('0'));
+            }
+            else if (pt_dvsr < pt_dvnd) {
+                dividend = dividend.replace('.', '');
+                var loc = dividend.length - pt_dvnd + pt_dvsr;
+                dividend = add_1.trim(dividend.substring(0, loc) + '.' + dividend.substring(loc));
+            }
+            else if (pt_dvsr == pt_dvnd) {
+                dividend = add_1.trim(dividend.replace('.', ''));
+            }
+        }
+    }
+    var prec = 0, dl = divisor.length, rem = '0', quotent = '';
+    var dvnd = (dividend.indexOf('.') > -1 && dividend.indexOf('.') < dl) ? dividend.substring(0, dl + 1) : dividend.substring(0, dl);
+    dividend = (dividend.indexOf('.') > -1 && dividend.indexOf('.') < dl) ? dividend.substring(dl + 1) : dividend.substring(dl);
+    if (dvnd.indexOf('.') > -1) {
+        var shift = dvnd.length - dvnd.indexOf('.') - 1;
+        dvnd = dvnd.replace('.', '');
+        if (dl > dvnd.length) {
+            shift += dl - dvnd.length;
+            dvnd = dvnd + (new Array(dl - dvnd.length + 1)).join('0');
+        }
+        prec = shift;
+        quotent = '0.' + (new Array(shift)).join('0');
+    }
+    precission = precission + 2;
+    while (prec <= precission) {
+        var qt = 0;
+        while (parseInt(dvnd) >= parseInt(divisor)) {
+            dvnd = add_1.add(dvnd, '-' + divisor);
+            qt++;
+        }
+        quotent += qt;
+        if (!dividend) {
+            if (!prec)
+                quotent += '.';
+            prec++;
+            dvnd = dvnd + '0';
+        }
+        else {
+            if (dividend[0] == '.') {
+                quotent += '.';
+                prec++;
+                dividend = dividend.substring(1);
+            }
+            dvnd = dvnd + dividend.substring(0, 1);
+            dividend = dividend.substring(1);
+        }
+    }
+    return ((neg == 1) ? '-' : '') + add_1.trim(round_1.roundOff(quotent, precission - 2));
+}
+exports.divide = divide;
+
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.negate = exports.subtract = void 0;
+var add_1 = __webpack_require__(0);
+function subtract(number1, number2) {
+    number1 = number1.toString();
+    number2 = number2.toString();
+    number2 = negate(number2);
+    return add_1.add(number1, number2);
+}
+exports.subtract = subtract;
+function negate(number) {
+    if (number[0] == '-') {
+        number = number.substr(1);
+    }
+    else {
+        number = '-' + number;
+    }
+    return number;
+}
+exports.negate = negate;
+
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var add_1 = __webpack_require__(0);
+var round_1 = __webpack_require__(1);
+var multiply_1 = __webpack_require__(3);
+var divide_1 = __webpack_require__(4);
+var modulus_1 = __webpack_require__(7);
+var compareTo_1 = __webpack_require__(8);
+var subtract_1 = __webpack_require__(5);
 var roundingModes_1 = __webpack_require__(2);
 var bigDecimal = /** @class */ (function () {
     function bigDecimal(number) {
@@ -518,6 +752,14 @@ var bigDecimal = /** @class */ (function () {
     bigDecimal.prototype.divide = function (number, precision) {
         return new bigDecimal(divide_1.divide(this.value, number.getValue(), precision));
     };
+    bigDecimal.modulus = function (number1, number2) {
+        number1 = bigDecimal.validate(number1);
+        number2 = bigDecimal.validate(number2);
+        return modulus_1.modulus(number1, number2);
+    };
+    bigDecimal.prototype.modulus = function (number) {
+        return new bigDecimal(modulus_1.modulus(this.value, number.getValue()));
+    };
     bigDecimal.compareTo = function (number1, number2) {
         number1 = bigDecimal.validate(number1);
         number2 = bigDecimal.validate(number2);
@@ -540,212 +782,47 @@ module.exports = bigDecimal;
 
 
 /***/ }),
-/* 4 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.multiply = void 0;
-function multiply(number1, number2) {
-    number1 = number1.toString();
-    number2 = number2.toString();
-    /*Filter numbers*/
-    var negative = 0;
-    if (number1[0] == '-') {
-        negative++;
-        number1 = number1.substr(1);
-    }
-    if (number2[0] == '-') {
-        negative++;
-        number2 = number2.substr(1);
-    }
-    number1 = trailZero(number1);
-    number2 = trailZero(number2);
-    var decimalLength1 = 0;
-    var decimalLength2 = 0;
-    if (number1.indexOf('.') != -1) {
-        decimalLength1 = number1.length - number1.indexOf('.') - 1;
-    }
-    if (number2.indexOf('.') != -1) {
-        decimalLength2 = number2.length - number2.indexOf('.') - 1;
-    }
-    var decimalLength = decimalLength1 + decimalLength2;
-    number1 = trailZero(number1.replace('.', ''));
-    number2 = trailZero(number2.replace('.', ''));
-    if (number1.length < number2.length) {
-        var temp = number1;
-        number1 = number2;
-        number2 = temp;
-    }
-    if (number2 == '0') {
-        return '0';
-    }
-    /*
-    * Core multiplication
-    */
-    var length = number2.length;
-    var carry = 0;
-    var positionVector = [];
-    var currentPosition = length - 1;
-    var result = "";
-    for (var i = 0; i < length; i++) {
-        positionVector[i] = number1.length - 1;
-    }
-    for (var i = 0; i < 2 * number1.length; i++) {
-        var sum = 0;
-        for (var j = number2.length - 1; j >= currentPosition && j >= 0; j--) {
-            if (positionVector[j] > -1 && positionVector[j] < number1.length) {
-                sum += parseInt(number1[positionVector[j]--]) * parseInt(number2[j]);
-            }
-        }
-        sum += carry;
-        carry = Math.floor(sum / 10);
-        result = sum % 10 + result;
-        currentPosition--;
-    }
-    /*
-    * Formatting result
-    */
-    result = trailZero(adjustDecimal(result, decimalLength));
-    if (negative == 1) {
-        result = '-' + result;
-    }
-    return result;
-}
-exports.multiply = multiply;
-/*
-* Add decimal point
-*/
-function adjustDecimal(number, decimal) {
-    if (decimal == 0)
-        return number;
-    else {
-        number = (decimal >= number.length) ? ((new Array(decimal - number.length + 1)).join('0') + number) : number;
-        return number.substr(0, number.length - decimal) + '.' + number.substr(number.length - decimal, decimal);
-    }
-}
-/*
-* Removes zero from front and back*/
-function trailZero(number) {
-    while (number[0] == '0') {
-        number = number.substr(1);
-    }
-    if (number.indexOf('.') != -1) {
-        while (number[number.length - 1] == '0') {
-            number = number.substr(0, number.length - 1);
-        }
-    }
-    if (number == "" || number == ".") {
-        number = '0';
-    }
-    else if (number[number.length - 1] == '.') {
-        number = number.substr(0, number.length - 1);
-    }
-    if (number[0] == '.') {
-        number = '0' + number;
-    }
-    return number;
-}
-
-
-/***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.divide = void 0;
-var add_1 = __webpack_require__(0);
+exports.modulus = void 0;
+var divide_1 = __webpack_require__(4);
 var round_1 = __webpack_require__(1);
-function divide(dividend, divisor, precission) {
-    if (precission === void 0) { precission = 8; }
+var multiply_1 = __webpack_require__(3);
+var subtract_1 = __webpack_require__(5);
+var roundingModes_1 = __webpack_require__(2);
+function modulus(dividend, divisor) {
     if (divisor == 0) {
         throw new Error('Cannot divide by 0');
     }
     dividend = dividend.toString();
     divisor = divisor.toString();
-    // remove trailing zeros in decimal ISSUE#18
-    dividend = dividend.replace(/(\.\d*?[1-9])0+$/g, "$1").replace(/\.0+$/, "");
-    divisor = divisor.replace(/(\.\d*?[1-9])0+$/g, "$1").replace(/\.0+$/, "");
-    if (dividend == 0)
-        return '0';
-    var neg = 0;
-    if (divisor[0] == '-') {
-        divisor = divisor.substring(1);
-        neg++;
-    }
+    validate(dividend);
+    validate(divisor);
+    var sign = '';
     if (dividend[0] == '-') {
-        dividend = dividend.substring(1);
-        neg++;
+        sign = '-';
+        dividend = dividend.substr(1);
     }
-    var pt_dvsr = divisor.indexOf('.') > 0 ? divisor.length - divisor.indexOf('.') - 1 : -1;
-    divisor = add_1.trim(divisor.replace('.', ''));
-    if (pt_dvsr >= 0) {
-        var pt_dvnd = dividend.indexOf('.') > 0 ? dividend.length - dividend.indexOf('.') - 1 : -1;
-        if (pt_dvnd == -1) {
-            dividend = add_1.trim(dividend + (new Array(pt_dvsr + 1)).join('0'));
-        }
-        else {
-            if (pt_dvsr > pt_dvnd) {
-                dividend = dividend.replace('.', '');
-                dividend = add_1.trim(dividend + (new Array(pt_dvsr - pt_dvnd + 1)).join('0'));
-            }
-            else if (pt_dvsr < pt_dvnd) {
-                dividend = dividend.replace('.', '');
-                var loc = dividend.length - pt_dvnd + pt_dvsr;
-                dividend = add_1.trim(dividend.substring(0, loc) + '.' + dividend.substring(loc));
-            }
-            else if (pt_dvsr == pt_dvnd) {
-                dividend = add_1.trim(dividend.replace('.', ''));
-            }
-        }
+    if (divisor[0] == '-') {
+        divisor = divisor.substr(1);
     }
-    var prec = 0, dl = divisor.length, rem = '0', quotent = '';
-    var dvnd = (dividend.indexOf('.') > -1 && dividend.indexOf('.') < dl) ? dividend.substring(0, dl + 1) : dividend.substring(0, dl);
-    dividend = (dividend.indexOf('.') > -1 && dividend.indexOf('.') < dl) ? dividend.substring(dl + 1) : dividend.substring(dl);
-    if (dvnd.indexOf('.') > -1) {
-        var shift = dvnd.length - dvnd.indexOf('.') - 1;
-        dvnd = dvnd.replace('.', '');
-        if (dl > dvnd.length) {
-            shift += dl - dvnd.length;
-            dvnd = dvnd + (new Array(dl - dvnd.length + 1)).join('0');
-        }
-        prec = shift;
-        quotent = '0.' + (new Array(shift)).join('0');
-    }
-    precission = precission + 2;
-    while (prec <= precission) {
-        var qt = 0;
-        while (parseInt(dvnd) >= parseInt(divisor)) {
-            dvnd = add_1.add(dvnd, '-' + divisor);
-            qt++;
-        }
-        quotent += qt;
-        if (!dividend) {
-            if (!prec)
-                quotent += '.';
-            prec++;
-            dvnd = dvnd + '0';
-        }
-        else {
-            if (dividend[0] == '.') {
-                quotent += '.';
-                prec++;
-                dividend = dividend.substring(1);
-            }
-            dvnd = dvnd + dividend.substring(0, 1);
-            dividend = dividend.substring(1);
-        }
-    }
-    return ((neg == 1) ? '-' : '') + add_1.trim(round_1.roundOff(quotent, precission - 2));
+    var result = subtract_1.subtract(dividend, multiply_1.multiply(divisor, round_1.roundOff(divide_1.divide(dividend, divisor), 0, roundingModes_1.RoundingModes.FLOOR)));
+    return sign + result;
 }
-exports.divide = divide;
+exports.modulus = modulus;
+function validate(oparand) {
+    if (oparand.indexOf('.') != -1) {
+        throw new Error('Modulus of non-integers not supported');
+    }
+}
 
 
 /***/ }),
-/* 6 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -795,34 +872,6 @@ function compareTo(number1, number2) {
     return 0;
 }
 exports.compareTo = compareTo;
-
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.negate = exports.subtract = void 0;
-var add_1 = __webpack_require__(0);
-function subtract(number1, number2) {
-    number1 = number1.toString();
-    number2 = number2.toString();
-    number2 = negate(number2);
-    return add_1.add(number1, number2);
-}
-exports.subtract = subtract;
-function negate(number) {
-    if (number[0] == '-') {
-        number = number.substr(1);
-    }
-    else {
-        number = '-' + number;
-    }
-    return number;
-}
-exports.negate = negate;
 
 
 /***/ })

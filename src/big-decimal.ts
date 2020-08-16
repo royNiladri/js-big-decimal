@@ -1,7 +1,8 @@
 import { add, trim } from './add';
 import { roundOff } from './round';
 import { multiply } from './multiply';
-import { divide } from './divide'
+import { divide } from './divide';
+import { modulus } from './modulus';
 import { compareTo } from './compareTo';
 import { subtract, negate } from './subtract';
 import { RoundingModes as Modes, RoundingModes } from './roundingModes';
@@ -157,6 +158,16 @@ class bigDecimal {
 
     divide(number: bigDecimal, precision) {
         return new bigDecimal(divide(this.value, number.getValue(), precision));
+    }
+
+    static modulus(number1, number2) {
+        number1 = bigDecimal.validate(number1);
+        number2 = bigDecimal.validate(number2);
+        return modulus(number1, number2);
+    }
+
+    modulus(number: bigDecimal) {
+        return new bigDecimal(modulus(this.value, number.getValue()));
     }
 
     static compareTo(number1, number2) {
