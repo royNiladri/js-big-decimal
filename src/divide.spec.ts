@@ -1,4 +1,4 @@
-var divide = require('./big-decimal').divide;
+const divide = require('./big-decimal').divide;
 
 describe('divide', function(){
     it('test failing scenario', function(){
@@ -76,4 +76,10 @@ describe('divide', function(){
     it('0.11005 / 0.1 = 1.1005', function(){
         expect(divide('0.11005', '0.1', 4)).toBe('1.1005');
     });
+    it('123456789.123456 / .0123456 = 10000063919.40902022', function(){
+        expect(divide('123456789.123456', '.0123456')).toBe('10000063919.40902022');
+    });
+    it('.102 / .0383292 = 2.66115651', function(){
+        expect(divide('.102', '.0383292',8)).toBe('2.66115651');
+    }); 
 })

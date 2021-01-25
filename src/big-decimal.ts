@@ -39,6 +39,12 @@ class bigDecimal {
             }
         }
 
+        //handle missing leading zero
+        if(number.startsWith('.'))
+            number = '0'+number;
+        else if(number.startsWith('-.'))
+            number = '-0'+number.substr(1);
+
         return number;
     }
 

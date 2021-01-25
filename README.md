@@ -1,5 +1,7 @@
 # JS Big Decimal
 
+[![Rate on Openbase](https://badges.openbase.io/js/rating/js-big-decimal.svg)](https://openbase.io/js/js-big-decimal?utm_source=embedded&utm_medium=badge&utm_campaign=rate-badge)
+
 [![Travis](https://img.shields.io/travis/royNiladri/js-big-decimal.svg?style=flat-square)](https://travis-ci.org/royNiladri/js-big-decimal)
 [![devDependencies Status](https://img.shields.io/david/dev/royNiladri/js-big-decimal.svg?style=flat-square)](https://david-dm.org/royNiladri/js-big-decimal?type=dev)
 [![Coverage Status](https://img.shields.io/coveralls/github/royNiladri/js-big-decimal/master?style=flat-square)](https://coveralls.io/github/royNiladri/js-big-decimal?branch=master)
@@ -247,7 +249,7 @@ Further, the result takes the sign of the dividend and the sign of the divisor i
 # Support the developers :heart: :star: :money_with_wings:
 If this library helps you in your organization, you can show some love by giving the repo a star or support by making a nominal monetary contribution.
 
-| <img src="https://github.githubassets.com/images/icons/emoji/unicode/1f375.png" width="45px" alt="Tea" style="vertical-align: middle"> <br> $ 1.99  <br> <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=Z55C4Y6K6AYWJ&os0=Tea"><img src="https://www.paypalobjects.com/en_GB/i/btn/btn_paynowCC_LG.gif" alt="Paypal Pay Now"/></a> | <img src="https://github.githubassets.com/images/icons/emoji/unicode/2615.png" width="45px" alt="Coffee" style="vertical-align: middle"> <br> $ 2.99  <br> <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=Z55C4Y6K6AYWJ&os0=Coffee"><img src="https://www.paypalobjects.com/en_GB/i/btn/btn_paynowCC_LG.gif" alt="Paypal Pay Now"/></a> | <img src="https://github.githubassets.com/images/icons/emoji/unicode/1f354.png" width="45px" alt="Burger" style="vertical-align: middle"> <br> $ 4.49  <br> <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=Z55C4Y6K6AYWJ&os0=Burger"><img src="https://www.paypalobjects.com/en_GB/i/btn/btn_paynowCC_LG.gif" alt="Paypal Pay Now"/></a> | <img src="https://github.githubassets.com/images/icons/emoji/unicode/1f355.png" width="45px" alt="Dinner" style="vertical-align: middle"> <br> $ 9.99  <br> <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=Z55C4Y6K6AYWJ&os0=Dinner"><img src="https://www.paypalobjects.com/en_GB/i/btn/btn_paynowCC_LG.gif" alt="Paypal Pay Now"/></a> | 
-|--|--|--|--|
+<a href="https://www.buymeacoffee.com/royniladri" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-blue.png" alt="Buy Me A Coffee" width="170"></a>
+
 
                
