@@ -63,6 +63,11 @@ For `web`, when used with script tag, a variable on `Window` object is created.
 console.log(bigDecimal.add('12', '45'));
 ```
 
+If you are only using it on the web and do not wish to get the whole npm package, you can download the file from unpkg as follows:
+```html
+<script src="https://unpkg.com/js-big-decimal@1.3.1/dist/web/js-big-decimal.min.js"></script>
+```
+
 ## Operations
 
 ### bigDecimal(number)
