@@ -22,6 +22,17 @@ describe('BIG-DECIMAL', function () {
             }
         });
 
+        describe('missing leadinh zero', function() {
+            it('should transform .123 to 0.123', function() {
+                var n = new bigDecimal('.123');
+                expect(n.getValue()).toBe('0.123')
+            })
+            it('should transform -.123 to -0.123', function() {
+                var n = new bigDecimal('-.123');
+                expect(n.getValue()).toBe('-0.123')
+            })
+        })
+
         describe('exponentiation', function () {
             it('should transform 13.45e-5 to 0.0001345', function () {
                 var n = new bigDecimal('13.45e-5');
