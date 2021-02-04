@@ -266,7 +266,7 @@ function roundOff(input, n, mode) {
     if (rem && greaterThanFive(rem, partDec, neg, mode)) {
         partDec = increment(partDec);
         if (partDec.length > n) {
-            return increment(partInt, parseInt(partDec[0])) + '.' + partDec.substring(1);
+            return (neg ? '-' : '') + increment(partInt, parseInt(partDec[0])) + '.' + partDec.substring(1);
         }
     }
     return (neg ? '-' : '') + partInt + '.' + partDec;
@@ -649,6 +649,11 @@ var bigDecimal = /** @class */ (function () {
                 number = '0.' + (new Array(-exponent + 1)).join('0') + mantisa;
             }
         }
+        //handle missing leading zero
+        if (number.startsWith('.'))
+            number = '0' + number;
+        else if (number.startsWith('-.'))
+            number = '-0' + number.substr(1);
         return number;
     };
     bigDecimal.prototype.getValue = function () {

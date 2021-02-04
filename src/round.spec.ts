@@ -195,6 +195,9 @@ describe('round', function () {
         it("should round(-3.5, 0, HALF_UP) = -4", function () {
             expect(roundOff('-3.5', 0, RoundingModes.HALF_UP)).toBe('-4');
         });
+        it("should round(-597.998, 2, HALF_UP) = -598.00", function () {
+            expect(roundOff('-597.998', 2, RoundingModes.HALF_UP)).toBe('-598.00');
+        });
     });
 
     describe("test rounding mode HALF_DOWN", function () {
