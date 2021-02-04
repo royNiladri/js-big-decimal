@@ -60,7 +60,7 @@ export function roundOff(input: number | string, n: number = 0, mode=RoundingMod
     if (rem && greaterThanFive(rem, partDec, neg, mode)) {
         partDec = increment(partDec);
         if (partDec.length > n) {
-            return increment(partInt, parseInt(partDec[0])) + '.' + partDec.substring(1);
+            return (neg ? '-' : '') + increment(partInt, parseInt(partDec[0])) + '.' + partDec.substring(1);
         }
     }
     return (neg ? '-' : '') + partInt + '.' + partDec;
