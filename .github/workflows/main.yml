@@ -38,5 +38,6 @@ jobs:
       
       - name: Test
         run: |
+          npm run compile
           npm run travis-test
           npm run coverage 
