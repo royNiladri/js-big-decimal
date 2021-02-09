@@ -34,10 +34,11 @@ jobs:
         run: npm i
       
       - name: Build
-        run: npm run dist
+        run: |
+          npm run compile
+          npm run dist
       
       - name: Test
         run: |
-          npm run compile
           npm run travis-test
           npm run coverage 
