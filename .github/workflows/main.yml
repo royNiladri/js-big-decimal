@@ -39,6 +39,8 @@ jobs:
           npm run dist
       
       - name: Test
+        with:
+          github-token: ${{ github.token }}
         run: |
           npm run travis-test
           npm run coverage 
