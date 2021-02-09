@@ -39,8 +39,11 @@ jobs:
           npm run dist
       
       - name: Test
-        with:
-          github-token: ${{ github.token }}
         run: |
           npm run travis-test
-          npm run coverage 
+          npm run coverage
+        
+      - name: Publish to coveralls.io
+        uses: coverallsapp/github-action@v1.1.2
+        with:
+          github-token: ${{ github.token }}
