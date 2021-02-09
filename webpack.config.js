@@ -29,7 +29,6 @@ module.exports = {
                     mangle: true,
                     keep_classnames: true
                 },
-                sourceMap: true
             })
         ] : []
     }
