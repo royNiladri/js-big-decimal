@@ -83,13 +83,17 @@ describe('BIG-DECIMAL', function () {
                 var n = new bigDecimal('0.1345e1');
                 expect(n.getValue()).toBe('1.345');
             });
-            it('should transform 0.1345e0 to 0.1345', function () {
-                var n = new bigDecimal('0.1345e0');
-                expect(n.getValue()).toBe('0.1345');
+            it('should transform 2e-2 to 0.02', function () {
+                var n = new bigDecimal('2e-2');
+                expect(n.getValue()).toBe('0.02');
             });
             it('should transform 0.1345e-1 to 0.01345', function () {
                 var n = new bigDecimal('0.1345e-1');
                 expect(n.getValue()).toBe('0.01345');
+            });
+            it('should transform 0.1345e-2 to 0.001345', function () {
+                var n = new bigDecimal('0.1345e-2');
+                expect(n.getValue()).toBe('0.001345');
             });
             it('should transform 0.1345e-2 to 0.001345', function () {
                 var n = new bigDecimal('0.1345e-2');
