@@ -23,8 +23,8 @@ declare class bigDecimal {
     divide(number: bigDecimal, precision: any): bigDecimal;
     static modulus(number1: any, number2: any): string;
     modulus(number: bigDecimal): bigDecimal;
-    static compareTo(number1: any, number2: any): 0 | 1 | -1;
-    compareTo(number: bigDecimal): 0 | 1 | -1;
+    static compareTo(number1: any, number2: any): 1 | 0 | -1;
+    compareTo(number: bigDecimal): 1 | 0 | -1;
     static negate(number: any): string;
     negate(): bigDecimal;
 }
