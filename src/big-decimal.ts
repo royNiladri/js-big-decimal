@@ -6,6 +6,7 @@ import { modulus } from './modulus';
 import { compareTo } from './compareTo';
 import { subtract, negate } from './subtract';
 import { RoundingModes as Modes, RoundingModes } from './roundingModes';
+import { off } from 'process';
 
 class bigDecimal {
 
@@ -23,27 +24,32 @@ class bigDecimal {
         } else
             number = '0';
 
+        //handle missing leading zero
+        if (number.startsWith('.'))
+            number = '0' + number;
+        else if (number.startsWith('-.'))
+            number = '-0' + number.substr(1);
+
         //handle exponentiation
         if (/e/i.test(number)) {
             let [mantisa, exponent] = number.split(/[eE]/);
             mantisa = trim(mantisa);
-            exponent = parseInt(exponent) + mantisa.indexOf('.');
-            mantisa = mantisa.replace('.', '');
+            let offset = 0;
+            if (mantisa.indexOf('.') >= 0) {
+                exponent = parseInt(exponent) + mantisa.indexOf('.');
+                mantisa = mantisa.replace('.', '');
+                offset = 1;
+            }
+
             if (mantisa.length < exponent) {
                 number = mantisa + (new Array(exponent - mantisa.length + 1)).join('0');
             } else if (mantisa.length >= exponent && exponent > 0) {
                 number = trim(mantisa.substring(0, exponent)) +
                     ((mantisa.length > exponent) ? ('.' + mantisa.substring(exponent)) : '');
             } else {
-                number = '0.' + (new Array(-exponent + 1)).join('0') + mantisa;
+                number = '0.' + (new Array(-exponent+offset)).join('0') + mantisa;
             }
         }
-
-        //handle missing leading zero
-        if(number.startsWith('.'))
-            number = '0'+number;
-        else if(number.startsWith('-.'))
-            number = '-0'+number.substr(1);
 
         return number;
     }
@@ -87,6 +93,7 @@ class bigDecimal {
 
     static round(number, precision = 0, mode = Modes.HALF_EVEN) {
         number = bigDecimal.validate(number);
+        // console.log(number)
         if (isNaN(precision))
             throw Error("Precision is not a number: " + precision);
         return roundOff(number, precision, mode);
