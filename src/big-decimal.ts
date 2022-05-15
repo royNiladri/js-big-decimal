@@ -34,20 +34,27 @@ class bigDecimal {
         if (/e/i.test(number)) {
             let [mantisa, exponent] = number.split(/[eE]/);
             mantisa = trim(mantisa);
-            let offset = 0;
+
+            let sign = '';
+            if (mantisa[0] == '-') {
+                sign = '-';
+                mantisa = mantisa.substring(1);
+            }
+
             if (mantisa.indexOf('.') >= 0) {
                 exponent = parseInt(exponent) + mantisa.indexOf('.');
                 mantisa = mantisa.replace('.', '');
-                offset = 1;
+            } else {
+                exponent = parseInt(exponent) + mantisa.length;
             }
 
             if (mantisa.length < exponent) {
-                number = mantisa + (new Array(exponent - mantisa.length + 1)).join('0');
+                number = sign + mantisa + (new Array(exponent - mantisa.length + 1)).join('0');
             } else if (mantisa.length >= exponent && exponent > 0) {
-                number = trim(mantisa.substring(0, exponent)) +
+                number = sign + trim(mantisa.substring(0, exponent)) +
                     ((mantisa.length > exponent) ? ('.' + mantisa.substring(exponent)) : '');
             } else {
-                number = '0.' + (new Array(-exponent+offset)).join('0') + mantisa;
+                number = sign + '0.' + (new Array(-exponent + 1)).join('0') + mantisa;
             }
         }
 
