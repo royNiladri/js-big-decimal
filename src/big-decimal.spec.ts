@@ -120,6 +120,83 @@ describe('BIG-DECIMAL', function () {
                 var n = new bigDecimal('0.0134e-2');
                 expect(n.getValue()).toBe('0.000134');
             });
+            
+            it('should transform .1e0 to 0.1', function(){
+                var n = new bigDecimal('.1e0');
+                expect(n.getValue()).toBe('0.1');
+            });
+
+            it('should transform .001e1 to 0.01', function(){
+                var n = new bigDecimal('.001e1');
+                expect(n.getValue()).toBe('0.01');
+            });
+
+            it('should transform .001e2 to 0.1', function(){
+                var n = new bigDecimal('.001e2');
+                expect(n.getValue()).toBe('0.1');
+            });
+
+
+            it('should transform 1e0 to 1', function(){
+                var n = new bigDecimal('1e0');
+                expect(n.getValue()).toBe('1');
+            });
+            it('should transform 1e1 to 10', function(){
+                var n = new bigDecimal('1e1');
+                expect(n.getValue()).toBe('10');
+            });
+
+            it('should transform 10e0 to 10', function(){
+                var n = new bigDecimal('10e0');
+                expect(n.getValue()).toBe('10');
+            });
+            it('should transform 10e1 to 100', function(){
+                var n = new bigDecimal('10e1');
+                expect(n.getValue()).toBe('100');
+            });
+            it('should transform 10e-1 to 1.0', function(){
+                var n = new bigDecimal('10e-1');
+                expect(n.getValue()).toBe('1.0');
+            });
+            it('should transform 11e-1 to 1.1', function(){
+                var n = new bigDecimal('11e-1');
+                expect(n.getValue()).toBe('1.1');
+            });
+
+            it('should transform +1e0 to 1', function(){
+                var n = new bigDecimal('+1e0');
+                expect(n.getValue()).toBe('1');
+            });
+
+            it('should transform 10.0e0 to 10.0', function(){
+                var n = new bigDecimal('10.0e0');
+                expect(n.getValue()).toBe('10.0');
+            });
+            it('should transform 10.0e1 to 100', function(){
+                var n = new bigDecimal('10.0e1');
+                expect(n.getValue()).toBe('100');
+            });
+            it('should transform 10.0e-1 to 1.00', function(){
+                var n = new bigDecimal('10.0e-1');
+                expect(n.getValue()).toBe('1.00');
+            });
+            it('should transform -10.0e-1 to 1.00', function(){
+                var n = new bigDecimal('-10.0e-1');
+                expect(n.getValue()).toBe('-1.00');
+            });
+            
+            it('should transform -1e0 to -1', function(){
+                var n = new bigDecimal('-1e0');
+                expect(n.getValue()).toBe('-1');
+            });
+            it('should transform -1e1 to -10', function(){
+                var n = new bigDecimal('-1e1');
+                expect(n.getValue()).toBe('-10');
+            });
+            it('should transform -0.0134e-2 to -0.000134', function () {
+                var n = new bigDecimal('-0.0134e-2');
+                expect(n.getValue()).toBe('-0.000134');
+            });
         });
     });
 
