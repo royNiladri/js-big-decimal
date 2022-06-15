@@ -8,7 +8,7 @@ var WEB = (process.env.USE_ENV === "web");
 
 module.exports = {
     entry: "./lib/big-decimal",
-    target: WEB ? "web" : "node",
+    target: [WEB ? "web" : "node", "es5"],
     output: {
         filename: "bundle.js",
         path: WEB ? path.resolve(__dirname, "dist/web") : path.resolve(__dirname, "dist/node"),
