@@ -1,6 +1,6 @@
 # JS Big Decimal
 
-[![Rate on Openbase](https://badges.openbase.io/js/rating/js-big-decimal.svg)](https://openbase.io/js/js-big-decimal?utm_source=embedded&utm_medium=badge&utm_campaign=rate-badge)
+[![Rate on Openbase](https://badges.openbase.io/js/rating/js-big-decimal.svg)](https://openbase.io/js/js-big-decimal?utm_source=embedded&utm_medium=badge&utm_campaign=rate-badge) [![kandi X-Ray](https://kandi.openweaver.com/badges/xray.svg)](https://kandi.openweaver.com/typescript/royNiladri/js-big-decimal)
 
 [![Travis](https://img.shields.io/travis/royNiladri/js-big-decimal.svg?style=flat-square)](https://travis-ci.org/royNiladri/js-big-decimal)
 [![devDependencies Status](https://img.shields.io/david/dev/royNiladri/js-big-decimal.svg?style=flat-square)](https://david-dm.org/royNiladri/js-big-decimal?type=dev)
