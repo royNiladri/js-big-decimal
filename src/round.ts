@@ -5,12 +5,12 @@ import { RoundingModes } from './roundingModes';
  * @param n precision
  * @param mode Rounding Mode
  */
-export function roundOff(input: number | string, n: number = 0, mode=RoundingModes.HALF_EVEN) {
+export function roundOff(input: number | string | bigint, n: number = 0, mode=RoundingModes.HALF_EVEN) {
     if (mode === RoundingModes.UNNECESSARY) {
         throw new Error("UNNECESSARY Rounding Mode has not yet been implemented");
     }
 
-    if (typeof (input) == 'number')
+    if (typeof (input) == 'number' || typeof (input) == 'bigint')
         input = input.toString();
 
     let neg = false;

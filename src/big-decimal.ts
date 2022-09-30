@@ -6,7 +6,6 @@ import { modulus } from './modulus';
 import { compareTo } from './compareTo';
 import { subtract, negate } from './subtract';
 import { RoundingModes as Modes, RoundingModes } from './roundingModes';
-import { off } from 'process';
 
 class bigDecimal {
 
@@ -61,7 +60,7 @@ class bigDecimal {
         return number;
     }
 
-    constructor(number: (number | string) = '0') {
+    constructor(number: (number | string | bigint) = '0') {
         this.value = bigDecimal.validate(number);
     }
 
