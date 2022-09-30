@@ -43,10 +43,10 @@ describe('round', function () {
     it("should round('1e-8',10) = 0.00000001", function() {
         expect(roundOff(0.00000001,10)).toBe('0.0000000100')
     })
-    fit("should round small negative to zero", function() {
+    it("should round small negative to zero", function() {
         expect(roundOff(-0.00000001,0)).toBe('0');
     })
-    fit("should round small negative to zero", function() {
+    it("should round small negative to zero", function() {
         expect(roundOff(-0.00000001,2)).toBe('0.00');
     })
 
