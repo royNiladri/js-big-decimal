@@ -3,7 +3,7 @@ declare class bigDecimal {
     private value;
     static RoundingModes: typeof Modes;
     private static validate;
-    constructor(number?: (number | string));
+    constructor(number?: (number | string | bigint));
     getValue(): string;
     static getPrettyValue(number: any, digits: any, separator: any): string;
     getPrettyValue(digits: any, separator: any): string;
@@ -23,8 +23,8 @@ declare class bigDecimal {
     divide(number: bigDecimal, precision: any): bigDecimal;
     static modulus(number1: any, number2: any): string;
     modulus(number: bigDecimal): bigDecimal;
-    static compareTo(number1: any, number2: any): 1 | 0 | -1;
-    compareTo(number: bigDecimal): 1 | 0 | -1;
+    static compareTo(number1: any, number2: any): 1 | -1 | 0;
+    compareTo(number: bigDecimal): 1 | -1 | 0;
     static negate(number: any): string;
     negate(): bigDecimal;
 }

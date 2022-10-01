@@ -5,12 +5,12 @@ import { RoundingModes } from './roundingModes';
  * @param n precision
  * @param mode Rounding Mode
  */
-export function roundOff(input: number | string, n: number = 0, mode=RoundingModes.HALF_EVEN) {
+export function roundOff(input: number | string | bigint, n: number = 0, mode=RoundingModes.HALF_EVEN) {
     if (mode === RoundingModes.UNNECESSARY) {
         throw new Error("UNNECESSARY Rounding Mode has not yet been implemented");
     }
 
-    if (typeof (input) == 'number')
+    if (typeof (input) == 'number' || typeof (input) == 'bigint')
         input = input.toString();
 
     let neg = false;
@@ -41,9 +41,9 @@ export function roundOff(input: number | string, n: number = 0, mode=RoundingMod
     if (n == 0) {
         let l = partInt.length;
         if (greaterThanFive(parts[1], partInt, neg, mode)) {
-            return (neg ? '-' : '') + increment(partInt);
+            partInt = increment(partInt);
         }
-        return (neg ? '-' : '') + partInt;
+        return (neg&&parseInt(partInt) ? '-' : '') + partInt;
     }
 
 
@@ -63,7 +63,7 @@ export function roundOff(input: number | string, n: number = 0, mode=RoundingMod
             return (neg ? '-' : '') + increment(partInt, parseInt(partDec[0])) + '.' + partDec.substring(1);
         }
     }
-    return (neg ? '-' : '') + partInt + '.' + partDec;
+    return (neg&&parseInt(partInt) ? '-' : '') + partInt + '.' + partDec;
 }
 
 function greaterThanFive(part: string, pre: string, neg: boolean, mode: RoundingModes) {

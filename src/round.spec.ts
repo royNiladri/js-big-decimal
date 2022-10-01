@@ -43,6 +43,12 @@ describe('round', function () {
     it("should round('1e-8',10) = 0.00000001", function() {
         expect(roundOff(0.00000001,10)).toBe('0.0000000100')
     })
+    it("should round small negative to zero", function() {
+        expect(roundOff(-0.00000001,0)).toBe('0');
+    })
+    it("should round small negative to zero", function() {
+        expect(roundOff(-0.00000001,2)).toBe('0.00');
+    })
 
     describe("test rounding mode UP", function () {
         it("should round(5.5, 0, UP) = 6", function () {
