@@ -649,9 +649,9 @@ function roundOff(input, n, mode) {
     if (n == 0) {
         var l = partInt.length;
         if (greaterThanFive(parts[1], partInt, neg, mode)) {
-            return (neg ? '-' : '') + increment(partInt);
+            partInt = increment(partInt);
         }
-        return (neg ? '-' : '') + partInt;
+        return (neg && parseInt(partInt) ? '-' : '') + partInt;
     }
     // handle case when n>0
     if (!parts[1]) {
@@ -668,7 +668,7 @@ function roundOff(input, n, mode) {
             return (neg ? '-' : '') + increment(partInt, parseInt(partDec[0])) + '.' + partDec.substring(1);
         }
     }
-    return (neg ? '-' : '') + partInt + '.' + partDec;
+    return (neg && parseInt(partInt) ? '-' : '') + partInt + '.' + partDec;
 }
 exports.roundOff = roundOff;
 function greaterThanFive(part, pre, neg, mode) {
