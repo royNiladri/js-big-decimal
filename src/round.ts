@@ -63,7 +63,7 @@ export function roundOff(input: number | string | bigint, n: number = 0, mode=Ro
             return (neg ? '-' : '') + increment(partInt, parseInt(partDec[0])) + '.' + partDec.substring(1);
         }
     }
-    return (neg&&parseInt(partInt) ? '-' : '') + partInt + '.' + partDec;
+    return (neg&&(parseInt(partInt) || parseInt(partDec)) ? '-' : '') + partInt + '.' + partDec;
 }
 
 function greaterThanFive(part: string, pre: string, neg: boolean, mode: RoundingModes) {
