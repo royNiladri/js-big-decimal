@@ -25,24 +25,28 @@ function add(number1, number2) {
     var neg = 0, ind = -1, neg_len;
     //check for negatives
     if (number1[0] == '-') {
-        neg++;
-        ind = 1;
         number1 = number1.substring(1);
-        neg_len = number1.length;
+        if (!testZero(number1)) {
+            neg++;
+            ind = 1;
+            neg_len = number1.length;
+        }
     }
     if (number2[0] == '-') {
-        neg++;
-        ind = 2;
         number2 = number2.substring(1);
-        neg_len = number2.length;
+        if (!testZero(number2)) {
+            neg++;
+            ind = 2;
+            neg_len = number2.length;
+        }
     }
     number1 = trim(number1);
     number2 = trim(number2);
     _a = pad(trim(number1), trim(number2)), number1 = _a[0], number2 = _a[1];
     if (neg == 1) {
-        if (ind == 1)
+        if (ind === 1)
             number1 = compliment(number1);
-        else
+        else if (ind === 2)
             number2 = compliment(number2);
     }
     var res = addCore(number1, number2);
@@ -59,6 +63,9 @@ function add(number1, number2) {
 }
 exports.add = add;
 function compliment(number) {
+    if (testZero(number)) {
+        return number;
+    }
     var s = '', l = number.length, dec = number.split('.')[1], ld = dec ? dec.length : 0;
     for (var i = 0; i < l; i++) {
         if (number[i] >= '0' && number[i] <= '9')
@@ -118,6 +125,9 @@ function addCore(number1, number2) {
         carry = Math.floor(temp / 10);
     }
     return carry ? (carry.toString() + sum) : sum;
+}
+function testZero(number) {
+    return (/^0[0]*[.]{0,1}[0]*$/.test(number));
 }
 
 
