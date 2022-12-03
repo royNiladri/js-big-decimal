@@ -51,5 +51,8 @@ describe('add', function () {
     it('should: 12.67-130.7 = -118.03', function () {
         expect(add('12.67', '-130.7')).toBe('-118.03');
     });
+    it('should: 10+(-0) = 10', function() {
+        expect(add('10', '-0')).toBe('10');
+    });
 
 })
