@@ -35,6 +35,9 @@ Work with large numbers on the client side with high precision.
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
+## Contributors Welcome!
+Hi, this is a relatively simple library that solves a very common and frustrating JS issue. With my current workload, it is becoming increasingly difficult to maintain this alone. If you have some basic JS/TS working knowledge, please go thorugh the open bugs/enhancements and help clear the backlog. Thanks in advance! :relieved:
+
 ---
 
 ## Installation
