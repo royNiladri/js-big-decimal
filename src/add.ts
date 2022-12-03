@@ -1,19 +1,23 @@
 //function add {
-export function add(number1, number2 = "0") {
+export function add(number1: string, number2 = "0") {
     let neg = 0, ind = -1, neg_len;
 
     //check for negatives
     if (number1[0] == '-') {
-        neg++;
-        ind = 1;
         number1 = number1.substring(1);
-        neg_len = number1.length;
+        if(!testZero(number1)){
+            neg++;
+            ind = 1;
+            neg_len = number1.length;
+        }
     }
     if (number2[0] == '-') {
-        neg++;
-        ind = 2;
         number2 = number2.substring(1);
-        neg_len = number2.length;
+        if(!testZero(number2)){
+            neg++;
+            ind = 2;
+            neg_len = number2.length;
+        }
     }
 
     number1 = trim(number1);
@@ -22,9 +26,9 @@ export function add(number1, number2 = "0") {
     [number1, number2] = pad(trim(number1), trim(number2));
 
     if (neg == 1) {
-        if (ind == 1)
+        if (ind === 1)
             number1 = compliment(number1);
-        else
+        else if (ind === 2)
             number2 = compliment(number2);
     }
 
@@ -42,6 +46,10 @@ export function add(number1, number2 = "0") {
 }
 
 function compliment(number: string) {
+    if (testZero(number)){
+        return number;
+    }
+
     let s = '',
         l = number.length,
         dec = number.split('.')[1],
@@ -118,4 +126,8 @@ function addCore(number1: string, number2: string) {
     }
 
     return carry ? (carry.toString() + sum) : sum;
+}
+
+function testZero(number: string){
+    return (/^0[0]*[.]{0,1}[0]*$/.test(number));
 }

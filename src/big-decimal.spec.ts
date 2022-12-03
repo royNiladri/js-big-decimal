@@ -284,6 +284,18 @@ describe('BIG-DECIMAL', function () {
                 expect(e.toString()).toMatch('Parameter is not a number');
             }
         });
+        it('should add -0 & 10 properly', function(){
+            const n1 = new bigDecimal('-0');
+            const n2 = new bigDecimal('10');
+            const sum = n1.add(n2);
+            expect(sum.getValue()).toBe('10');
+        });
+        it('should add -0 & -10 properly', function(){
+            const n1 = new bigDecimal('-0');
+            const n2 = new bigDecimal('-10');
+            const sum = n1.add(n2);
+            expect(sum.getValue()).toBe('-10');
+        });
     });
 
     describe('compareTo', function () {
