@@ -1,15 +1,21 @@
 # JS Big Decimal
 
-[![Rate on Openbase](https://badges.openbase.io/js/rating/js-big-decimal.svg)](https://openbase.io/js/js-big-decimal?utm_source=embedded&utm_medium=badge&utm_campaign=rate-badge)
+<p align="center">
+  <img width="163" alt="image" src="https://user-images.githubusercontent.com/16587916/209551931-765fa805-f1c3-4837-8426-09cf6072e126.png">
+  <br>
+  <i>Work with large numbers on the client side with high precision
+    <br> Welcome to a saner world where <code>0.1 + 0.2 = 0.3</code> and not <code>0.30000000000000004</code>
+  <br>
+</p>
 
-[![Travis](https://img.shields.io/travis/royNiladri/js-big-decimal.svg?style=flat-square)](https://travis-ci.org/royNiladri/js-big-decimal)
-[![Coverage Status](https://img.shields.io/coveralls/github/royNiladri/js-big-decimal/master?style=flat-square)](https://coveralls.io/github/royNiladri/js-big-decimal?branch=master)
-[![license](https://img.shields.io/github/license/royNiladri/js-big-decimal.svg?style=flat-square)](https://github.com/royNiladri/js-big-decimal/blob/master/LICENSE)
-[![npm](https://img.shields.io/npm/v/js-big-decimal.svg?style=flat-square)](https://www.npmjs.com/package/js-big-decimal)
-[![npm](https://img.shields.io/npm/dw/js-big-decimal.svg?style=flat-square)](https://npm-stat.com/charts.html?package=js-big-decimal&from=2017-01-01)
-[![Github file size](https://img.shields.io/github/size/royNiladri/js-big-decimal/dist/web/js-big-decimal.min.js.svg?style=flat-square)](https://github.com/royNiladri/js-big-decimal/blob/master/dist/web/js-big-decimal.min.js)
-
-Work with large numbers on the client side with high precision.
+<p align="center">
+<a href="https://travis-ci.org/royNiladri/js-big-decimal"><img src="https://img.shields.io/travis/royNiladri/js-big-decimal.svg?style=flat-square" alt="Travis"></a>
+<a href="https://coveralls.io/github/royNiladri/js-big-decimal?branch=master"><img src="https://img.shields.io/coveralls/github/royNiladri/js-big-decimal/master?style=flat-square" alt="Coverage Status"></a>
+<a href="https://github.com/royNiladri/js-big-decimal/blob/master/LICENSE"><img src="https://img.shields.io/github/license/royNiladri/js-big-decimal.svg?style=flat-square" alt="license"></a>
+<a href="https://www.npmjs.com/package/js-big-decimal"><img src="https://img.shields.io/npm/v/js-big-decimal.svg?style=flat-square" alt="npm"></a>
+<a href="https://npm-stat.com/charts.html?package=js-big-decimal&amp;from=2017-01-01"><img src="https://img.shields.io/npm/dw/js-big-decimal.svg?style=flat-square" alt="npm"></a>
+<a href="https://github.com/royNiladri/js-big-decimal/blob/master/dist/web/js-big-decimal.min.js"><img src="https://img.shields.io/github/size/royNiladri/js-big-decimal/dist/web/js-big-decimal.min.js.svg?style=flat-square" alt="Github file size"></a>
+</p>
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
