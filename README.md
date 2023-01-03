@@ -21,6 +21,7 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 ## Contents
 
+  - [Contributors Welcome!](#contributors-welcome)
   - [Installation](#installation)
     - [Usage](#usage)
   - [Operations](#operations)
@@ -28,6 +29,7 @@
     - [getValue()](#getvalue)
     - [getPrettyValue(number, digits, separator)](#getprettyvaluenumber-digits-separator)
     - [round(number, precision, roundingMode)](#roundnumber-precision-roundingmode)
+    - [abs(number)](#absnumber)
     - [floor(number)](#floornumber)
     - [ceil(number)](#ceilnumber)
     - [compareTo(number1, number2)](#comparetonumber1-number2)
@@ -141,6 +143,18 @@ Extensive description of the modes can be found at [Rounding Modes](https://docs
 var num = new bigDecimal("123.657");
 var numRound1 = num.round(1, bigDecimal.RoundingModes.DOWN); // "123.6"
 var numRound2 = num.round(2, bigDecimal.RoundingModes.CEILING); // "123.66"
+```
+
+### abs(number)
+Returns the absolute value of a number.
+```javascript
+var n1 = bigDecimal.abs(12.8) // "12.8"
+var n2 = bigDecimal.abs(-12.3) // "12.3"
+```
+The instance returns the result as new `bigDecimal`
+```javascript
+var n1 = new bigDecimal(12.8).abs() // bigDecimal(12.8)
+var n2 = new bigDecimal(-12.3).abs() // bigDecimal(-12.3)
 ```
 
 ### floor(number)
