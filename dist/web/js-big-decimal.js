@@ -3,6 +3,24 @@ var bigDecimal;
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
+/***/ 165:
+/***/ (function(__unused_webpack_module, exports) {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.abs = void 0;
+function abs(n) {
+    if (typeof n == 'number' || typeof n == 'bigint')
+        n = n.toString();
+    if (n[0] == '-')
+        return n.substring(1);
+    return n;
+}
+exports.abs = abs;
+
+
+/***/ }),
+
 /***/ 217:
 /***/ (function(__unused_webpack_module, exports) {
 
@@ -129,6 +147,7 @@ function testZero(number) {
 
 
 var add_1 = __webpack_require__(217);
+var abs_1 = __webpack_require__(165);
 var round_1 = __webpack_require__(350);
 var multiply_1 = __webpack_require__(182);
 var divide_1 = __webpack_require__(415);
@@ -232,6 +251,13 @@ var bigDecimal = /** @class */ (function () {
         if (isNaN(precision))
             throw Error("Precision is not a number: " + precision);
         return new bigDecimal((0, round_1.roundOff)(this.value, precision, mode));
+    };
+    bigDecimal.abs = function (number) {
+        number = bigDecimal.validate(number);
+        return (0, abs_1.abs)(number);
+    };
+    bigDecimal.prototype.abs = function () {
+        return new bigDecimal((0, abs_1.abs)(this.value));
     };
     bigDecimal.floor = function (number) {
         number = bigDecimal.validate(number);
