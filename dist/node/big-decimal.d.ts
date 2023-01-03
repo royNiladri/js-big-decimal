@@ -9,6 +9,8 @@ declare class bigDecimal {
     getPrettyValue(digits: any, separator: any): string;
     static round(number: any, precision?: number, mode?: Modes): string;
     round(precision?: number, mode?: Modes): bigDecimal;
+    static abs(number: any): string;
+    abs(): bigDecimal;
     static floor(number: any): any;
     floor(): bigDecimal;
     static ceil(number: any): any;

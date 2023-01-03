@@ -1,4 +1,5 @@
 import { add, trim } from './add';
+import { abs } from './abs';
 import { roundOff } from './round';
 import { multiply } from './multiply';
 import { divide } from './divide';
@@ -110,6 +111,15 @@ class bigDecimal {
             throw Error("Precision is not a number: " + precision);
 
         return new bigDecimal(roundOff(this.value, precision, mode));
+    }
+
+    static abs(number) {
+        number = bigDecimal.validate(number);
+        return abs(number);
+    }
+
+    abs() {
+        return new bigDecimal(abs(this.value));
     }
 
     static floor(number) {

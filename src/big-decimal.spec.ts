@@ -200,6 +200,20 @@ describe('BIG-DECIMAL', function () {
         });
     });
 
+    describe('abs', function () {
+        it('should return 1.345 for -1.345', function () {
+            var n = new bigDecimal('-1.345');
+            expect(n.abs().getValue()).toBe('1.345');
+            expect(bigDecimal.abs('-1.345')).toBe('1.345');
+        });
+
+        it('should return 1.345 for 1.345', function () {
+            var n = new bigDecimal('1.345');
+            expect(n.abs().getValue()).toBe('1.345');
+            expect(bigDecimal.abs('1.345')).toBe('1.345');
+        });
+    });
+
     describe('round', function () {
         it('should round off 12.678 to 12.68 if precision is set to 2', function () {
             var n = new bigDecimal('12.678');
