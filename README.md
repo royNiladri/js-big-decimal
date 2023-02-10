@@ -27,6 +27,7 @@
   - [Operations](#operations)
     - [bigDecimal(number)](#bigdecimalnumber)
     - [getValue()](#getvalue)
+    - [setValue()](#setvalue)
     - [getPrettyValue(number, digits, separator)](#getprettyvaluenumber-digits-separator)
     - [round(number, precision, roundingMode)](#roundnumber-precision-roundingmode)
     - [abs(number)](#absnumber)
@@ -95,6 +96,14 @@ var n3 = new bigDecimal('12.456e3'); // 12456
 Returns the string value of the decimal.
 ```javascript
 console.log(n2.getValue()); // "12345.6789"
+```
+
+### setValue()
+Allows setting the BigDecimal to a new value.
+```js
+var n = new bigDecimal('123');
+n.setvalue('567');
+console.log(n.getValue()); // 567
 ```
 
 ### getPrettyValue(number, digits, separator)

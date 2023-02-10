@@ -207,6 +207,9 @@ var bigDecimal = /** @class */ (function () {
     bigDecimal.prototype.getValue = function () {
         return this.value;
     };
+    bigDecimal.prototype.setValue = function (num) {
+        this.value = bigDecimal.validate(num);
+    };
     bigDecimal.getPrettyValue = function (number, digits, separator) {
         if (!(digits || separator)) {
             digits = 3;

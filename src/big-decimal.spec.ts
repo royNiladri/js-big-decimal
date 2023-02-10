@@ -200,6 +200,14 @@ describe('BIG-DECIMAL', function () {
         });
     });
 
+    describe('setValue', function() {
+        it('should allow setting value', function() {
+            var n = new bigDecimal('123');
+            n.setValue('456');
+            expect(n.getValue()).toBe('456');
+        })
+    })
+
     describe('abs', function () {
         it('should return 1.345 for -1.345', function () {
             var n = new bigDecimal('-1.345');

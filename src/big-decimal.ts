@@ -69,6 +69,10 @@ class bigDecimal {
         return this.value;
     }
 
+    setValue(num: (number | string | bigint)) {
+        this.value = bigDecimal.validate(num);
+    }
+
     static getPrettyValue(number, digits, separator): string {
         if (!(digits || separator)) {
             digits = 3;
