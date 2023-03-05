@@ -59,12 +59,12 @@ npm install --save js-big-decimal
 :heavy_exclamation_mark: **Note:** Usage has changed since **version 1.1.4**
 
 Require in `javascript` as
-```jsavascript
+```javascript
 var bigDecimal = require('js-big-decimal');
 ```
 For `typescript`, use
-```jsavascript
-import bigDecimal require('js-big-decimal');
+```javascript
+import bigDecimal = require('js-big-decimal');
 ```
 For `web`, when used with script tag, a variable on `Window` object is created.
 ```html
