@@ -222,4 +222,4 @@ class bigDecimal {
         return new bigDecimal(negate(this.value));
     }
 }
-export = bigDecimal;
+export default bigDecimal;
