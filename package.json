@@ -4,6 +4,7 @@
   "description": "Work with large numbers on the client side. Round them off to any required precision.",
   "main": "dist/node/js-big-decimal",
   "types": "dist/node/big-decimal",
+  "module": "dist/esm/big-decimal.js",
   "scripts": {
     "test": "ts-node node_modules/jasmine/bin/jasmine --config=spec/jasmine.json --helper=spec/helper/*.js",
     "test:watch": "chokidar \"src/**/*.ts\" -c \"npm run travis-test\"",
