@@ -23,7 +23,7 @@ declare class bigDecimal {
     static multiply(number1: any, number2: any): string;
     multiply(number: bigDecimal): bigDecimal;
     static divide(number1: any, number2: any, precision?: number): string;
-    divide(number: bigDecimal, precision: any): bigDecimal;
+    divide(number: bigDecimal, precision?: number): bigDecimal;
     static modulus(number1: any, number2: any): string;
     modulus(number: bigDecimal): bigDecimal;
     static compareTo(number1: any, number2: any): 0 | 1 | -1;
