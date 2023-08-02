@@ -182,7 +182,7 @@ class bigDecimal {
     return divide(number1, number2, precision);
   }
 
-  divide(number: bigDecimal, precision) {
+  divide(number: bigDecimal, precision?: number) {
     return new bigDecimal(divide(this.value, number.getValue(), precision));
   }
 
