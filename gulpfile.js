@@ -1,6 +1,8 @@
 var gulp = require('gulp');
 var del = require('del');
 var run = require('gulp-run');
+var ru = require('rollup');
+var ruTS = require('@rollup/plugin-typescript');
 
 const paths = {
     src: ['./src/**/*.ts', '!./src/**/*.spec.ts'],
@@ -16,6 +18,21 @@ gulp.task('clean', function () {
 })
 
 gulp.task('dist', gulp.series('clean', function (done) {
+    // build es module with rollup
+    ru.rollup({
+        input: paths.entry,
+        plugins: [
+          ruTS.default({
+            outDir: paths.dist + 'esm',
+          }),
+        ],
+      }).then((bundle) => {
+        bundle.write({
+          dir: paths.dist + 'esm',
+          format: 'esm',
+          sourcemap: true,
+        });
+      });
 
     var cmd = new run.Command('webpack-cli', { silent: true });
 
