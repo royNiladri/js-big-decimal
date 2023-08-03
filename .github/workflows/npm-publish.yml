@@ -45,7 +45,8 @@ jobs:
 
       - name: Publish
         if: steps.check_version.outputs.is_version == 'true'
-      - run: npm ci
-      - run: npm publish
+        run: |
+          npm ci
+          npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
