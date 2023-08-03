@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-<a href="https://travis-ci.org/royNiladri/js-big-decimal"><img src="https://img.shields.io/travis/royNiladri/js-big-decimal.svg?style=flat-square" alt="Travis"></a>
+<a href="https://github.com/royNiladri/js-big-decimal/actions/workflows/main.yml"><img src="https://img.shields.io/github/actions/workflow/status/royNiladri/js-big-decimal/main.yml?style=flat-square" alt="GitHub Action Build"></a>
 <a href="https://coveralls.io/github/royNiladri/js-big-decimal?branch=master"><img src="https://img.shields.io/coveralls/github/royNiladri/js-big-decimal/master?style=flat-square" alt="Coverage Status"></a>
 <a href="https://github.com/royNiladri/js-big-decimal/blob/master/LICENSE"><img src="https://img.shields.io/github/license/royNiladri/js-big-decimal.svg?style=flat-square" alt="license"></a>
 <a href="https://www.npmjs.com/package/js-big-decimal"><img src="https://img.shields.io/npm/v/js-big-decimal.svg?style=flat-square" alt="npm"></a>
