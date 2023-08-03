@@ -38,13 +38,13 @@ jobs:
         run: |
           VERSION_TAG=$(git tag --contains HEAD)
           if [[ "$VERSION_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "::set-output name=is_version::true"
+            echo "is_version=true" >> $GITHUB_ENV
           else
-            echo "::set-output name=is_version::false"
+            echo "is_version=false" >> $GITHUB_ENV
           fi
 
       - name: Publish
-        if: steps.check_version.outputs.is_version == 'true'
+        if: env.is_version == 'true'
         run: |
           npm ci
           npm publish
