@@ -38,7 +38,7 @@ jobs:
         run: |
           VERSION_TAG=$(git tag --list --sort=-version:refname "v*" | head -n 1)
           echo "Version: $VERSION_TAG"
-          LAST_VER = v$(npm view js-big-decimal version)
+          LAST_VER=v$(npm view js-big-decimal version)
           echo "Published Version: $LAST_VER"
           if [[ "$VERSION_TAG" != "$LAST_VER" ]]; then
             echo "is_version=true" >> $GITHUB_ENV
