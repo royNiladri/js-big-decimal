@@ -36,16 +36,19 @@ jobs:
       - name: Check if tag is a version
         id: check_version
         run: |
-          VERSION_TAG=$(git tag --contains HEAD)
+          VERSION_TAG=$(git describe --tags --abbrev=0)
           echo $VERSION_TAG
-          if [[ "$VERSION_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+          if [[ "$VERSION_TAG" != "$VERSION" ]]; then
             echo "is_version=true" >> $GITHUB_ENV
+            echo "$VERSION_TAG: $VERSION"
           else
             echo "is_version=false" >> $GITHUB_ENV
           fi
 
       - name: Debug env
-        run: echo ${{env.is_version}}
+        run: |
+          echo ${{env.is_version}}
+          echo ${{env.VERSION}}
       - name: Publish
         if: env.is_version == 'true'
         run: |
