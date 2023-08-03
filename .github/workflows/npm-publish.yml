@@ -36,6 +36,7 @@ jobs:
       - name: Check if tag is a version
         id: check_version
         run: |
+          git fetch --tags
           VERSION_TAG=$(git tag --list --sort=-version:refname "v*" | head -n 1)
           echo "Version: $VERSION_TAG"
           LAST_VER=v$(npm view js-big-decimal version)
