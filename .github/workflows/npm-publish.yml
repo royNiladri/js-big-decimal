@@ -48,7 +48,7 @@ jobs:
 
       - name: Debug env
         run: |
-          echo ${{env.is_version}}
+          echo "is_version: ${{env.is_version}}"
       - name: Publish
         if: env.is_version == 'true'
         run: |
