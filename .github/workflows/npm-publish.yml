@@ -38,7 +38,7 @@ jobs:
         run: |
           git fetch --tags
           VERSION_TAG=$(git tag --list --sort=-version:refname "v*" | head -n 1)
-          echo $VERSION_TAG
+          echo "Version: $VERSION_TAG"
           if [[ "$VERSION_TAG" != "$VERSION" ]]; then
             echo "is_version=true" >> $GITHUB_ENV
             echo "$VERSION_TAG: $VERSION"
