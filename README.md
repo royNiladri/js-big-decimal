@@ -3,8 +3,8 @@
 <p align="center">
   <img width="163" alt="image" src="https://user-images.githubusercontent.com/16587916/209551931-765fa805-f1c3-4837-8426-09cf6072e126.png">
   <br>
-  <i>Work with large numbers on the client side with high precision
-    <br> Welcome to a saner world where <code>0.1 + 0.2 = 0.3</code> and not <code>0.30000000000000004</code>
+  <i>Work with large numbers on the client side with high precision</i>
+  <br> Welcome to a saner world where <code>0.1 + 0.2 = 0.3</code> and not <code>0.30000000000000004</code>
   <br>
 </p>
 
