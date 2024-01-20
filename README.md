@@ -30,6 +30,7 @@
     - [setValue()](#setvalue)
     - [getPrettyValue(number, digits, separator)](#getprettyvaluenumber-digits-separator)
     - [round(number, precision, roundingMode)](#roundnumber-precision-roundingmode)
+    - [stripTrailingZero(number)](#striptrailingzeronumber)
     - [abs(number)](#absnumber)
     - [floor(number)](#floornumber)
     - [ceil(number)](#ceilnumber)
@@ -152,6 +153,19 @@ Extensive description of the modes can be found at [Rounding Modes](https://docs
 var num = new bigDecimal("123.657");
 var numRound1 = num.round(1, bigDecimal.RoundingModes.DOWN); // "123.6"
 var numRound2 = num.round(2, bigDecimal.RoundingModes.CEILING); // "123.66"
+```
+
+### stripTrailingZero(number)
+Returns the number with trailing zeroes (prefix and suffix) removed.
+```javascript
+var n1 = bigDecimal.stripTrailingZero(300.30) // "300.3"
+var n2 = bigDecimal.stripTrailingZero(-0015.1) // "-15.1"
+var n3 = bigDecimal.stripTrailingZero(0.000) // by default defined as "0"
+```
+The instance returns the result as new `bigDecimal`
+```javascript
+var n1 = new bigDecimal(5.100).stripTrailingZero() // bigDecimal(5.1)
+var n2 = new bigDecimal(1.05).add(new bigDecimal(1.05)).stripTrailingZero() // bigDecimal(2.1)
 ```
 
 ### abs(number)

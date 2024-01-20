@@ -469,4 +469,15 @@ describe("BIG-DECIMAL", function () {
       ).toBe("24.0");
     });
   });
+
+  describe("stripTrailingZero", function () {
+    it("should: static function running", function () {
+      expect(bigDecimal.stripTrailingZero("44")).toBe("44");
+    });
+  
+    it("should: class function running", function () {
+      expect(new bigDecimal("00.001200").stripTrailingZero().getValue()).toBe("0.0012");
+    });
+  
+  });
 });
