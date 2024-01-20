@@ -7,6 +7,7 @@ import { modulus } from "./modulus";
 import { compareTo } from "./compareTo";
 import { subtract, negate } from "./subtract";
 import { RoundingModes as Modes, RoundingModes } from "./roundingModes";
+import { stripTrailingZero } from "./stripTrailingZero";
 
 class bigDecimal {
   private value: string;
@@ -213,6 +214,15 @@ class bigDecimal {
 
   negate() {
     return new bigDecimal(negate(this.value));
+  }
+
+  static stripTrailingZero(number) {
+    number = bigDecimal.validate(number);
+    return stripTrailingZero(number);
+  }
+
+  stripTrailingZero() {
+    return new bigDecimal(stripTrailingZero(this.value));
   }
 }
 export default bigDecimal;

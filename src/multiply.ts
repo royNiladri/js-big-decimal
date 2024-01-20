@@ -1,3 +1,5 @@
+import { stripTrailingZero } from "./stripTrailingZero"
+
 export function multiply(number1, number2) {
 	number1 = number1.toString();
 	number2 = number2.toString();
@@ -12,8 +14,8 @@ export function multiply(number1, number2) {
 		negative++;
 		number2 = number2.substr(1);
 	}
-	number1 = trailZero(number1);
-	number2 = trailZero(number2);
+	number1 = stripTrailingZero(number1);
+	number2 = stripTrailingZero(number2);
 	let decimalLength1 = 0;
 	let decimalLength2 = 0;
 
@@ -25,8 +27,8 @@ export function multiply(number1, number2) {
 		decimalLength2 = number2.length - number2.indexOf('.') - 1;
 	}
 	let decimalLength = decimalLength1 + decimalLength2;
-	number1 = trailZero(number1.replace('.', ''));
-	number2 = trailZero(number2.replace('.', ''));
+	number1 = stripTrailingZero(number1.replace('.', ''));
+	number2 = stripTrailingZero(number2.replace('.', ''));
 
 	if (number1.length < number2.length) {
 		let temp = number1;
@@ -65,7 +67,7 @@ export function multiply(number1, number2) {
 	/*
 	* Formatting result
 	*/
-	result = trailZero(adjustDecimal(result, decimalLength));
+	result = stripTrailingZero(adjustDecimal(result, decimalLength));
 	if (negative == 1) {
 		result = '-' + result;
 	}
@@ -82,26 +84,4 @@ function adjustDecimal(number, decimal) {
 		number = (decimal >= number.length) ? ((new Array(decimal - number.length + 1)).join('0') + number) : number;
 		return number.substr(0, number.length - decimal) + '.' + number.substr(number.length - decimal, decimal)
 	}
-}
-
-/*
-* Removes zero from front and back*/
-function trailZero(number) {
-	while (number[0] == '0') {
-		number = number.substr(1);
-	}
-	if (number.indexOf('.') != -1) {
-		while (number[number.length - 1] == '0') {
-			number = number.substr(0, number.length - 1);
-		}
-	}
-	if (number == "" || number == ".") {
-		number = '0';
-	} else if (number[number.length - 1] == '.') {
-		number = number.substr(0, number.length - 1);
-	}
-	if (number[0] == '.') {
-		number = '0' + number;
-	}
-	return number;
 }
