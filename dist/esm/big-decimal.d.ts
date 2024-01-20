@@ -30,5 +30,7 @@ declare class bigDecimal {
     compareTo(number: bigDecimal): 0 | 1 | -1;
     static negate(number: any): string;
     negate(): bigDecimal;
+    static stripTrailingZero(number: any): any;
+    stripTrailingZero(): bigDecimal;
 }
 export default bigDecimal;

@@ -348,11 +348,12 @@ function validate(oparand) {
 /***/ }),
 
 /***/ 182:
-/***/ (function(__unused_webpack_module, exports) {
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.multiply = void 0;
+var stripTrailingZero_1 = __webpack_require__(859);
 function multiply(number1, number2) {
     number1 = number1.toString();
     number2 = number2.toString();
@@ -366,8 +367,8 @@ function multiply(number1, number2) {
         negative++;
         number2 = number2.substr(1);
     }
-    number1 = trailZero(number1);
-    number2 = trailZero(number2);
+    number1 = (0, stripTrailingZero_1.stripTrailingZero)(number1);
+    number2 = (0, stripTrailingZero_1.stripTrailingZero)(number2);
     var decimalLength1 = 0;
     var decimalLength2 = 0;
     if (number1.indexOf('.') != -1) {
@@ -377,8 +378,8 @@ function multiply(number1, number2) {
         decimalLength2 = number2.length - number2.indexOf('.') - 1;
     }
     var decimalLength = decimalLength1 + decimalLength2;
-    number1 = trailZero(number1.replace('.', ''));
-    number2 = trailZero(number2.replace('.', ''));
+    number1 = (0, stripTrailingZero_1.stripTrailingZero)(number1.replace('.', ''));
+    number2 = (0, stripTrailingZero_1.stripTrailingZero)(number2.replace('.', ''));
     if (number1.length < number2.length) {
         var temp = number1;
         number1 = number2;
@@ -413,7 +414,7 @@ function multiply(number1, number2) {
     /*
     * Formatting result
     */
-    result = trailZero(adjustDecimal(result, decimalLength));
+    result = (0, stripTrailingZero_1.stripTrailingZero)(adjustDecimal(result, decimalLength));
     if (negative == 1) {
         result = '-' + result;
     }
@@ -430,28 +431,6 @@ function adjustDecimal(number, decimal) {
         number = (decimal >= number.length) ? ((new Array(decimal - number.length + 1)).join('0') + number) : number;
         return number.substr(0, number.length - decimal) + '.' + number.substr(number.length - decimal, decimal);
     }
-}
-/*
-* Removes zero from front and back*/
-function trailZero(number) {
-    while (number[0] == '0') {
-        number = number.substr(1);
-    }
-    if (number.indexOf('.') != -1) {
-        while (number[number.length - 1] == '0') {
-            number = number.substr(0, number.length - 1);
-        }
-    }
-    if (number == "" || number == ".") {
-        number = '0';
-    }
-    else if (number[number.length - 1] == '.') {
-        number = number.substr(0, number.length - 1);
-    }
-    if (number[0] == '.') {
-        number = '0' + number;
-    }
-    return number;
 }
 
 
@@ -622,6 +601,46 @@ var RoundingModes;
 
 /***/ }),
 
+/***/ 859:
+/***/ (function(__unused_webpack_module, exports) {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.stripTrailingZero = void 0;
+/*
+* Removes zero from front and back*/
+function stripTrailingZero(number) {
+    var isNegative = number[0] === '-';
+    if (isNegative) {
+        number = number.substr(1);
+    }
+    while (number[0] == '0') {
+        number = number.substr(1);
+    }
+    if (number.indexOf('.') != -1) {
+        while (number[number.length - 1] == '0') {
+            number = number.substr(0, number.length - 1);
+        }
+    }
+    if (number == "" || number == ".") {
+        number = '0';
+    }
+    else if (number[number.length - 1] == '.') {
+        number = number.substr(0, number.length - 1);
+    }
+    if (number[0] == '.') {
+        number = '0' + number;
+    }
+    if (isNegative) {
+        number = '-' + number;
+    }
+    return number;
+}
+exports.stripTrailingZero = stripTrailingZero;
+
+
+/***/ }),
+
 /***/ 26:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
@@ -692,6 +711,7 @@ var modulus_1 = __webpack_require__(213);
 var compareTo_1 = __webpack_require__(664);
 var subtract_1 = __webpack_require__(26);
 var roundingModes_1 = __webpack_require__(916);
+var stripTrailingZero_1 = __webpack_require__(859);
 var bigDecimal = /** @class */ (function () {
     function bigDecimal(number) {
         if (number === void 0) { number = "0"; }
@@ -884,6 +904,13 @@ var bigDecimal = /** @class */ (function () {
     };
     bigDecimal.prototype.negate = function () {
         return new bigDecimal((0, subtract_1.negate)(this.value));
+    };
+    bigDecimal.stripTrailingZero = function (number) {
+        number = bigDecimal.validate(number);
+        return (0, stripTrailingZero_1.stripTrailingZero)(number);
+    };
+    bigDecimal.prototype.stripTrailingZero = function () {
+        return new bigDecimal((0, stripTrailingZero_1.stripTrailingZero)(this.value));
     };
     bigDecimal.RoundingModes = roundingModes_1.RoundingModes;
     return bigDecimal;
