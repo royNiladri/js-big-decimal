@@ -59,6 +59,21 @@ describe("stripTrailingZero", function () {
     expect(stripTrailingZero("-5.50000000000000000")).toBe("-5.5");
   });
 
+  // handle zeros
+  it("should: 0.00000 become 0", function () {
+    expect(stripTrailingZero("0.00000")).toBe("0");
+  });
+  it("should: -0.00000 become 0", function () {
+    expect(stripTrailingZero("-0.00000")).toBe("0");
+  });
+  it("should: 000 become 0", function () {
+    expect(stripTrailingZero("000")).toBe("0");
+  });
+  it("should: -000 become 0", function () {
+    expect(stripTrailingZero("-000")).toBe("0");
+  });
+
+
   // Usage in conjugation with rounding
   it("should: result of remove trailing zeroes then rounding 1.550 to 1 digit precision becomes 1.6", function () {
     expect((new bigDecimal("1.550")).stripTrailingZero().round(1).getValue()).toBe("1.6");

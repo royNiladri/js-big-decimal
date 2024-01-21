@@ -63,4 +63,7 @@ describe("compareTo", function () {
   it("should: 0.67, .6700 = 0", function () {
     expect(compareTo("0.67", ".6700")).toBe(0);
   });
+  it("should: -0, 0 = 0", function () {
+    expect(compareTo("-0", "0")).toBe(0);
+  });
 });

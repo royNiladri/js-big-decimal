@@ -292,7 +292,7 @@ function stripTrailingZero(number) {
     if (number[0] == '.') {
         number = '0' + number;
     }
-    if (isNegative) {
+    if (isNegative && number != '0') {
         number = '-' + number;
     }
     return number;
@@ -501,8 +501,9 @@ function validate(oparand) {
 }
 
 function compareTo(number1, number2) {
-    var _a;
+    var _a, _b;
     var negative = false;
+    _a = [number1, number2].map(function (n) { return stripTrailingZero(n); }), number1 = _a[0], number2 = _a[1];
     if (number1[0] == '-' && number2[0] != "-") {
         return -1;
     }
@@ -514,7 +515,7 @@ function compareTo(number1, number2) {
         number2 = number2.substr(1);
         negative = true;
     }
-    _a = pad(number1, number2), number1 = _a[0], number2 = _a[1];
+    _b = pad(number1, number2), number1 = _b[0], number2 = _b[1];
     if (number1.localeCompare(number2) == 0) {
         return 0;
     }
