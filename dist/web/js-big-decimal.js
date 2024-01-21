@@ -157,9 +157,11 @@ function testZero(number) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.compareTo = void 0;
 var add_1 = __webpack_require__(217);
+var stripTrailingZero_1 = __webpack_require__(859);
 function compareTo(number1, number2) {
-    var _a;
+    var _a, _b;
     var negative = false;
+    _a = [number1, number2].map(function (n) { return (0, stripTrailingZero_1.stripTrailingZero)(n); }), number1 = _a[0], number2 = _a[1];
     if (number1[0] == '-' && number2[0] != "-") {
         return -1;
     }
@@ -171,7 +173,7 @@ function compareTo(number1, number2) {
         number2 = number2.substr(1);
         negative = true;
     }
-    _a = (0, add_1.pad)(number1, number2), number1 = _a[0], number2 = _a[1];
+    _b = (0, add_1.pad)(number1, number2), number1 = _b[0], number2 = _b[1];
     if (number1.localeCompare(number2) == 0) {
         return 0;
     }
@@ -199,6 +201,8 @@ function compareTo(number1, number2) {
     return 0;
 }
 exports.compareTo = compareTo;
+function checkZero(number) {
+}
 
 
 /***/ }),
@@ -622,7 +626,7 @@ function stripTrailingZero(number) {
     if (number[0] == '.') {
         number = '0' + number;
     }
-    if (isNegative) {
+    if (isNegative && number != '0') {
         number = '-' + number;
     }
     return number;

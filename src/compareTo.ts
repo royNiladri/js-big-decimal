@@ -1,7 +1,9 @@
 import { pad } from './add';
+import {stripTrailingZero} from './stripTrailingZero';
 
 export function compareTo(number1 : string, number2 : string) {
 	let negative = false;
+	[number1, number2] = [number1, number2].map(n => stripTrailingZero(n));
 	if(number1[0] == '-' && number2[0] != "-"){
 		return -1;
 	}else if(number1[0] != '-' && number2[0] == '-'){
@@ -33,4 +35,8 @@ export function compareTo(number1 : string, number2 : string) {
 		}
 	}
 	return 0;
+}
+
+function checkZero(number){
+
 }

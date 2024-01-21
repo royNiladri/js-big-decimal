@@ -21,7 +21,7 @@ export function stripTrailingZero(number) {
 	if (number[0] == '.') {
 		number = '0' + number;
 	}
-	if (isNegative) {
+	if (isNegative && number != '0') {
 		number = '-' + number;
 	}
 	return number;
