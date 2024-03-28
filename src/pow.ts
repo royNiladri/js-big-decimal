@@ -1,6 +1,7 @@
 import { abs } from "./abs";
 import { compareTo } from "./compareTo";
 import { divide } from "./divide";
+import { modulus } from "./modulus";
 import { multiply } from "./multiply";
 import { roundOff } from "./round";
 import { RoundingModes } from "./roundingModes";
@@ -66,10 +67,7 @@ export const ComplexExponentException: ExponentErrorOrException = {
 
 // Integer Exponent Only Implementation
 
-export function intPow(base: number|string, exponent: number|string, negate: boolean = false) {
-
-
-    let e = Number(exponent);
+export function intPow(base: number | string, exponent: number | string, negate: boolean = false) {
 
     exponent = exponent.toString();
     base = base.toString();
@@ -105,11 +103,12 @@ export function intPow(base: number|string, exponent: number|string, negate: boo
 
     let result = '1';
 
-    while (e > 0) {
-        if (e & 1)
-            result = multiply(result, base);
-            base = multiply(base, base);
-        e >>= 1;
+    exponent = abs(exponent)
+
+    while (compareTo(exponent, '0') == 1) {
+        if (modulus(exponent, 2) == '1') { result = multiply(result, base) }
+        base = multiply(base, base);
+        exponent = roundOff(divide(exponent, 2), 0, RoundingModes.FLOOR);
     }
 
     result = (reciprical) ? divide(1, result, base10Percision) : result;
