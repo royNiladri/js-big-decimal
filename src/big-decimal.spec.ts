@@ -470,6 +470,15 @@ describe("BIG-DECIMAL", function () {
     });
   });
 
+  describe("pow", function () {
+    it("should: 3^3 = 27", function () {
+      expect(bigDecimal.pow("3", "3")).toBe("27");
+    });
+    it("should: 3^3 = 27", function () {
+      expect(new bigDecimal("-3").pow("3").getValue()).toBe("-27");
+    });
+  });
+
   describe("stripTrailingZero", function () {
     it("should: static function running", function () {
       expect(bigDecimal.stripTrailingZero("44")).toBe("44");

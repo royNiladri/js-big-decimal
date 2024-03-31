@@ -475,7 +475,54 @@ function negate(number) {
     return number;
 }
 
-function modulus(dividend, divisor) {
+// export function modulus(dividend: number | string, divisor: number | string) {
+//     if (divisor == 0) {
+//         throw new Error('Cannot divide by 0');
+//     }
+//     dividend = dividend.toString();
+//     divisor = divisor.toString();
+//     validate(dividend);
+//     validate(divisor);
+//     let sign = '';
+//     if (dividend[0] == '-') {
+//         sign = '-';
+//         dividend = dividend.substr(1);
+//     }
+//     if (divisor[0] == '-') {
+//         divisor = divisor.substr(1);
+//     }
+//     let result = subtract(dividend, multiply(divisor, roundOff(divide(dividend, divisor), 0, RoundingModes.FLOOR)));
+//     return sign + result;
+// }
+// function validate(oparand: string) {
+//     if (oparand.indexOf('.') != -1) { // oparand.includes('.') could also work here
+//         throw new Error('Modulus of non-integers not supported');
+//     }
+// }
+// For technical purposes, this is actually Remainder, and not Modulus (Euclidean division).
+// Could seperate the Modulus equation into its own function,
+// then use it within the Remainder function after proper negation.
+// Proper neation only depends on the sign of the dividend, where the result takes the sign
+// of the divident, and ignores the sign of the divisor. For this effect, the absolute values of
+// each oparand is used, then the original sign of the divident dictates 
+// nagation of the result to negative or not.
+// To ensure backwards compatibility, the new Modulus function could be named 'modulusE',
+// where 'E' denotes 'Euclidean' in 'Euclidean division'.
+// Sugested changes are bellow
+function modulusE(n, base, percision) {
+    if (base === void 0) { base = '1'; }
+    if (percision === void 0) { percision = undefined; }
+    if (base == 0) {
+        throw new Error('Cannot divide by 0');
+    }
+    n = n.toString();
+    base = base.toString();
+    validate(n);
+    validate(base);
+    return subtract(n, multiply(base, roundOff(divide(n, base, percision), 0, RoundingModes.FLOOR)));
+}
+function modulus(dividend, divisor, percision) {
+    if (percision === void 0) { percision = undefined; }
     if (divisor == 0) {
         throw new Error('Cannot divide by 0');
     }
@@ -483,19 +530,15 @@ function modulus(dividend, divisor) {
     divisor = divisor.toString();
     validate(dividend);
     validate(divisor);
-    var sign = '';
-    if (dividend[0] == '-') {
-        sign = '-';
-        dividend = dividend.substr(1);
+    var sign = false;
+    if (dividend[0] == '-') { // or dividend.includes('-')
+        sign = true;
     }
-    if (divisor[0] == '-') {
-        divisor = divisor.substr(1);
-    }
-    var result = subtract(dividend, multiply(divisor, roundOff(divide(dividend, divisor), 0, RoundingModes.FLOOR)));
-    return sign + result;
+    var result = modulusE(abs(dividend), abs(divisor), percision);
+    return (sign) ? negate(result) : result;
 }
 function validate(oparand) {
-    if (oparand.indexOf('.') != -1) {
+    if (oparand.indexOf('.') != -1) { // or oparand.includes('.')
         throw new Error('Modulus of non-integers not supported');
     }
 }
@@ -542,6 +585,133 @@ function compareTo(number1, number2) {
     }
     return 0;
 }
+
+var NonIntegerExponentError = {
+    message: "Exponent must be an integer.",
+    type: 'error',
+};
+/**
+ * Calculates the power of a given base raised to an integer exponent
+ *
+ * @param base - Base number
+ * @param exponent - Exponent integer
+ * @param negate - If set to true, parameters will be evaluated as `-(x ^ n)`
+ *
+ * @returns The resulting power as a string
+ *
+ * @throws {NonIntegerExponentError} - If `exponent` is a non-integer number, this error is thrown.
+ *
+ * @example Basic usage:
+ * ```
+ * // Positive Base
+ * console.log(pow(2,2)) // Prints '4'
+ * // Negative Base
+ * console.log(pow(-2,2)) // Prints '4'
+ * // Negative Base where the result will be a negative number
+ * console.log(pow(-2,3)) // Prints '-8'
+ * ```
+ *
+ * @example Negation usage:
+ * ```
+ * // Positive Base
+ * console.log(pow(2, 2, true)) // Prints '-4'
+ * // Negative Base
+ * console.log(pow(-2, 2, true)) // Prints '-4'
+ * // Negative Base where the result will be a negative number
+ * console.log(pow(-2, 3, true)) // Prints '8'
+ * ```
+ *
+ * @example Special cases:
+ * ```
+ * // Exponent of 0
+ * console.log(pow(2, 0)) // Prints '1'
+ * // Exponent of 1
+ * console.log(pow(2, 1)) // Prints '2'
+ * ```
+ */
+// Integer Exponent Only Implementation
+function pow(base, exponent, negate$1) {
+    if (negate$1 === void 0) { negate$1 = false; }
+    exponent = exponent.toString();
+    base = base.toString();
+    try {
+        if (exponent.includes('.')) {
+            throw NonIntegerExponentError;
+        }
+        // Special Handling of Complex numbers
+        // const imaginary = exponent < 0 && Number(remainder) > 0 && Number(remainder) < 1;
+        // if (imaginary) {
+        //     throw ComplexExponentException
+        // }
+    }
+    catch (errorOrException) {
+        errorOrException = errorOrException;
+        switch (errorOrException.type) {
+            case 'error':
+                var error = Error("".concat(errorOrException.message));
+                console.error(error);
+                throw error;
+            // case 'exception': // For Complex nunmbers 
+            //     console.error(`Exception(${errorOrException.severity}): ${errorOrException.message}`)
+            //     return NaN // Todo: Break or continue
+        }
+    }
+    var reciprical = compareTo(exponent, '0') == -1;
+    var base10Percision = compareTo(base, '10') == 0 ? exponent.length : undefined;
+    var result = '1';
+    exponent = abs(exponent);
+    while (compareTo(exponent, '0') == 1) {
+        if (modulus(exponent, 2) == '1') {
+            result = multiply(result, base);
+        }
+        base = multiply(base, base);
+        exponent = roundOff(divide(exponent, 2), 0, RoundingModes.FLOOR);
+    }
+    result = (reciprical) ? divide(1, result, base10Percision) : result;
+    return (negate$1) ? negate(result) : result;
+}
+// Todo: Core Powers function
+// Needs Nth-Root implementation for fractional powers
+// export function pow(x: number, n: number, negate: boolean = false) {
+//     const reciprical = n < 0;
+//     const percision = x == 10 && n >= 1 ? Math.abs(n) : undefined
+//     const exp = abs(n);
+//     const floor = roundOff(exp, 0, RoundingModes.FLOOR);
+//     const remainder = subtract(exp, floor);
+//     const imaginary = x < 0 && Number(remainder) > 0 && Number(remainder) < 1;
+//     try {
+//         if (imaginary) {
+//             x = Math.abs(x);
+//             negate = true;
+//             throw `Complex Number Exception: Cannot calculate powers resulting in Imaginary Numbers. Base will be subsituted with it's absolute value, and result will be negated.`;
+//         }
+//     } catch (warning) {
+//         console.warn(warning);
+//     }
+//     const base = x;
+//     let result = x.toString();
+//     if (Number(remainder) > 0 && Number(remainder) < 1) {
+//         const factor = divide(1, remainder, 3);
+//         const root = nthRoot(x, Number(factor));
+//         if (Number(floor) > 0) {
+//             for (let i = 0; i < Number(floor) - 1; i++) {
+//                 result = multiply(result, base);
+//             }
+//         } else {
+//             result = '1';
+//         }
+//         result = multiply(result, root);
+//     } else if (n == 0) {
+//         result = '1';
+//     } else {
+//         for (let i = 0; i < Number(exp) - 1; i++) {
+//             result = multiply(result, base);
+//         }
+//     }
+//     result = negate ? negateFn(result) : result;
+//     result = reciprical ? divide(1, result, percision) : result;
+//     return result;
+// };
 
 var bigDecimal = /** @class */ (function () {
     function bigDecimal(number) {
@@ -735,6 +905,15 @@ var bigDecimal = /** @class */ (function () {
     };
     bigDecimal.prototype.negate = function () {
         return new bigDecimal(negate(this.value));
+    };
+    bigDecimal.pow = function (base, exponent) {
+        base = bigDecimal.validate(base);
+        exponent = bigDecimal.validate(exponent);
+        return pow(base, exponent);
+    };
+    bigDecimal.prototype.pow = function (exponent) {
+        exponent = bigDecimal.validate(exponent);
+        return new bigDecimal(pow(this.value, exponent));
     };
     bigDecimal.stripTrailingZero = function (number) {
         number = bigDecimal.validate(number);

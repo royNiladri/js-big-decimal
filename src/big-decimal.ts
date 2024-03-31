@@ -8,6 +8,7 @@ import { compareTo } from "./compareTo";
 import { subtract, negate } from "./subtract";
 import { RoundingModes as Modes, RoundingModes } from "./roundingModes";
 import { stripTrailingZero } from "./stripTrailingZero";
+import { pow } from "./pow";
 
 class bigDecimal {
   private value: string;
@@ -214,6 +215,17 @@ class bigDecimal {
 
   negate() {
     return new bigDecimal(negate(this.value));
+  }
+
+  static pow(base, exponent) {
+    base = bigDecimal.validate(base);
+    exponent = bigDecimal.validate(exponent);
+    return pow(base, exponent);
+  }
+
+  pow(exponent: number|string) {
+    exponent = bigDecimal.validate(exponent);
+    return new bigDecimal(pow(this.value, exponent));
   }
 
   static stripTrailingZero(number) {

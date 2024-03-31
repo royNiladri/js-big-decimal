@@ -5,7 +5,7 @@ import { modulus } from "./modulus";
 import { multiply } from "./multiply";
 import { roundOff } from "./round";
 import { RoundingModes } from "./roundingModes";
-import { negate as negateFn, subtract } from "./subtract";
+import { negate as negateFn } from "./subtract";
 
 export type ExponentErrorOrException = {
     message: string,
@@ -67,7 +67,7 @@ export const ComplexExponentException: ExponentErrorOrException = {
 
 // Integer Exponent Only Implementation
 
-export function intPow(base: number | string, exponent: number | string, negate: boolean = false) {
+export function pow(base: number | string, exponent: number | string, negate: boolean = false) {
 
     exponent = exponent.toString();
     base = base.toString();

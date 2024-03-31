@@ -30,6 +30,8 @@ declare class bigDecimal {
     compareTo(number: bigDecimal): 0 | 1 | -1;
     static negate(number: any): string;
     negate(): bigDecimal;
+    static pow(base: any, exponent: any): string;
+    pow(exponent: number | string): bigDecimal;
     static stripTrailingZero(number: any): any;
     stripTrailingZero(): bigDecimal;
 }
