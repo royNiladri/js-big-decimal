@@ -3,26 +3,11 @@ import { compareTo } from "./compareTo";
 import { divide } from "./divide";
 import { modulus } from "./modulus";
 import { multiply } from "./multiply";
+import { root10 } from "./roots";
 import { roundOff } from "./round";
 import { RoundingModes } from "./roundingModes";
-import { negate as negateFn, subtract } from "./subtract";
-
-export type ExponentErrorOrException = {
-    message: string,
-    type: 'error' | 'exception',
-}
-
-export const NonIntegerExponentError: ExponentErrorOrException = {
-    message: `Exponent must be an integer.`,
-    type: 'error',
-}
-
-export const ComplexExponentException: ExponentErrorOrException = {
-    message: `Result is a Complex number with only an Imaginary component.`,
-    type: 'exception',
-}
-
-
+import { stripTrailingZero } from "./stripTrailingZero";
+import { negate as negateFn } from "./subtract";
 
 
 /**
@@ -34,7 +19,6 @@ export const ComplexExponentException: ExponentErrorOrException = {
  * 
  * @returns The resulting power as a string
  * 
- * @throws {NonIntegerExponentError} - If `exponent` is a non-integer number, this error is thrown.
  * 
  * @example Basic usage:
  * ```
@@ -67,41 +51,48 @@ export const ComplexExponentException: ExponentErrorOrException = {
 
 // Integer Exponent Only Implementation
 
-export function intPow(base: number | string, exponent: number | string, negate: boolean = false) {
+export function pow(base: number | string, exponent: number | string, negate: boolean = false, percision: number | undefined = undefined) {
 
     exponent = exponent.toString();
     base = base.toString();
 
-    try {
-        if (exponent.includes('.')) {
-            throw NonIntegerExponentError
-        }
+    const remainder = abs(modulus(exponent));
+    const reciprical = exponent.includes('-');
+    const isBase10 = compareTo(abs(base), '10') == 0;
+    const negativeBase = base.includes('-');
+    const negativeBase10 = isBase10 && negativeBase;
+    const orderOrPercision = reciprical && compareTo(abs(exponent), '1') == -1 ? percision : Number(abs(exponent));
+    const recipricalPercision = isBase10 ? orderOrPercision : percision;
 
-        // Special Handling of Complex numbers
+    let fractionalExponent = '1';
+    let result = '1';
 
-        // const imaginary = exponent < 0 && Number(remainder) > 0 && Number(remainder) < 1;
-
-        // if (imaginary) {
-        //     throw ComplexExponentException
-        // }
-
-    } catch (errorOrException) {
-        errorOrException = <ExponentErrorOrException>errorOrException
-        switch (errorOrException.type) {
-            case 'error':
-                const error = Error(`${errorOrException.message}`)
-                console.error(error)
-                throw error
-            // case 'exception': // For Complex nunmbers 
-            //     console.error(`Exception(${errorOrException.severity}): ${errorOrException.message}`)
-            //     return NaN // Todo: Break or continue
-        }
+    if (negativeBase10) {
+        base = abs(base);
+        negate = !negate;
     }
 
-    const reciprical = compareTo(exponent, '0') == -1;
-    const base10Percision = compareTo(base, '10') == 0 ? exponent.length : undefined;
+    if (compareTo(remainder, '0') == 1) {
 
-    let result = '1';
+        if(negativeBase && !negativeBase10){
+            negate = !negate
+        }
+
+        const mantissa = remainder.split('.').pop();
+        const spread: string[] = [];
+
+        for (let i = 0; i < mantissa.length; i++) {
+            if (!spread[0]) {
+                spread.push(root10(abs(base)))
+            } else {
+                spread.push(root10(spread[i - 1]))
+            }
+        }
+
+        fractionalExponent = spread.reduce((p: string | number, c: string | number, i: number) => {
+            return multiply(p, pow(c, mantissa[i]));
+        }, fractionalExponent)
+    }
 
     exponent = abs(exponent)
 
@@ -111,58 +102,8 @@ export function intPow(base: number | string, exponent: number | string, negate:
         exponent = roundOff(divide(exponent, 2), 0, RoundingModes.FLOOR);
     }
 
-    result = (reciprical) ? divide(1, result, base10Percision) : result;
-    return (negate) ? negateFn(result) : result;
+    result = multiply(result, fractionalExponent);
+    result = (percision) ? roundOff(result, percision) : result;
+    result = (reciprical) ? divide(1, result, recipricalPercision) : result;
+    return (negate) ? stripTrailingZero(negateFn(result)) : stripTrailingZero(result);
 };
-
-// Todo: Core Powers function
-// Needs Nth-Root implementation for fractional powers
-
-// export function pow(x: number, n: number, negate: boolean = false) {
-
-//     const reciprical = n < 0;
-//     const percision = x == 10 && n >= 1 ? Math.abs(n) : undefined
-
-//     const exp = abs(n);
-//     const floor = roundOff(exp, 0, RoundingModes.FLOOR);
-//     const remainder = subtract(exp, floor);
-//     const imaginary = x < 0 && Number(remainder) > 0 && Number(remainder) < 1;
-
-//     try {
-//         if (imaginary) {
-//             x = Math.abs(x);
-//             negate = true;
-//             throw `Complex Number Exception: Cannot calculate powers resulting in Imaginary Numbers. Base will be subsituted with it's absolute value, and result will be negated.`;
-//         }
-//     } catch (warning) {
-//         console.warn(warning);
-//     }
-
-//     const base = x;
-
-//     let result = x.toString();
-
-//     if (Number(remainder) > 0 && Number(remainder) < 1) {
-//         const factor = divide(1, remainder, 3);
-//         const root = nthRoot(x, Number(factor));
-
-//         if (Number(floor) > 0) {
-//             for (let i = 0; i < Number(floor) - 1; i++) {
-//                 result = multiply(result, base);
-//             }
-//         } else {
-//             result = '1';
-//         }
-
-//         result = multiply(result, root);
-//     } else if (n == 0) {
-//         result = '1';
-//     } else {
-//         for (let i = 0; i < Number(exp) - 1; i++) {
-//             result = multiply(result, base);
-//         }
-//     }
-//     result = negate ? negateFn(result) : result;
-//     result = reciprical ? divide(1, result, percision) : result;
-//     return result;
-// };

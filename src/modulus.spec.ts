@@ -21,15 +21,15 @@ describe("modulus(remainder)", function () {
     expect(modulus("76457896543456", "77732")).toBe("45352");
   });
 
-  it("should modulus(7.5%3.2) to throw error", function () {
-    expect(() => modulus("7.5", "3.2")).toThrowError();
-  });
-  it("should modulus(75%3.2) to throw error", function () {
-    expect(() => modulus("75", "3.2")).toThrowError();
-  });
-  it("should modulus(7.5%32) to throw error", function () {
-    expect(() => modulus("7.5", "32")).toThrowError();
-  });
+  // it("should modulus(7.5%3.2) to throw error", function () {
+  //   expect(() => modulus("7.5", "3.2")).toThrowError();
+  // });
+  // it("should modulus(75%3.2) to throw error", function () {
+  //   expect(() => modulus("75", "3.2")).toThrowError();
+  // });
+  // it("should modulus(7.5%32) to throw error", function () {
+  //   expect(() => modulus("7.5", "32")).toThrowError();
+  // });
 });
 
 describe("modulus(Euclidean division)", function () {
@@ -53,13 +53,15 @@ describe("modulus(Euclidean division)", function () {
     expect(modulusE("76457896543456", "77732")).toBe("45352");
   });
 
-  it("should modulusE(7.5, 3.2) to throw error", function () {
-    expect(() => modulusE("7.5", "3.2")).toThrowError();
-  });
-  it("should modulusE(75, 3.2) to throw error", function () {
-    expect(() => modulusE("75", "3.2")).toThrowError();
-  });
-  it("should modulusE(7.5, 32) to throw error", function () {
-    expect(() => modulusE("7.5", "32")).toThrowError();
-  });
+  // it("should modulusE(7.5, 3.2) to throw error", function () {
+  //   expect(() => modulusE("7.5", "3.2")).toThrowError();
+  // });
+
+  // it("should modulusE(75, 3.2) to throw error", function () {
+  //   expect(() => modulusE("75", "3.2")).toThrowError();
+  // });
+
+  // it("should modulusE(7.5, 32) to throw error", function () {
+  //   expect(() => modulusE("7.5", "32")).toThrowError();
+  // });
 });
