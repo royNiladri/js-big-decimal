@@ -5,38 +5,6 @@ import { negate, subtract } from './subtract';
 import { RoundingModes } from './roundingModes';
 import { abs } from './abs';
 
-
-// export function modulus(dividend: number | string, divisor: number | string) {
-//     if (divisor == 0) {
-//         throw new Error('Cannot divide by 0');
-//     }
-
-//     dividend = dividend.toString();
-//     divisor = divisor.toString();
-
-//     validate(dividend);
-//     validate(divisor);
-
-//     let sign = '';
-//     if (dividend[0] == '-') {
-//         sign = '-';
-//         dividend = dividend.substr(1);
-//     }
-//     if (divisor[0] == '-') {
-//         divisor = divisor.substr(1);
-//     }
-
-//     let result = subtract(dividend, multiply(divisor, roundOff(divide(dividend, divisor), 0, RoundingModes.FLOOR)));
-//     return sign + result;
-// }
-
-// function validate(oparand: string) {
-//     if (oparand.indexOf('.') != -1) { // oparand.includes('.') could also work here
-//         throw new Error('Modulus of non-integers not supported');
-//     }
-// }
-
-
 // For technical purposes, this is actually Remainder, and not Modulus (Euclidean division).
 // Could seperate the Modulus equation into its own function,
 // then use it within the Remainder function after proper negation.
@@ -52,6 +20,7 @@ import { abs } from './abs';
 // Sugested changes are bellow
 
 export function modulusE(n: number | string, base: number | string = 1, percision: number | undefined = undefined) {
+    
     if (base == 0) {
         throw new Error('Cannot divide by 0');
     }
@@ -59,7 +28,6 @@ export function modulusE(n: number | string, base: number | string = 1, percisio
     n = n.toString();
     base = base.toString();
 
-    // validate(n);
     validate(base);
 
     return subtract(n, multiply(base, roundOff(divide(n, base, percision), 0, RoundingModes.FLOOR)));

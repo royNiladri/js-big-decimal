@@ -40,8 +40,14 @@
     - [subtract(minuend, subtrahend)](#subtractminuend-subtrahend)
     - [multiply(multiplicand, multiplier)](#multiplymultiplicand-multiplier)
     - [divide(dividend, divisor, precision)](#dividedividend-divisor-precision)
+    - [pow(base, exponent)](#powbase-exponent)
+    - [sqRoot(number)](#sqRootnumber)
+    - [cbRoot(number)](#cbRootnumber)
     - [modulus(dividend, divisor)](#modulusdividend-divisor)
-- [Support the developers :heart: :star: :money_with_wings:](#support-the-developers-heart-star-money_with_wings)
+    - [exp(exponent)](#expexponent)
+    - [factorial(number)](#factorialnumber)
+  - [Roadmap (Planned Features)](#roadmap)
+  - [Support the developers :heart: :star: :money_with_wings:](#support-the-developers-heart-star-money_with_wings)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -278,6 +284,43 @@ var n2 = new bigDecimal('4');
 var quotient = n1.divide(n2); // quotient = new bigDecimal('11.25')
 ```
 
+### pow(base, exponent)
+Raise a base number to it's exponent. Either component can be a real number, positive or negative. Exponents, where `1 > exponent > 0`, will return the root of the base.
+```javascript
+var power = bigDecimal.pow('6', '3'); // power = '216'
+```
+
+Alternately, use the instance property. It returns the result as new `bigDecimal`.
+```javascript
+var base = new bigDecimal('6');
+var exponent = new bigDecimal('3');
+var power = base.divide(exponent); // power = new bigDecimal('216')
+```
+
+### sqRoot(number)
+Get the square root of a given number.
+```javascript
+var sqrt = bigDecimal.sqRoot('81',); // sqrt = '9'
+```
+
+Alternately, use the instance property. It returns the result as new `bigDecimal`.
+```javascript
+var n = new bigDecimal('81');
+var cbrt = n.sqRoot(); // sqrt = new bigDecimal('9')
+```
+
+### cbRoot(number)
+Get the cube root of a given number.
+```javascript
+var cbrt = bigDecimal.cbRoot('27',); // sqrt = '3'
+```
+
+Alternately, use the instance property. It returns the result as new `bigDecimal`.
+```javascript
+var n = new bigDecimal('27');
+var sqrt = n.cbRoot(); // sqrt = new bigDecimal('3')
+```
+
 ### modulus(dividend, divisor)
 Get the modulus of two numbers, i.e., remainder when the dividend is divided by the divisor. Note that both divisor and dividend need to be integers.
 ```javascript
@@ -289,7 +332,42 @@ var n1 = new bigDecimal('45');
 var n2 = new bigDecimal('4');
 var remainder = n1.modulus(n2); // remainder = new bigDecimal('1')
 ```
-Further, the result takes the sign of the dividend and the sign of the divisor is ignored. Note that this behaviour is the same as in Java and JavaScript.
+Further, the result takes the sign of the dividend and the sign of the divisor is ignored. Note that this behaviour is the same as in Java and JavaScript. For Euclidian Division seen in C++ and Python, use `bigDecimal.modulusE()`.
+
+### exp(exponent)
+Get the exponentiation of E, where E is Euler's constant calculated to 32 decimal places of percision. Returns the power of E raised to the given exponent.
+```javascript
+var exp = bigDecimal.exp('5'); // exp = '54.5981500331...'
+```
+Alternately, to get Euler's constant calculated to 32 decimal places of percision, use the static property `bigDecimal.E`.
+```javascript
+var e = bigDecimal.E; // e = '2.71828182845904523536028747135266'
+```
+
+### factorial(number)
+Get the factorial(n! notation) of a given number. Note, the number can only be a positive integer.
+```javascript
+var factorial = bigDecimal.factorial('5'); // factorial = '120'
+```
+
+# Roadmap (Planned Features)
+The features listed below are being considered as possible additions in future revisions.
+
+- PI constant
+- Hypotenuse
+- Sign (returns the sign of a number)
+
+The following are less likely to be implemented, but are still being considered.
+
+- NthRoot
+- Sin and Inverse Sin
+- Cosin and Inverse Cosin
+- Tan, Inverse Tan, and Tan2
+- Log(base 10)
+- Log(base 2)
+- Natural Log(base E)
+- Sigma (Read more: [Summation](https://en.wikipedia.org/wiki/Summation))
+
 
 # Support the developers :heart: :star: :money_with_wings:
 If this library helps you in your organization, you can show some love by giving the repo a star or support by making a nominal monetary contribution.

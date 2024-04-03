@@ -3,11 +3,12 @@ import { compareTo } from "./compareTo";
 import { divide } from "./divide";
 import { modulus } from "./modulus";
 import { multiply } from "./multiply";
-import { root10 } from "./roots";
 import { roundOff } from "./round";
 import { RoundingModes } from "./roundingModes";
 import { stripTrailingZero } from "./stripTrailingZero";
-import { negate as negateFn } from "./subtract";
+import { negate as negateFn, subtract } from "./subtract";
+import { add } from "./add";
+import { Euler, factorial } from "./utils";
 
 
 /**
@@ -49,17 +50,16 @@ import { negate as negateFn } from "./subtract";
  * ```
  */
 
-// Integer Exponent Only Implementation
 
-export function pow(base: number | string, exponent: number | string, negate: boolean = false, percision: number | undefined = undefined) {
+export function pow(base: number | string, exponent: number | string, percision: number | undefined = undefined, negate: boolean  | undefined = false):string {
 
     exponent = exponent.toString();
     base = base.toString();
 
     const remainder = abs(modulus(exponent));
     const reciprical = exponent.includes('-');
-    const isBase10 = compareTo(abs(base), '10') == 0;
     const negativeBase = base.includes('-');
+    const isBase10 = compareTo(abs(base), '10') == 0;
     const negativeBase10 = isBase10 && negativeBase;
     const orderOrPercision = reciprical && compareTo(abs(exponent), '1') == -1 ? percision : Number(abs(exponent));
     const recipricalPercision = isBase10 ? orderOrPercision : percision;
@@ -107,3 +107,67 @@ export function pow(base: number | string, exponent: number | string, negate: bo
     result = (reciprical) ? divide(1, result, recipricalPercision) : result;
     return (negate) ? stripTrailingZero(negateFn(result)) : stripTrailingZero(result);
 };
+
+export function nthRoot(x: number | string, n: number | string, percision = 8) {
+
+    x = x.toString();
+    n = n.toString();
+
+    validate(n);
+
+    let guess = '1';
+    let nMinusOne = subtract(n, 1);
+    let tolerance = pow(10, -percision);
+    let percisionMax = Number(multiply(percision, 2));
+
+    let i = 0;
+    while (i < percision) {
+
+        let newGuess = divide(add(stripTrailingZero(divide(x, pow(guess, nMinusOne), percisionMax)), multiply(guess, nMinusOne)), n, percisionMax);
+
+        if (compareTo(subtract(pow(newGuess, n),x), tolerance!) == -1) {
+            return newGuess
+        }
+
+        guess = newGuess;
+
+        i++;
+    }
+
+    return guess;
+}
+
+export function sqRoot(base: string|number, percision = 32) {
+    percision = Math.max(percision, 32);
+    return nthRoot(base, 2, percision);
+}
+
+export function cbRoot(base: string|number, percision = 32) {
+    percision = Math.max(percision, 32);
+    return nthRoot(base, 3, percision);
+}
+
+export function root4(base: string|number, percision = 32) {
+    percision = Math.max(percision, 32);
+    return nthRoot(base, 4, percision);
+}
+
+export function root5(base: string|number, percision = 32) {
+    percision = Math.max(percision, 32);
+    return nthRoot(base, 5, percision);
+}
+
+export function root10(base: string|number, percision = 32) {
+    percision = Math.max(percision, 32);
+    return sqRoot(root5(base, percision), percision);
+}
+
+export function exp(exponent: number | string){
+    return pow(Euler(32),exponent)
+} 
+
+function validate(oparand: string) {
+    if (oparand.includes('.')) {
+        throw new Error('Root base of non-integers not supported');
+    }
+}

@@ -1,36 +1,35 @@
-import { pow } from "./pow";
-import { stripTrailingZero } from "./stripTrailingZero";
+import { exp, pow } from "./pow";
 
-describe("intPow", function () {
+describe("Pow", function () {
 
     it("should be defined", function () {
-        expect(intPow).toBeDefined();
+        expect(pow).toBeDefined();
     });
 
     it("should: 2^2 = 4", function () {
-        expect(intPow(2, 2)).toBe("4");
+        expect(pow(2, 2)).toBe("4");
     });
 
     it("should: -2^2 = 4", function () {
-        expect(intPow(-2, 2)).toBe("4");
+        expect(pow(-2, 2)).toBe("4");
     });
 
     it("should: -2^3 = -8", function () {
-        expect(intPow(-2, 3)).toBe("-8");
+        expect(pow(-2, 3)).toBe("-8");
     });
 
     describe('Negated', function () {
 
         it("should: -(2^2) = -4", function () {
-            expect(intPow(2, 2, true)).toBe("-4");
+            expect(pow(2, 2, undefined, true)).toBe("-4");
         });
 
         it("should: -(-2^2) = -4", function () {
-            expect(intPow(2, 2, true)).toBe("-4");
+            expect(pow(2, 2, undefined, true)).toBe("-4");
         });
 
         it("should: -(-2^3) = 8", function () {
-            expect(intPow(-2, 3, true)).toBe("8");
+            expect(pow(-2, 3, undefined, true)).toBe("8");
         });
     })
 
@@ -52,27 +51,27 @@ describe("intPow", function () {
     describe('should handle fractional exponent', function() {
 
         it("should: 2^2.5 = 5.65685424949238019520675489683879", function(){
-            expect(pow(2, 2.5, false, 32)).toBe("5.65685424949238019520675489683879");
+            expect(pow(2, 2.5, 32)).toBe("5.65685424949238019520675489683879");
         });
 
         it("should: 2^.5 = 1.4142135623730950488016887242097", function(){
-            expect(pow(2, .5, false, 32)).toBe("1.4142135623730950488016887242097");
+            expect(pow(2, .5, 32)).toBe("1.4142135623730950488016887242097");
         });
 
         it("should: 2.5^2.2 = 7.50702771238394520776312433499478", function(){
-            expect(pow(2.5, 2.2, false, 32)).toBe("7.50702771238394520776312433499478");
+            expect(pow(2.5, 2.2, 32)).toBe("7.50702771238394520776312433499478");
         });
 
         it("should: 2.5^-2.2 = 0.13320851318429970246653555493722", function(){
-            expect(pow(2.5, -2.2, false, 32)).toBe("0.13320851318429970246653555493722");
+            expect(pow(2.5, -2.2, 32)).toBe("0.13320851318429970246653555493722");
         });
 
         it("should: -2.5^2.2 = -7.50702771238394520776312433499478", function(){
-            expect(pow(-2.5, 2.2, false, 32)).toBe("-7.50702771238394520776312433499478");
+            expect(pow(-2.5, 2.2, 32)).toBe("-7.50702771238394520776312433499478");
         });
 
         it("should: -2.5^-2.2 = -0.13320851318429970246653555493722", function(){
-            expect(pow(-2.5, -2.2, false, 32)).toBe("-0.13320851318429970246653555493722");
+            expect(pow(-2.5, -2.2, 32)).toBe("-0.13320851318429970246653555493722");
         });
 
     })
@@ -80,19 +79,19 @@ describe("intPow", function () {
     describe('should handle powers of 10', function() {
 
         it("should: 10^2 = 100", function(){
-            expect(pow(10, 2, false, 32)).toBe("100");
+            expect(pow(10, 2, 32, undefined)).toBe("100");
         });
 
         it("should: 10^-2 = .01", function(){
-            expect(pow(10, -2, false, 32)).toBe("0.01");
+            expect(pow(10, -2, 32, undefined)).toBe("0.01");
         });
 
         it("should: 10^.2 = 1.58489319246111348520210137339151", function(){
-            expect(pow(10, .2, false, 32)).toBe("1.58489319246111348520210137339151");
+            expect(pow(10, .2, 32, undefined)).toBe("1.58489319246111348520210137339151");
         });
 
         it("should: 10^-.2 = 0.63095734448019324943436013662234", function(){
-            expect(pow(10, -.2, false, 32)).toBe("0.63095734448019324943436013662234");
+            expect(pow(10, -.2, 32, undefined)).toBe("0.63095734448019324943436013662234");
         });
 
     })
@@ -100,7 +99,7 @@ describe("intPow", function () {
 
     describe('Special Cases', function () {
         it("should: 2^0 = 1", function () {
-            expect(intPow(2, 0)).toBe("1");
+            expect(pow(2, 0)).toBe("1");
         });
 
         it("should: -2^1 = 2", function () {
@@ -135,5 +134,4 @@ describe("intPow", function () {
             expect(() => pow(0, -1)).toThrowError();
         });
     })
-
 });

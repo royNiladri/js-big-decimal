@@ -8,6 +8,8 @@ import { compareTo } from "./compareTo";
 import { subtract, negate } from "./subtract";
 import { RoundingModes as Modes, RoundingModes } from "./roundingModes";
 import { stripTrailingZero } from "./stripTrailingZero";
+import { cbRoot, exp, pow, sqRoot } from "./pow";
+import { Euler, factorial } from "./utils";
 
 class bigDecimal {
   private value: string;
@@ -216,6 +218,49 @@ class bigDecimal {
     return new bigDecimal(negate(this.value));
   }
 
+  static pow(base: number|string, exponent: string) {
+    base = bigDecimal.validate(base);
+    exponent = bigDecimal.validate(exponent);
+    return pow(base, exponent);
+  }
+
+  pow(exponent: number|string) {
+    exponent = bigDecimal.validate(exponent);
+    return new bigDecimal(pow(this.value, exponent, 32));
+  }
+
+  static sqRoot(number: number|string): string {
+    number = bigDecimal.validate(number);
+    return sqRoot(number);
+  }
+
+  sqRoot(): bigDecimal {
+    return new bigDecimal(sqRoot(this.value));
+  }
+
+  static cbRoot(number: number|string): string {
+    number = bigDecimal.validate(number);
+    return cbRoot(number);
+  }
+
+  cbRoot(): bigDecimal {
+    return new bigDecimal(cbRoot(this.value));
+  }
+
+  static exp(base: number|string): string {
+    base = bigDecimal.validate(base);
+    return exp(base);
+  }
+
+  static get E() {
+    return Euler(32);
+  }
+
+  static factorial(base: number|string): string {
+    base = bigDecimal.validate(base);
+    return factorial(base);
+  }
+
   static stripTrailingZero(number) {
     number = bigDecimal.validate(number);
     return stripTrailingZero(number);
@@ -224,5 +269,7 @@ class bigDecimal {
   stripTrailingZero() {
     return new bigDecimal(stripTrailingZero(this.value));
   }
+
+
 }
 export default bigDecimal;
