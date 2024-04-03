@@ -3,7 +3,7 @@ import { abs } from "./abs";
 import { roundOff } from "./round";
 import { multiply } from "./multiply";
 import { divide } from "./divide";
-import { modulus } from "./modulus";
+import { modulus, modulusE } from "./modulus";
 import { compareTo } from "./compareTo";
 import { subtract, negate } from "./subtract";
 import { RoundingModes as Modes, RoundingModes } from "./roundingModes";
@@ -197,6 +197,16 @@ class bigDecimal {
 
   modulus(number: bigDecimal) {
     return new bigDecimal(modulus(this.value, number.getValue()));
+  }
+
+  static modulusE(number1, number2) {
+    number1 = bigDecimal.validate(number1);
+    number2 = bigDecimal.validate(number2);
+    return modulusE(number1, number2);
+  }
+
+  modulusE(number: bigDecimal) {
+    return new bigDecimal(modulusE(this.value, number.getValue()));
   }
 
   static compareTo(number1, number2) {
