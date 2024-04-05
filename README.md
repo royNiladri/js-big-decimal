@@ -150,7 +150,19 @@ Round also supports the following rounding modes (These are same as that of Java
 * `HALF_DOWN` - Rounding mode to round towards "nearest neighbor" unless both neighbors are equidistant, in which case round down.
 * `HALF_EVEN` - Rounding mode to round towards the "nearest neighbor" unless both neighbors are equidistant, in which case, round towards the even neighbor.
 * `HALF_UP` - Rounding mode to round towards "nearest neighbor" unless both neighbors are equidistant, in which case round up.
-* `UNNECESSARY` (!Not Implemented!)- Rounding mode to assert that the requested operation has an exact result, hence no rounding is necessary.
+* `UNNECESSARY` - Rounding mode to assert that the requested operation has an exact result, hence no rounding is necessary. If rounding is found to be necessary, an error is thrown.
+  <details>
+  <summary> More about the behavior</summary>
+  <br/>
+
+  > For example, `bigDecimal.round("123.78", 2, "UNNECESSARY")` will return `"123.78"` because the exact value is within the `precision` limit of `2` decimal places, while `bigDecimal.round("123.789", 2, "UNNECESSARY")` will throw an error beacuse it exceeds the limit and rounding is necessary.
+  <br/>
+  <br/>
+  Same applies to negative `precision` values, such as `bigDecimal.round("17400", -2, "UNNECESSARY")` returning `"17400"`, and `bigDecimal.round("17480", -2, "UNNECESSARY")` or `bigDecimal.round("17400.0001", -2, "UNNECESSARY")` throwing an error.
+  <br/>
+
+  </details>
+  <br/>
 * `UP` - Rounding mode to round away from zero.
 
 Extensive description of the modes can be found at [Rounding Modes](https://docs.oracle.com/javase/8/docs/api/java/math/RoundingMode.html)
