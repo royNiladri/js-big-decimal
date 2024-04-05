@@ -4,7 +4,7 @@ import { roundOff } from "./round";
 import { multiply } from "./multiply";
 import { divide } from "./divide";
 import { modulus, modulusE } from "./modulus";
-import { compareTo } from "./compareTo";
+import { compareTo, lessThan } from "./compareTo";
 import { subtract, negate } from "./subtract";
 import { RoundingModes as Modes, RoundingModes } from "./roundingModes";
 import { stripTrailingZero } from "./stripTrailingZero";
@@ -14,24 +14,22 @@ import { Euler, factorial } from "./utils";
 class bigDecimal {
   private value: string;
   static RoundingModes = Modes;
-
-  private static validate(number): string {
+  private static validate(number: number | string | bigint ): string {
     if (number) {
       number = number.toString();
-      if (isNaN(number)) throw Error("Parameter is not a number: " + number);
-
+      if (isNaN(Number(number))) throw Error("Parameter is not a number: " + number);
       if (number[0] == "+") number = number.substring(1);
     } else number = "0";
 
     //handle missing leading zero
     if (number.startsWith(".")) number = "0" + number;
-    else if (number.startsWith("-.")) number = "-0" + number.substr(1);
+    else if (number.startsWith("-.")) number = "-0" + number.substring(1);
 
-    //handle exponentiation
+    //handle exponentiation (scientific notation)
     if (/e/i.test(number)) {
       let [mantisa, exponent] = number.split(/[eE]/);
+      let exponentIndex = Number(exponent)
       mantisa = trim(mantisa);
-
       let sign = "";
       if (mantisa[0] == "-") {
         sign = "-";
@@ -39,22 +37,22 @@ class bigDecimal {
       }
 
       if (mantisa.indexOf(".") >= 0) {
-        exponent = parseInt(exponent) + mantisa.indexOf(".");
+        exponentIndex = parseInt(exponent) + mantisa.indexOf(".");
         mantisa = mantisa.replace(".", "");
       } else {
-        exponent = parseInt(exponent) + mantisa.length;
+        exponentIndex = parseInt(exponent) + mantisa.length;
       }
 
-      if (mantisa.length < exponent) {
+      if (mantisa.length < exponentIndex) {
         number =
-          sign + mantisa + new Array(exponent - mantisa.length + 1).join("0");
-      } else if (mantisa.length >= exponent && exponent > 0) {
+          sign + mantisa + new Array(exponentIndex - mantisa.length + 1).join("0");
+      } else if (mantisa.length >= exponentIndex && exponentIndex > 0) {
         number =
           sign +
-          trim(mantisa.substring(0, exponent)) +
-          (mantisa.length > exponent ? "." + mantisa.substring(exponent) : "");
+          trim(mantisa.substring(0, exponentIndex)) +
+          (mantisa.length > exponentIndex ? "." + mantisa.substring(exponentIndex) : "");
       } else {
-        number = sign + "0." + new Array(-exponent + 1).join("0") + mantisa;
+        number = sign + "0." + new Array(-exponentIndex + 1).join("0") + mantisa;
       }
     }
 

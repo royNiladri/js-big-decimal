@@ -1,5 +1,6 @@
+import { abs } from "./abs";
 import { add } from "./add";
-import { compareTo } from "./compareTo";
+import { compareTo, isNotZero, isOne, isZero, lessThan } from "./compareTo";
 import { divide } from "./divide";
 import { multiply } from "./multiply";
 import { roundOff } from "./round";
@@ -12,15 +13,15 @@ export const factorial = (n: number | string): string => {
     validateInteger(n);
     validatePositive(n);
 
-    if (isEaxactlyZero(n) || isEaxactlyOne(n)) {
+    if (isZero(n) || isOne(n)) {
         return '1';
     }
 
     let result = n;
 
-    while(!isEaxactlyZero(n)){
+    while(isNotZero(n)){
 
-        if(isEaxactlyOne(n)){
+        if(isOne(n)){
             return result;
         }
 
@@ -59,28 +60,41 @@ export const sigma = (n: number | string, limit: number | string, fn: (n:number|
 
 }
 
+export function tolerance(percision){ return `0.${new Array(percision - 1).join('0')}1`}
+
 export function Euler(percision: number = 32) {
     return roundOff(sigma(0, percision, (n: string | number)=>{
         return divide('1', factorial(n), percision + 1)
     }), percision);
 }
 
-function validateInteger(oparand: string) {
-    if (oparand.includes('.')) {
+function validateInteger(number: string) {
+    if (number.includes('.')) {
         throw new Error('Non-integers not supported');
     }
 }
 
-function validatePositive(oparand: string) {
-    if (oparand.includes('-')) {
+function validatePositive(number: string) {
+    if (number.includes('-')) {
         throw new Error('Negatives not supported');
     }
 }
 
-function isEaxactlyZero(oparand: string) {
-    return (compareTo(oparand, '0') === 0)
+function isAproxZero(number: string | number, percision: number = 8) {
+    number = abs(number.toString());
+
+    if(isZero(number)) return true;
+    if(lessThan(number, tolerance(percision), true)) return true;
+
+    return false;
 }
 
-function isEaxactlyOne(oparand: string) {
-    return (compareTo(oparand, '1') === 0)
+function isAproxOne(number: string | number, percision: number = 8) {
+    number = abs(number.toString());
+
+    if(isOne(number)) return true;
+    if(lessThan(subtract('1', number), tolerance(percision), true)) return true;
+
+    return false;
 }
+

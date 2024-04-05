@@ -1,4 +1,4 @@
-import { exp, pow } from "./pow";
+import { pow, nthRoot } from "./pow";
 
 describe("Pow", function () {
 
@@ -134,4 +134,42 @@ describe("Pow", function () {
             expect(() => pow(0, -1)).toThrowError();
         });
     })
+
+    describe('Roots', function(){
+
+        describe('nthRoot', function(){
+    
+            it("should: 4root2 = 2", function () {
+                expect(nthRoot(4, 2)).toBe("2");
+            });
+    
+            it("should: 9root2 = 9", function () {
+                expect(nthRoot(81, 2)).toBe("9");
+            });
+    
+            it("should: 452root2 = 21.260291625", function () {
+                expect(nthRoot(452, 2)).toBe("21.260291625");
+            });
+
+            it("should: 452root2 = 21.260...", function () {
+                expect(nthRoot(452, 2, 32)).toBe("21.260291625469298815998243829858628");
+            });
+
+            it("should: 45.76root3 = 3.576805615", function () {
+                expect(nthRoot(45.76, 3)).toBe("3.576805615");
+            });
+
+            it("should: 45.76root3 = 3.576...", function () {
+                expect(nthRoot(45.76, 3, 32)).toBe("3.576805614696509204554520668745324");
+            });
+
+        })
+
+        describe('Errors and Exceptions', function () {
+            it("should throw error", function () {
+                expect(() => nthRoot(4, 3.5)).toThrowError();
+            });
+        });
+    });
 });
+

@@ -1,5 +1,5 @@
 import { abs } from "./abs";
-import { compareTo } from "./compareTo";
+import { compareTo, greaterThan, isNotZero, isOne, lessThan } from "./compareTo";
 import { divide } from "./divide";
 import { modulus } from "./modulus";
 import { multiply } from "./multiply";
@@ -8,7 +8,7 @@ import { RoundingModes } from "./roundingModes";
 import { stripTrailingZero } from "./stripTrailingZero";
 import { negate as negateFn, subtract } from "./subtract";
 import { add } from "./add";
-import { Euler, factorial } from "./utils";
+import { Euler, tolerance } from "./utils";
 
 
 /**
@@ -72,7 +72,7 @@ export function pow(base: number | string, exponent: number | string, percision:
         negate = !negate;
     }
 
-    if (compareTo(remainder, '0') == 1) {
+    if (isNotZero(remainder)) {
 
         if(negativeBase && !negativeBase10){
             negate = !negate
@@ -96,8 +96,8 @@ export function pow(base: number | string, exponent: number | string, percision:
 
     exponent = abs(exponent)
 
-    while (compareTo(exponent, '0') == 1) {
-        if (modulus(exponent, 2) == '1') { result = multiply(result, base) }
+    while (greaterThan(exponent, '0')) {
+        if (isOne(modulus(exponent, 2))) { result = multiply(result, base) }
         base = multiply(base, base);
         exponent = roundOff(divide(exponent, 2), 0, RoundingModes.FLOOR);
     }
@@ -117,24 +117,23 @@ export function nthRoot(x: number | string, n: number | string, percision = 8) {
 
     let guess = '1';
     let nMinusOne = subtract(n, 1);
-    let tolerance = pow(10, -percision);
-    let percisionMax = Number(multiply(percision, 2));
+    let percisionMax = Number(multiply(percision + 1, 2));
 
     let i = 0;
-    while (i < percision) {
+    while (i < percisionMax) {
 
         let newGuess = divide(add(stripTrailingZero(divide(x, pow(guess, nMinusOne), percisionMax)), multiply(guess, nMinusOne)), n, percisionMax);
 
-        if (compareTo(subtract(pow(newGuess, n),x), tolerance!) == -1) {
-            return newGuess
+        if (lessThan(newGuess, tolerance(percision))) {
+            return stripTrailingZero(roundOff(newGuess, percision + 1))
         }
 
-        guess = newGuess;
+        guess = stripTrailingZero(newGuess);
 
         i++;
     }
 
-    return guess;
+    return stripTrailingZero(roundOff(guess, percision + 1))
 }
 
 export function sqRoot(base: string|number, percision = 32) {
@@ -168,6 +167,6 @@ export function exp(exponent: number | string){
 
 function validate(oparand: string) {
     if (oparand.includes('.')) {
-        throw new Error('Root base of non-integers not supported');
+        throw Error('Root base of non-integers not supported');
     }
 }
