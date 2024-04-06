@@ -1,5 +1,5 @@
 import { abs } from "./abs";
-import { compareTo, greaterThan, isNotZero, isOne, lessThan } from "./compareTo";
+import { compareTo, greaterThan, isNotZero, isOne, isZero, lessThan } from "./compareTo";
 import { divide } from "./divide";
 import { modulus } from "./modulus";
 import { multiply } from "./multiply";
@@ -54,6 +54,18 @@ export function pow(base: number | string, exponent: number | string, percision:
 
     exponent = exponent.toString();
     base = base.toString();
+
+    if(isZero(exponent)){
+        return '1'
+    }
+
+    if(!exponent.includes('-') && isOne(exponent)){
+        return base
+    }
+
+    if(isZero(base) && exponent.includes('-') && isOne(exponent)){
+        throw Error('0^(-1) is undefined');
+    }
 
     const remainder = abs(modulus(exponent));
     const reciprical = exponent.includes('-');
