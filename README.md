@@ -363,6 +363,11 @@ var factorial = bigDecimal.factorial('5'); // factorial = '120'
 ```
 
 # Roadmap (Planned Features)
+
+In discovery phase:
+
+- Locale aware pretty value
+
 The features listed below are being considered as possible additions in future revisions.
 
 - PI constant
