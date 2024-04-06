@@ -1,21 +1,22 @@
 import { modulus, modulusE } from "./modulus";
 
 describe("modulus(remainder)", function () {
+  
   describe('Basic operations', function () {
 
-    it("should modulusE(7,4) = 3", function () {
+    it("should modulus(7,4) = 3", function () {
       expect(modulus(7, 4)).toBe("3");
     });
   
-    it("should modulusE(32.6, 7) = 4.6", function () {
+    it("should modulus(32.6, 7) = 4.6", function () {
       expect(modulus(32.6, 7)).toBe("4.6");
     });
   
-    it("should modulusE(-7, 4) = 1", function () {
+    it("should modulus(-7, 4) = 1", function () {
       expect(modulus(-7, 4)).toBe("-3");
     });
   
-    it("should modulusE(-32.6, 7) = -4.6", function () {
+    it("should modulus(-32.6, 7) = -4.6", function () {
       expect(modulus(-32.6, 7)).toBe("-4.6");
     });
   
@@ -23,7 +24,7 @@ describe("modulus(remainder)", function () {
       expect(modulus(7, -4)).toBe("3");
     });
   
-    it("should modulusE(32.6, -7) = 4.6", function () {
+    it("should modulus(32.6, -7) = 4.6", function () {
       expect(modulus(32.6, -7)).toBe("4.6");
     });
   
@@ -31,7 +32,7 @@ describe("modulus(remainder)", function () {
       expect(modulus(-7, -4)).toBe("-3");
     });
   
-    it("should modulusE(-32.6, -7) = -4.6", function () {
+    it("should modulus(-32.6, -7) = -4.6", function () {
       expect(modulus(-32.6, -7)).toBe("-4.6");
     });
   
@@ -39,7 +40,7 @@ describe("modulus(remainder)", function () {
       expect(() => modulus(-7, 0)).toThrowError();
     });
   
-    it("should modulusE(76457896543456, 77732) = 45352", function () {
+    it("should modulus(76457896543456, 77732) = 45352", function () {
       expect(modulus("76457896543456", "77732")).toBe("45352");
     });
   })
@@ -112,7 +113,7 @@ describe("modulus(Euclidean division)", function () {
       expect(modulusE(-32.6, -7)).toBe("-4.6");
     });
   
-    it("should modulus(-7,0) throw", function () {
+    it("should modulusE(-7, 0) throw", function () {
       expect(() => modulusE(-7, 0)).toThrowError();
     });
   
@@ -147,8 +148,10 @@ describe("modulus(Euclidean division)", function () {
       expect(() => modulusE("7.5", "3.2")).toThrowError();
     });
 
-    it("should modulus(75%3.2) to throw error", function () {
+    it("should modulusE(75%3.2) to throw error", function () {
       expect(() => modulusE("75", "3.2")).toThrowError();
     });
   })
+
 });
+

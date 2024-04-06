@@ -5,20 +5,6 @@ import { negate, subtract } from './subtract';
 import { RoundingModes } from './roundingModes';
 import { abs } from './abs';
 
-// For technical purposes, this is actually Remainder, and not Modulus (Euclidean division).
-// Could seperate the Modulus equation into its own function,
-// then use it within the Remainder function after proper negation.
-// Proper neation only depends on the sign of the dividend, where the result takes the sign
-// of the divident, and ignores the sign of the divisor. For this effect, the absolute values of
-// each oparand is used, then the original sign of the divident dictates 
-// nagation of the result to negative or not.
-
-
-// To ensure backwards compatibility, the new Modulus function could be named 'modulusE',
-// where 'E' denotes 'Euclidean' in 'Euclidean division'.
-
-// Sugested changes are bellow
-
 export function modulusE(n: number | string, base: number | string = 1, percision: number | undefined = undefined) {
     
     if (base == 0) {
@@ -27,14 +13,13 @@ export function modulusE(n: number | string, base: number | string = 1, percisio
 
     n = n.toString();
     base = base.toString();
-
+  
     validate(base);
 
     return subtract(n, multiply(base, roundOff(divide(n, base, percision), 0, RoundingModes.FLOOR)));
 }
 
 export function modulus(dividend: number | string, divisor: number | string = 1, percision: number | undefined = undefined) {
-    
     if (divisor == 0) {
         throw new Error('Cannot divide by 0');
     }

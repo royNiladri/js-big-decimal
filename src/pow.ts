@@ -50,7 +50,6 @@ import { Euler, tolerance } from "./utils";
  * ```
  */
 
-
 export function pow(base: number | string, exponent: number | string, percision: number | undefined = undefined, negate: boolean  | undefined = false):string {
 
     exponent = exponent.toString();
