@@ -1,17 +1,36 @@
 import { RoundingModes } from './roundingModes';
+import { stripTrailingZero } from './stripTrailingZero';
 /**
  * 
  * @param input the number to round
  * @param n precision
  * @param mode Rounding Mode
  */
-export function roundOff(input: number | string | bigint, n: number = 0, mode=RoundingModes.HALF_EVEN) {
-    if (mode === RoundingModes.UNNECESSARY) {
-        throw new Error("UNNECESSARY Rounding Mode has not yet been implemented");
-    }
+export function roundOff(input: number | string | bigint, n: number = 0, mode = RoundingModes.HALF_EVEN) {
+    if (typeof (input) == 'number' || typeof (input) == 'bigint') input = input.toString();
 
-    if (typeof (input) == 'number' || typeof (input) == 'bigint')
-        input = input.toString();
+    if (mode === RoundingModes.UNNECESSARY) {
+        let [integers, mantissa] = stripTrailingZero(input.replace('-', '')).split('.');
+        if (n > 0 && mantissa) {
+            if (mantissa.length <= n) {
+                return input
+            }
+            if (/[^0]/.test(mantissa.slice(n))) {
+                throw new Error('Number is not an exact value. Rounding necessary.')
+            }
+            return input
+        } else if (n < 0 && mantissa) {
+            throw new Error('Number is not an exact value. Rounding necessary.')
+        } else if (n < 0) {
+            if (integers.length <= Math.abs(n) || /[^0]/.test(integers.slice(n))) {
+                throw new Error('Number is not an exact value. Rounding necessary.')
+            }
+            return input
+        } else if (n == 0 && mantissa) {
+            throw new Error('Number is not an exact value. Rounding necessary.')
+        }
+        return input
+    }
 
     let neg = false;
     if (input[0] === '-') {
@@ -29,8 +48,8 @@ export function roundOff(input: number | string | bigint, n: number = 0, mode=Ro
         if (partInt.length <= n)
             return '0';
         else {
-            let prefix = partInt.substr(0, partInt.length - n);
-            input = prefix + '.' + partInt.substr(partInt.length - n) + partDec;
+            let prefix = partInt.substring(0, partInt.length - n);
+            input = prefix + '.' + partInt.substring(partInt.length - n) + partDec;
             prefix = roundOff(input, 0, mode);
             return (neg ? '-' : '') + prefix + (new Array(n + 1).join('0'));
         }
@@ -43,7 +62,7 @@ export function roundOff(input: number | string | bigint, n: number = 0, mode=Ro
         if (greaterThanFive(parts[1], partInt, neg, mode)) {
             partInt = increment(partInt);
         }
-        return (neg&&parseInt(partInt) ? '-' : '') + partInt;
+        return (neg && parseInt(partInt) ? '-' : '') + partInt;
     }
 
 
@@ -63,7 +82,7 @@ export function roundOff(input: number | string | bigint, n: number = 0, mode=Ro
             return (neg ? '-' : '') + increment(partInt, parseInt(partDec[0])) + '.' + partDec.substring(1);
         }
     }
-    return (neg&&(parseInt(partInt) || parseInt(partDec)) ? '-' : '') + partInt + '.' + partDec;
+    return (neg && (parseInt(partInt) || parseInt(partDec)) ? '-' : '') + partInt + '.' + partDec;
 }
 
 function greaterThanFive(part: string, pre: string, neg: boolean, mode: RoundingModes) {
