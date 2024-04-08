@@ -1,5 +1,5 @@
 import { abs } from "./abs";
-import { compareTo, greaterThan, isNotZero, isOne, isZero, lessThan } from "./compareTo";
+import { compareTo, greaterThan, isExatclyOne, isExatclyZero, lessThan } from "./compareTo";
 import { divide } from "./divide";
 import { modulus } from "./modulus";
 import { multiply } from "./multiply";
@@ -55,15 +55,15 @@ export function pow(base: number | string, exponent: number | string, percision:
     exponent = exponent.toString();
     base = base.toString();
 
-    if(isZero(exponent)){
+    if(isExatclyZero(exponent)){
         return '1'
     }
 
-    if(!exponent.includes('-') && isOne(exponent)){
+    if(!exponent.includes('-') && isExatclyOne(exponent)){
         return base
     }
 
-    if(isZero(base) && exponent.includes('-') && isOne(exponent)){
+    if(isExatclyZero(base) && exponent.includes('-') && isExatclyOne(exponent)){
         throw Error('0^(-1) is undefined');
     }
 
@@ -83,7 +83,7 @@ export function pow(base: number | string, exponent: number | string, percision:
         negate = !negate;
     }
 
-    if (isNotZero(remainder)) {
+    if (!isExatclyZero(remainder)) {
 
         if(negativeBase && !negativeBase10){
             negate = !negate
@@ -108,7 +108,7 @@ export function pow(base: number | string, exponent: number | string, percision:
     exponent = abs(exponent)
 
     while (greaterThan(exponent, '0')) {
-        if (isOne(modulus(exponent, 2))) { result = multiply(result, base) }
+        if (isExatclyOne(modulus(exponent, 2))) { result = multiply(result, base) }
         base = multiply(base, base);
         exponent = roundOff(divide(exponent, 2), 0, RoundingModes.FLOOR);
     }
@@ -159,7 +159,7 @@ export function cbRoot(base: string|number, percision = 32) {
 
 export function root4(base: string|number, percision = 32) {
     percision = Math.max(percision, 32);
-    return nthRoot(base, 4, percision);
+    return sqRoot(sqRoot(base, percision), percision);
 }
 
 export function root5(base: string|number, percision = 32) {

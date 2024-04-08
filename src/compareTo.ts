@@ -57,18 +57,10 @@ export function equals(left: string, right: string){
 	return (compareTo(stripTrailingZero(left), stripTrailingZero(right)) === 0)
 }
 
-export function isZero(number: string) {
-    return (compareTo(stripTrailingZero(abs(number)), '0') === 0)
+export function isExatclyZero(number: string) {
+    return equals(stripTrailingZero(abs(number)), '0')
 }
 
-export function isOne(number: string) {
-    return (compareTo(stripTrailingZero(abs(number)), '1') === 0)
-}
-
-export function isNotZero(number: string) {
-    return !isZero(number)
-}
-
-export function isNotOne(number: string) {
-    return !isOne(number)
+export function isExatclyOne(number: string) {
+    return equals(stripTrailingZero(abs(number)), '1')
 }

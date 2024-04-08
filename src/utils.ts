@@ -1,6 +1,6 @@
 import { abs } from "./abs";
 import { add } from "./add";
-import { compareTo, isNotZero, isOne, isZero, lessThan } from "./compareTo";
+import { compareTo, isExatclyOne, isExatclyZero, lessThan } from "./compareTo";
 import { divide } from "./divide";
 import { multiply } from "./multiply";
 import { roundOff } from "./round";
@@ -13,15 +13,15 @@ export const factorial = (n: number | string): string => {
     validateInteger(n);
     validatePositive(n);
 
-    if (isZero(n) || isOne(n)) {
+    if (isExatclyZero(n) || isExatclyOne(n)) {
         return '1';
     }
 
     let result = n;
 
-    while(isNotZero(n)){
+    while(!isExatclyZero(n)){
 
-        if(isOne(n)){
+        if(isExatclyOne(n)){
             return result;
         }
 
@@ -34,14 +34,14 @@ export const factorial = (n: number | string): string => {
 
 }
 
-export const sigma = (n: number | string, limit: number | string, fn: (n:number|string, ...args) => any, ...args:any): string => {
+function sigma(n: number | string, limit: number | string, fn: (n:number|string, ...args) => any, ...args:any): string {
 
     n = n.toString();
     limit = limit.toString();
 
     validateInteger(n);
-    validateInteger(n);
-    validatePositive(limit);
+    validateInteger(limit);
+    validatePositive(n);
     validatePositive(limit);
 
     let result = '0';
@@ -60,12 +60,39 @@ export const sigma = (n: number | string, limit: number | string, fn: (n:number|
 
 }
 
-export function tolerance(percision){ return `0.${new Array(percision - 1).join('0')}1`}
+export function tolerance(percision: number | string){
+    percision = percision.toString();
+    validateInteger(percision);
+    if(percision == '0') return '0';
+    if(percision.startsWith('-')) return `1${new Array(Number(-percision)).join('0')}`;
+    return `0.${new Array(Number(percision) - 1).join('0')}1`
+}
 
 export function Euler(percision: number = 32) {
+    percision = Math.max(16, percision)
     return roundOff(sigma(0, percision, (n: string | number)=>{
         return divide('1', factorial(n), percision + 1)
     }), percision);
+}
+
+export function isAproxZero(number: string | number, percision: number = 8) {
+    percision = Math.max(1, percision)
+    number = abs(number.toString());
+
+    if(isExatclyZero(number)) return true;
+    if(lessThan(number, tolerance(percision), true)) return true;
+
+    return false;
+}
+
+export function isAproxOne(number: string | number, percision: number = 8) {
+    percision = Math.max(1, percision)
+    number = abs(number.toString());
+
+    if(isExatclyOne(number)) return true;
+    if(lessThan(abs(subtract('1', number)), tolerance(percision), true)) return true;
+
+    return false;
 }
 
 function validateInteger(number: string) {
@@ -80,21 +107,4 @@ function validatePositive(number: string) {
     }
 }
 
-function isAproxZero(number: string | number, percision: number = 8) {
-    number = abs(number.toString());
-
-    if(isZero(number)) return true;
-    if(lessThan(number, tolerance(percision), true)) return true;
-
-    return false;
-}
-
-function isAproxOne(number: string | number, percision: number = 8) {
-    number = abs(number.toString());
-
-    if(isOne(number)) return true;
-    if(lessThan(subtract('1', number), tolerance(percision), true)) return true;
-
-    return false;
-}
 
