@@ -1,10 +1,11 @@
 import { abs } from "./abs";
 import { add } from "./add";
-import { compareTo, isExatclyOne, isExatclyZero, lessThan } from "./compareTo";
+import { compareTo, equals, greaterThan, isExatclyOne, isExatclyZero, lessThan } from "./compareTo";
 import { divide } from "./divide";
 import { multiply } from "./multiply";
+import { sqRoot } from "./pow";
 import { roundOff } from "./round";
-import { subtract } from "./subtract";
+import { negate, subtract } from "./subtract";
 
 export const factorial = (n: number | string): string => {
 
@@ -34,7 +35,7 @@ export const factorial = (n: number | string): string => {
 
 }
 
-function sigma(n: number | string, limit: number | string, fn: (n:number|string, ...args) => any, ...args:any): string {
+export function sigma(n: number | string, limit: number | string, fn: (n:number|string, ...args) => any, ...args:any): string {
 
     n = n.toString();
     limit = limit.toString();
@@ -51,48 +52,76 @@ function sigma(n: number | string, limit: number | string, fn: (n:number|string,
             return result;
         }
 
-        let next = subtract(limit,'1');
         result = add(result, fn(limit, ...args));
-        limit = next;
+        limit = subtract(limit,'1');
     }
 
     return result
 
 }
 
-export function tolerance(percision: number | string){
-    percision = percision.toString();
-    validateInteger(percision);
-    if(percision == '0') return '0';
-    if(percision.startsWith('-')) return `1${new Array(Number(-percision)).join('0')}`;
-    return `0.${new Array(Number(percision) - 1).join('0')}1`
+export function alternatingSeries(n: number | string, limit: number | string, fn: (n:number|string) => any, _sign: number | string = '1'): string {
+
+    n = n.toString();
+    limit = limit.toString();
+    _sign = sign(_sign).toString();
+
+    validateInteger(n);
+    validateInteger(limit);
+    validatePositive(n);
+    validatePositive(limit);
+
+    let result = '0';
+    while(true){
+
+        const next = multiply(_sign, fn(n))
+
+        if(lessThan(abs(next), tolerance(limit))){
+            return result;
+        }
+
+        result = add(result, next);
+        _sign = negate(_sign)
+        n = add(n,'1');
+    }
+
+    return result
+
 }
 
-export function Euler(percision: number = 32) {
-    percision = Math.max(16, percision)
-    return roundOff(sigma(0, percision, (n: string | number)=>{
-        return divide('1', factorial(n), percision + 1)
-    }), percision);
+export function tolerance(precision: number | string){
+    precision = precision.toString();
+    validateInteger(precision);
+    if(precision == '0') return '0';
+    if(precision.startsWith('-')) return `1${new Array(Number(-precision)).join('0')}`;
+    return `0.${new Array(Number(precision) - 1).join('0')}1`
 }
 
-export function isAproxZero(number: string | number, percision: number = 8) {
-    percision = Math.max(1, percision)
+export function isAproxZero(number: string | number, precision: number = 8) {
+    precision = Math.max(1, precision)
     number = abs(number.toString());
 
     if(isExatclyZero(number)) return true;
-    if(lessThan(number, tolerance(percision), true)) return true;
+    if(lessThan(number, tolerance(precision), true)) return true;
 
     return false;
 }
 
-export function isAproxOne(number: string | number, percision: number = 8) {
-    percision = Math.max(1, percision)
+export function isAproxOne(number: string | number, precision: number = 8) {
+    precision = Math.max(1, precision)
     number = abs(number.toString());
 
     if(isExatclyOne(number)) return true;
-    if(lessThan(abs(subtract('1', number)), tolerance(percision), true)) return true;
+    if(lessThan(abs(subtract('1', number)), tolerance(precision), true)) return true;
 
     return false;
+}
+
+export function sign(number: string | number){
+    number = number.toString();
+    if(isExatclyZero(number)) return 0;
+    if(number.includes('-')) return -1;
+    return 1;
 }
 
 function validateInteger(number: string) {

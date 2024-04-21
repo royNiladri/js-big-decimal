@@ -8,8 +8,10 @@ import { compareTo, lessThan } from "./compareTo";
 import { subtract, negate } from "./subtract";
 import { RoundingModes as Modes, RoundingModes } from "./roundingModes";
 import { stripTrailingZero } from "./stripTrailingZero";
-import { cbRoot, exp, pow, sqRoot } from "./pow";
-import { Euler, factorial } from "./utils";
+import { cbRoot, pow, sqRoot } from "./pow";
+import { factorial } from "./utils";
+import { cos, sin, tan } from "./trig";
+import { ln, log, ln2, log10, exp, LN2, LN10, LN2E, LN10E, Euler, expm1 } from "./logarithm";
 
 class bigDecimal {
   private value: string;
@@ -226,6 +228,8 @@ class bigDecimal {
     return new bigDecimal(negate(this.value));
   }
 
+  // Powers
+
   static pow(base: number|string, exponent: string) {
     base = bigDecimal.validate(base);
     exponent = bigDecimal.validate(exponent);
@@ -235,6 +239,16 @@ class bigDecimal {
   pow(exponent: number|string) {
     exponent = bigDecimal.validate(exponent);
     return new bigDecimal(pow(this.value, exponent, 32));
+  }
+
+  // Roots
+
+  static get SQRT1_2() {
+    return sqRoot('.5');
+  }
+
+  static get SQRT2() {
+    return sqRoot('2');
   }
 
   static sqRoot(number: number|string): string {
@@ -255,18 +269,79 @@ class bigDecimal {
     return new bigDecimal(cbRoot(this.value));
   }
 
-  static exp(base: number|string): string {
-    base = bigDecimal.validate(base);
-    return exp(base);
-  }
+  // Logarithms
 
   static get E() {
     return Euler(32);
   }
 
-  static factorial(base: number|string): string {
-    base = bigDecimal.validate(base);
-    return factorial(base);
+  static get LN2(){
+    return LN2
+  }
+
+  static get LN10(){
+    return LN10
+  }
+
+  static get LN2E(){
+    return LN2E
+  }
+
+  static get LN10E(){
+    return LN10E
+  }
+
+  static log2(number: number|string){
+    number = bigDecimal.validate(number);
+    return ln2(number)
+  }  
+
+  static log10(number: number|string){
+    number = bigDecimal.validate(number);
+    return log10(number)
+  }
+
+  static log1p(number: number|string){
+    number = bigDecimal.validate(number);
+    return log(add('1', number))
+  }
+
+  static log(number: number|string){
+    number = bigDecimal.validate(number);
+    return log(number)
+  }
+
+  static exp(number: number|string): string {
+    number = bigDecimal.validate(number);
+    return exp(number);
+  }
+
+  static expm1(number: number|string): string {
+    number = bigDecimal.validate(number);
+    return expm1(number)
+  }
+
+  // Trig
+  static sin(number: number|string): string {
+    number = bigDecimal.validate(number);
+    return sin(number);
+  }
+
+  static cos(number: number|string): string {
+    number = bigDecimal.validate(number);
+    return cos(number);
+  }
+
+  static tan(number: number|string): string {
+    number = bigDecimal.validate(number);
+    return tan(number);
+  }
+
+  // Misc.
+
+  static factorial(number: number|string): string {
+    number = bigDecimal.validate(number);
+    return factorial(number);
   }
 
   static stripTrailingZero(number) {

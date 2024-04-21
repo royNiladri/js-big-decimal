@@ -1,5 +1,5 @@
 import { abs } from "./abs";
-import { compareTo, greaterThan, isExatclyOne, isExatclyZero, lessThan } from "./compareTo";
+import { compareTo, equals, greaterThan, isExatclyOne, isExatclyZero, lessThan } from "./compareTo";
 import { divide } from "./divide";
 import { modulus } from "./modulus";
 import { multiply } from "./multiply";
@@ -8,8 +8,7 @@ import { RoundingModes } from "./roundingModes";
 import { stripTrailingZero } from "./stripTrailingZero";
 import { negate as negateFn, subtract } from "./subtract";
 import { add } from "./add";
-import { Euler, tolerance } from "./utils";
-
+import { tolerance } from "./utils";
 
 /**
  * Calculates the power of a given base raised to an integer exponent
@@ -50,20 +49,20 @@ import { Euler, tolerance } from "./utils";
  * ```
  */
 
-export function pow(base: number | string, exponent: number | string, percision: number | undefined = undefined, negate: boolean  | undefined = false):string {
+export function pow(base: number | string, exponent: number | string, precision: number | undefined = undefined, negate: boolean | undefined = false): string {
 
     exponent = exponent.toString();
     base = base.toString();
 
-    if(isExatclyZero(exponent)){
+    if (isExatclyZero(exponent)) {
         return '1'
     }
 
-    if(!exponent.includes('-') && isExatclyOne(exponent)){
+    if (!exponent.includes('-') && isExatclyOne(exponent)) {
         return base
     }
 
-    if(isExatclyZero(base) && exponent.includes('-') && isExatclyOne(exponent)){
+    if (isExatclyZero(base) && exponent.includes('-') && isExatclyOne(exponent)) {
         throw Error('0^(-1) is undefined');
     }
 
@@ -72,8 +71,8 @@ export function pow(base: number | string, exponent: number | string, percision:
     const negativeBase = base.includes('-');
     const isBase10 = compareTo(abs(base), '10') == 0;
     const negativeBase10 = isBase10 && negativeBase;
-    const orderOrPercision = reciprical && compareTo(abs(exponent), '1') == -1 ? percision : Number(abs(exponent));
-    const recipricalPercision = isBase10 ? orderOrPercision : percision;
+    const orderOrprecision = reciprical && compareTo(abs(exponent), '1') == -1 ? precision : Number(abs(exponent));
+    const recipricalprecision = isBase10 ? orderOrprecision : precision;
 
     let fractionalExponent = '1';
     let result = '1';
@@ -85,7 +84,7 @@ export function pow(base: number | string, exponent: number | string, percision:
 
     if (!isExatclyZero(remainder)) {
 
-        if(negativeBase && !negativeBase10){
+        if (negativeBase && !negativeBase10) {
             negate = !negate
         }
 
@@ -114,12 +113,12 @@ export function pow(base: number | string, exponent: number | string, percision:
     }
 
     result = multiply(result, fractionalExponent);
-    result = (percision) ? roundOff(result, percision) : result;
-    result = (reciprical) ? divide(1, result, recipricalPercision) : result;
+    result = (precision) ? roundOff(result, precision) : result;
+    result = (reciprical) ? divide(1, result, recipricalprecision) : result;
     return (negate) ? stripTrailingZero(negateFn(result)) : stripTrailingZero(result);
 };
 
-export function nthRoot(x: number | string, n: number | string, percision = 8) {
+export function nthRoot(x: number | string, n: number | string, precision = 8) {
 
     x = x.toString();
     n = n.toString();
@@ -128,15 +127,15 @@ export function nthRoot(x: number | string, n: number | string, percision = 8) {
 
     let guess = '1';
     let nMinusOne = subtract(n, 1);
-    let percisionMax = Number(multiply(percision + 1, 2));
+    let precisionMax = Number(multiply(precision + 1, 2));
 
     let i = 0;
-    while (i < percisionMax) {
+    while (i < precisionMax) {
 
-        let newGuess = divide(add(stripTrailingZero(divide(x, pow(guess, nMinusOne), percisionMax)), multiply(guess, nMinusOne)), n, percisionMax);
+        let newGuess = divide(add(stripTrailingZero(divide(x, pow(guess, nMinusOne), precisionMax)), multiply(guess, nMinusOne)), n, precisionMax);
 
-        if (lessThan(newGuess, tolerance(percision))) {
-            return stripTrailingZero(roundOff(newGuess, percision + 1))
+        if (lessThan(newGuess, tolerance(precision))) {
+            return stripTrailingZero(roundOff(newGuess, precision + 1))
         }
 
         guess = stripTrailingZero(newGuess);
@@ -144,40 +143,38 @@ export function nthRoot(x: number | string, n: number | string, percision = 8) {
         i++;
     }
 
-    return stripTrailingZero(roundOff(guess, percision + 1))
+    return stripTrailingZero(roundOff(guess, precision + 1))
 }
 
-export function sqRoot(base: string|number, percision = 32) {
-    percision = Math.max(percision, 32);
-    return nthRoot(base, 2, percision);
+export function sqRoot(base: string | number, precision = 32) {
+    precision = Math.max(precision, 32);
+    return nthRoot(base, 2, precision);
 }
 
-export function cbRoot(base: string|number, percision = 32) {
-    percision = Math.max(percision, 32);
-    return nthRoot(base, 3, percision);
+export function cbRoot(base: string | number, precision = 32) {
+    precision = Math.max(precision, 32);
+    return nthRoot(base, 3, precision);
 }
 
-export function root4(base: string|number, percision = 32) {
-    percision = Math.max(percision, 32);
-    return sqRoot(sqRoot(base, percision), percision);
+export function root4(base: string | number, precision = 32) {
+    precision = Math.max(precision, 32);
+    return sqRoot(sqRoot(base, precision), precision);
 }
 
-export function root5(base: string|number, percision = 32) {
-    percision = Math.max(percision, 32);
-    return nthRoot(base, 5, percision);
+export function root5(base: string | number, precision = 32) {
+    precision = Math.max(precision, 32);
+    return nthRoot(base, 5, precision);
 }
 
-export function root10(base: string|number, percision = 32) {
-    percision = Math.max(percision, 32);
-    return sqRoot(root5(base, percision), percision);
+export function root10(base: string | number, precision = 32) {
+    precision = Math.max(precision, 32);
+    return sqRoot(root5(base, precision), precision);
 }
-
-export function exp(exponent: number | string){
-    return pow(Euler(32),exponent)
-} 
 
 function validate(oparand: string) {
     if (oparand.includes('.')) {
         throw Error('Root base of non-integers not supported');
     }
 }
+
+
