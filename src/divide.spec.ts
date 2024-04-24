@@ -100,4 +100,7 @@ describe("divide", function () {
   it(".102 / .0383292 = 2.66115651", function () {
     expect(divide(".102", ".0383292", 8)).toBe("2.66115651");
   });
+  it("divide(0, 2, 3) should add trailing 0s", function () {
+    expect(divide(0, 2, 3)).toBe("0.000");
+  });
 });

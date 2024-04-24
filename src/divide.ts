@@ -1,20 +1,26 @@
 import { add, trim } from './add';
 import { roundOff } from './round';
 
-export function divide(dividend, divisor, precission = 8) {
-    if (divisor == 0) {
-        throw new Error('Cannot divide by 0');
+export function divide(dividend: string | number, divisor: string | number, precission?:number) {
+    // Convert to string
+    if (typeof dividend == 'number' || typeof divisor == 'number') {
+        dividend = dividend.toString();
+        divisor = divisor.toString();
     }
 
-    dividend = dividend.toString();
-    divisor = divisor.toString();
+    // Return 0 
+    if (divisor == '0') {
+        return '0' + (!precission)? '': '.' + new Array(precission).join('0');
+    }
+
+    // Set default precission
+    if(typeof precission == 'undefined'){
+        precission = 8;
+    }
 
     // remove trailing zeros in decimal ISSUE#18
     dividend = dividend.replace(/(\.\d*?[1-9])0+$/g, "$1").replace(/\.0+$/, "");
     divisor = divisor.replace(/(\.\d*?[1-9])0+$/g, "$1").replace(/\.0+$/, "");
-
-    if (dividend == 0)
-        return '0';
 
     let neg = 0;
     if (divisor[0] == '-') {
@@ -51,7 +57,7 @@ export function divide(dividend, divisor, precission = 8) {
     let prec = 0, dl = divisor.length, rem = '0', quotent = '';
     let dvnd = (dividend.indexOf('.') > -1 && dividend.indexOf('.') < dl) ? dividend.substring(0, dl + 1) : dividend.substring(0, dl);
     dividend = (dividend.indexOf('.') > -1 && dividend.indexOf('.') < dl) ? dividend.substring(dl + 1) : dividend.substring(dl);
-    
+
     if (dvnd.indexOf('.') > -1) {
         let shift = dvnd.length - dvnd.indexOf('.') - 1;
         dvnd = dvnd.replace('.', '');

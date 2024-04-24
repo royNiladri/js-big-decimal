@@ -3,33 +3,35 @@ import { abs } from "./abs";
 import { roundOff } from "./round";
 import { multiply } from "./multiply";
 import { divide } from "./divide";
-import { modulus } from "./modulus";
-import { compareTo } from "./compareTo";
+import { modulus, modulusE } from "./modulus";
+import { compareTo, equals, greaterThan, lessThan } from "./compareTo";
 import { subtract, negate } from "./subtract";
 import { RoundingModes as Modes, RoundingModes } from "./roundingModes";
 import { stripTrailingZero } from "./stripTrailingZero";
+import { cbRoot, pow, sqRoot } from "./pow";
+import { factorial, sign } from "./utils";
+import { acos, asin, atan, atan2, cos, cosh, hypot, sin, sinh, tan, tanh } from "./trig";
+import { ln, log, ln2, log10, exp, LN2, LN10, LOG2E, LOG10E, Euler, expm1 } from "./logarithm";
 
 class bigDecimal {
   private value: string;
   static RoundingModes = Modes;
-
-  private static validate(number): string {
+  private static validate(number: number | string | bigint ): string {
     if (number) {
       number = number.toString();
-      if (isNaN(number)) throw Error("Parameter is not a number: " + number);
-
+      if (isNaN(Number(number))) throw Error("Parameter is not a number: " + number);
       if (number[0] == "+") number = number.substring(1);
     } else number = "0";
 
     //handle missing leading zero
     if (number.startsWith(".")) number = "0" + number;
-    else if (number.startsWith("-.")) number = "-0" + number.substr(1);
+    else if (number.startsWith("-.")) number = "-0" + number.substring(1);
 
-    //handle exponentiation
+    //handle exponentiation (scientific notation)
     if (/e/i.test(number)) {
       let [mantisa, exponent] = number.split(/[eE]/);
+      let exponentIndex = Number(exponent)
       mantisa = trim(mantisa);
-
       let sign = "";
       if (mantisa[0] == "-") {
         sign = "-";
@@ -37,22 +39,22 @@ class bigDecimal {
       }
 
       if (mantisa.indexOf(".") >= 0) {
-        exponent = parseInt(exponent) + mantisa.indexOf(".");
+        exponentIndex = parseInt(exponent) + mantisa.indexOf(".");
         mantisa = mantisa.replace(".", "");
       } else {
-        exponent = parseInt(exponent) + mantisa.length;
+        exponentIndex = parseInt(exponent) + mantisa.length;
       }
 
-      if (mantisa.length < exponent) {
+      if (mantisa.length < exponentIndex) {
         number =
-          sign + mantisa + new Array(exponent - mantisa.length + 1).join("0");
-      } else if (mantisa.length >= exponent && exponent > 0) {
+          sign + mantisa + new Array(exponentIndex - mantisa.length + 1).join("0");
+      } else if (mantisa.length >= exponentIndex && exponentIndex > 0) {
         number =
           sign +
-          trim(mantisa.substring(0, exponent)) +
-          (mantisa.length > exponent ? "." + mantisa.substring(exponent) : "");
+          trim(mantisa.substring(0, exponentIndex)) +
+          (mantisa.length > exponentIndex ? "." + mantisa.substring(exponentIndex) : "");
       } else {
-        number = sign + "0." + new Array(-exponent + 1).join("0") + mantisa;
+        number = sign + "0." + new Array(-exponentIndex + 1).join("0") + mantisa;
       }
     }
 
@@ -197,14 +199,14 @@ class bigDecimal {
     return new bigDecimal(modulus(this.value, number.getValue()));
   }
 
-  static compareTo(number1, number2) {
+  static modulusE(number1, number2) {
     number1 = bigDecimal.validate(number1);
     number2 = bigDecimal.validate(number2);
-    return compareTo(number1, number2);
+    return modulusE(number1, number2);
   }
 
-  compareTo(number: bigDecimal) {
-    return compareTo(this.value, number.getValue());
+  modulusE(number: bigDecimal) {
+    return new bigDecimal(modulusE(this.value, number.getValue()));
   }
 
   static negate(number) {
@@ -216,6 +218,235 @@ class bigDecimal {
     return new bigDecimal(negate(this.value));
   }
 
+  // Powers
+
+  static pow(base: number|string, exponent: number|string) {
+    base = bigDecimal.validate(base);
+    exponent = bigDecimal.validate(exponent);
+    return pow(base, exponent);
+  }
+
+  pow(exponent: bigDecimal) {
+    return new bigDecimal(pow(this.value, exponent.getValue(), 32));
+  }
+
+  // Roots
+
+  static get SQRT1_2() {
+    return sqRoot('.5');
+  }
+
+  static get SQRT2() {
+    return sqRoot('2');
+  }
+
+  static sqRoot(number: number|string): string {
+    number = bigDecimal.validate(number);
+    return sqRoot(number);
+  }
+
+  sqRoot(): bigDecimal {
+    return new bigDecimal(sqRoot(this.value));
+  }
+
+  static cbRoot(number: number|string): string {
+    number = bigDecimal.validate(number);
+    return cbRoot(number);
+  }
+
+  cbRoot(): bigDecimal {
+    return new bigDecimal(cbRoot(this.value));
+  }
+
+  // Logarithms
+
+  static get E() {
+    return Euler(32);
+  }
+
+  static get LN2(){
+    return LN2
+  }
+
+  static get LN10(){
+    return LN10
+  }
+
+  static get LOG2E(){
+    return LOG2E
+  }
+
+  static get LOG10E(){
+    return LOG10E
+  }
+
+  static log2(number: number|string){
+    number = bigDecimal.validate(number);
+    return ln2(number)
+  }  
+
+  static log10(number: number|string){
+    number = bigDecimal.validate(number);
+    return log10(number)
+  }
+
+  static log1p(number: number|string){
+    number = bigDecimal.validate(number);
+    return log(add('1', number))
+  }
+
+  static log(number: number|string){
+    number = bigDecimal.validate(number);
+    return log(number)
+  }
+
+  static exp(number: number|string): string {
+    number = bigDecimal.validate(number);
+    return exp(number);
+  }
+
+  static expm1(number: number|string): string {
+    number = bigDecimal.validate(number);
+    return expm1(number)
+  }
+
+  // Trig
+  static hypot(a: number|string, b: number|string){
+    a = bigDecimal.validate(a);
+    b = bigDecimal.validate(b);
+
+    return hypot(a,b);
+
+  }
+
+  static sin(number: number|string): string {
+    number = bigDecimal.validate(number);
+    return sin(number);
+  }
+
+  static sinh(number: number|string): string {
+    number = bigDecimal.validate(number);
+    return sinh(number);
+  }
+
+  static asin(number: number|string): string {
+    number = bigDecimal.validate(number);
+    return asin(number);
+  }
+
+  static cos(number: number|string): string {
+    number = bigDecimal.validate(number);
+    return cos(number);
+  }
+
+  static cosh(number: number|string): string {
+    number = bigDecimal.validate(number);
+    return cosh(number);
+  }
+
+  static acos(number: number|string): string {
+    number = bigDecimal.validate(number);
+    return acos(number);
+  }
+
+  static tan(number: number|string): string {
+    number = bigDecimal.validate(number);
+    return tan(number);
+  }
+
+  static tanh(number: number|string): string {
+    number = bigDecimal.validate(number);
+    return tanh(number);
+  }
+
+  static atan(number: number|string): string {
+    number = bigDecimal.validate(number);
+    return atan(number);
+  }
+
+  static atan2(y: number|string, x: number|string): string {
+    x = bigDecimal.validate(x);
+    y = bigDecimal.validate(y);
+    return atan2(y, x);
+  }
+
+  // Comparisons
+  static compareTo(number1: number|string, number2: number|string) {
+    number1 = bigDecimal.validate(number1);
+    number2 = bigDecimal.validate(number2);
+    return compareTo(number1, number2);
+  }
+
+  compareTo(number: bigDecimal) {
+    return compareTo(this.value, number.getValue());
+  }
+
+  static equals(number1: number|string, number2: number|string){
+    number1 = bigDecimal.validate(number1);
+    number2 = bigDecimal.validate(number2);
+    return equals(number1, number2);
+  }
+
+  equals(number: bigDecimal){
+    return equals(this.value, number.getValue());
+  }
+
+  static lt(number1: number|string, number2: number|string){
+    number1 = bigDecimal.validate(number1);
+    number2 = bigDecimal.validate(number2);
+    return lessThan(number1, number2);
+  }
+
+  lt(number: bigDecimal){
+    return lessThan(this.value, number.getValue());
+  }
+
+  static leq(number1: number|string, number2: number|string){
+    number1 = bigDecimal.validate(number1);
+    number2 = bigDecimal.validate(number2);
+    return lessThan(number1, number2, true);
+  }
+
+  leq(number: bigDecimal){
+    return lessThan(this.value, number.getValue(), true);
+  }
+
+  static gt(number1: number|string, number2: number|string){
+    number1 = bigDecimal.validate(number1);
+    number2 = bigDecimal.validate(number2);
+    return greaterThan(number1, number2);
+  }
+
+  gt(number: bigDecimal){
+    return greaterThan(this.value, number.getValue());
+  }
+
+  static geq(number1: number|string, number2: number|string){
+    number1 = bigDecimal.validate(number1);
+    number2 = bigDecimal.validate(number2);
+    return greaterThan(number1, number2, true);
+  }
+
+  geq(number: bigDecimal){
+    return greaterThan(this.value, number.getValue(), true);
+  }
+
+  static sign(number: number|string){
+    number = bigDecimal.validate(number);
+    return sign(number);
+  }
+
+  sign(){
+    return sign(this.value);
+  }
+
+  // Misc.
+
+  static factorial(number: number|string): string {
+    number = bigDecimal.validate(number);
+    return factorial(number);
+  }
+
   static stripTrailingZero(number) {
     number = bigDecimal.validate(number);
     return stripTrailingZero(number);
@@ -224,5 +455,7 @@ class bigDecimal {
   stripTrailingZero() {
     return new bigDecimal(stripTrailingZero(this.value));
   }
+
+
 }
 export default bigDecimal;

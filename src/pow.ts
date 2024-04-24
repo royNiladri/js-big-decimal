@@ -1,29 +1,14 @@
 import { abs } from "./abs";
-import { compareTo } from "./compareTo";
+import { compareTo, equals, greaterThan, isExatclyOne, isExatclyZero, lessThan } from "./compareTo";
 import { divide } from "./divide";
 import { modulus } from "./modulus";
 import { multiply } from "./multiply";
 import { roundOff } from "./round";
 import { RoundingModes } from "./roundingModes";
+import { stripTrailingZero } from "./stripTrailingZero";
 import { negate as negateFn, subtract } from "./subtract";
-
-export type ExponentErrorOrException = {
-    message: string,
-    type: 'error' | 'exception',
-}
-
-export const NonIntegerExponentError: ExponentErrorOrException = {
-    message: `Exponent must be an integer.`,
-    type: 'error',
-}
-
-export const ComplexExponentException: ExponentErrorOrException = {
-    message: `Result is a Complex number with only an Imaginary component.`,
-    type: 'exception',
-}
-
-
-
+import { add } from "./add";
+import { tolerance } from "./utils";
 
 /**
  * Calculates the power of a given base raised to an integer exponent
@@ -34,7 +19,6 @@ export const ComplexExponentException: ExponentErrorOrException = {
  * 
  * @returns The resulting power as a string
  * 
- * @throws {NonIntegerExponentError} - If `exponent` is a non-integer number, this error is thrown.
  * 
  * @example Basic usage:
  * ```
@@ -65,104 +49,126 @@ export const ComplexExponentException: ExponentErrorOrException = {
  * ```
  */
 
-// Integer Exponent Only Implementation
-
-export function intPow(base: number | string, exponent: number | string, negate: boolean = false) {
+export function pow(base: number | string, exponent: number | string, precision: number | undefined = undefined, negate: boolean | undefined = false): string {
 
     exponent = exponent.toString();
     base = base.toString();
 
-    try {
-        if (exponent.includes('.')) {
-            throw NonIntegerExponentError
-        }
-
-        // Special Handling of Complex numbers
-
-        // const imaginary = exponent < 0 && Number(remainder) > 0 && Number(remainder) < 1;
-
-        // if (imaginary) {
-        //     throw ComplexExponentException
-        // }
-
-    } catch (errorOrException) {
-        errorOrException = <ExponentErrorOrException>errorOrException
-        switch (errorOrException.type) {
-            case 'error':
-                const error = Error(`${errorOrException.message}`)
-                console.error(error)
-                throw error
-            // case 'exception': // For Complex nunmbers 
-            //     console.error(`Exception(${errorOrException.severity}): ${errorOrException.message}`)
-            //     return NaN // Todo: Break or continue
-        }
+    if (isExatclyZero(exponent)) {
+        return '1'
     }
 
-    const reciprical = compareTo(exponent, '0') == -1;
-    const base10Percision = compareTo(base, '10') == 0 ? exponent.length : undefined;
+    if (!exponent.includes('-') && isExatclyOne(exponent)) {
+        return base
+    }
 
+    if (isExatclyZero(base) && exponent.includes('-') && isExatclyOne(exponent)) {
+        throw Error('0^(-1) is undefined');
+    }
+
+    const remainder = exponent.split('.')[1];
+    const reciprical = exponent.includes('-');
+    const negativeBase = base.includes('-');
+    const isBase10 = equals(abs(base), '10');
+    const negativeBase10 = isBase10 && negativeBase;
+    const orderOrprecision = reciprical && lessThan(abs(exponent), '1') ? precision : Number(abs(exponent));
+    const recipricalprecision = isBase10 ? orderOrprecision : precision;
+
+    let fractionalExponent = '1';
     let result = '1';
 
-    exponent = abs(exponent)
+    if (negativeBase10) {
+        base = abs(base);
+        negate = !negate;
+    }
 
-    while (compareTo(exponent, '0') == 1) {
-        if (modulus(exponent, 2) == '1') { result = multiply(result, base) }
+    if (remainder) {
+
+        if (negativeBase && !negativeBase10) {
+            negate = !negate
+        }
+
+        precision = 32;
+        let tempBase = root10(abs(base));
+
+        for (let i = 0; i < remainder.length; i++) {
+            fractionalExponent = multiply(fractionalExponent, pow(tempBase, remainder[i]))
+            tempBase = root10(tempBase)
+        }
+
+    }
+
+    exponent = abs(exponent.split('.')[0])
+
+    while (greaterThan(exponent, '0')) {
+        if (equals(modulus(exponent, 2), '1')) { result = multiply(result, base) }
         base = multiply(base, base);
         exponent = roundOff(divide(exponent, 2), 0, RoundingModes.FLOOR);
     }
 
-    result = (reciprical) ? divide(1, result, base10Percision) : result;
-    return (negate) ? negateFn(result) : result;
+    result = multiply(result, fractionalExponent);
+    result = (precision) ? roundOff(result, precision) : result;
+    result = (reciprical) ? divide(1, result, recipricalprecision) : result;
+    return (negate) ? stripTrailingZero(negateFn(result)) : stripTrailingZero(result);
 };
 
-// Todo: Core Powers function
-// Needs Nth-Root implementation for fractional powers
+export function nthRoot(x: number | string, n: number | string, precision = 8) {
 
-// export function pow(x: number, n: number, negate: boolean = false) {
+    x = x.toString();
+    n = n.toString();
 
-//     const reciprical = n < 0;
-//     const percision = x == 10 && n >= 1 ? Math.abs(n) : undefined
+    validate(n);
 
-//     const exp = abs(n);
-//     const floor = roundOff(exp, 0, RoundingModes.FLOOR);
-//     const remainder = subtract(exp, floor);
-//     const imaginary = x < 0 && Number(remainder) > 0 && Number(remainder) < 1;
+    let guess = '1';
+    let nMinusOne = subtract(n, 1);
+    let precisionMax = Number(multiply(precision + 1, 2));
 
-//     try {
-//         if (imaginary) {
-//             x = Math.abs(x);
-//             negate = true;
-//             throw `Complex Number Exception: Cannot calculate powers resulting in Imaginary Numbers. Base will be subsituted with it's absolute value, and result will be negated.`;
-//         }
-//     } catch (warning) {
-//         console.warn(warning);
-//     }
+    let i = 0;
+    while (i < precisionMax) {
 
-//     const base = x;
+        let newGuess = divide(add(stripTrailingZero(divide(x, pow(guess, nMinusOne), precision + 2)), multiply(guess, nMinusOne)), n, precision + 2);
 
-//     let result = x.toString();
+        if (lessThan(newGuess, tolerance(precision - 1))) {
+            return stripTrailingZero(roundOff(newGuess, precision + 1))
+        }
 
-//     if (Number(remainder) > 0 && Number(remainder) < 1) {
-//         const factor = divide(1, remainder, 3);
-//         const root = nthRoot(x, Number(factor));
+        guess = stripTrailingZero(newGuess);
 
-//         if (Number(floor) > 0) {
-//             for (let i = 0; i < Number(floor) - 1; i++) {
-//                 result = multiply(result, base);
-//             }
-//         } else {
-//             result = '1';
-//         }
+        i++;
+    }
 
-//         result = multiply(result, root);
-//     } else if (n == 0) {
-//         result = '1';
-//     } else {
-//         for (let i = 0; i < Number(exp) - 1; i++) {
-//             result = multiply(result, base);
-//         }
-//     }
-//     result = negate ? negateFn(result) : result;
-//     result = reciprical ? divide(1, result, percision) : result;
-//     return result;
-// };
+    return stripTrailingZero(roundOff(guess, precision + 1))
+}
+
+export function sqRoot(base: string | number, precision = 32) {
+    precision = Math.max(precision, 32);
+    return nthRoot(base, 2, precision);
+}
+
+export function cbRoot(base: string | number, precision = 32) {
+    precision = Math.max(precision, 32);
+    return nthRoot(base, 3, precision);
+}
+
+export function root4(base: string | number, precision = 32) {
+    precision = Math.max(precision, 32);
+    return sqRoot(sqRoot(base, precision), precision);
+}
+
+export function root5(base: string | number, precision = 32) {
+    precision = Math.max(precision, 32);
+    return nthRoot(base, 5, precision);
+}
+
+export function root10(base: string | number, precision = 32) {
+    precision = Math.max(precision, 32);
+    return sqRoot(root5(base, precision), precision);
+}
+
+function validate(oparand: string) {
+    if (oparand.includes('.')) {
+        throw Error('Root base of non-integers not supported');
+    }
+}
+
+
