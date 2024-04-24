@@ -1,10 +1,7 @@
 import { abs } from "./abs";
 import { add } from "./add";
-import { compareTo, equals, greaterThan, isExatclyOne, isExatclyZero, lessThan } from "./compareTo";
-import { divide } from "./divide";
+import { greaterThan, isExatclyOne, isExatclyZero, lessThan } from "./compareTo";
 import { multiply } from "./multiply";
-import { sqRoot } from "./pow";
-import { roundOff } from "./round";
 import { negate, subtract } from "./subtract";
 
 export const factorial = (n: number | string): string => {
@@ -20,7 +17,7 @@ export const factorial = (n: number | string): string => {
 
     let result = n;
 
-    while(!isExatclyZero(n)){
+    while(true){
 
         if(isExatclyOne(n)){
             return result;
@@ -30,9 +27,6 @@ export const factorial = (n: number | string): string => {
         result = multiply(result, next);
         n = next;
     }
-
-    return result
-
 }
 
 export function sigma(n: number | string, limit: number | string, fn: (n:number|string, ...args) => any, ...args:any): string {
@@ -46,12 +40,8 @@ export function sigma(n: number | string, limit: number | string, fn: (n:number|
     validatePositive(limit);
 
     let result = '0';
-    while(compareTo(limit, subtract(n,'1')) === 1){
 
-        if(compareTo(limit, n) === -1){
-            return result;
-        }
-
+    while(greaterThan(limit, subtract(n,'1'))){
         result = add(result, fn(limit, ...args));
         limit = subtract(limit,'1');
     }
@@ -66,9 +56,12 @@ export function alternatingSeries(n: number | string, limit: number | string, fn
     limit = limit.toString();
     _sign = sign(_sign).toString();
 
+    if(lessThan(n, '1')){
+        throw new Error('[alternatingSeries]: Argument n is less than 1');
+    }
+
     validateInteger(n);
     validateInteger(limit);
-    validatePositive(n);
     validatePositive(limit);
 
     let result = '0';
@@ -84,9 +77,6 @@ export function alternatingSeries(n: number | string, limit: number | string, fn
         _sign = negate(_sign)
         n = add(n,'1');
     }
-
-    return result
-
 }
 
 export function tolerance(precision: number | string){

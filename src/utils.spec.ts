@@ -1,6 +1,51 @@
-import { Euler, factorial, isAproxOne, isAproxZero, tolerance } from "./utils";
+import { divide } from "./divide";
+import { multiply } from "./multiply";
+import { alternatingSeries, factorial, isAproxOne, isAproxZero, sigma, sign, tolerance } from "./utils";
 
 describe('Utils', function () {
+    describe('sigma', function () {
+        it("0 + 1 + 2 + 3 = 6", function () {
+            expect(sigma(0, 3, (n)=>{
+                return n
+            })).toBe("6")
+        });
+        it("2(0) + 2(1) + 2(2) + 2(3) = 12", function () {
+            expect(sigma(0, 3, (n)=>{
+                return multiply(n, '2')
+            })).toBe("12")
+        });
+    });
+    describe('alternatingSeries', function () {
+        it("where 2/(n + 1) < 10^-3, (2/1) - (2/1) + (2/3) ... (2/n) = 1.38130686096364843050453744294519", function () {
+            expect(alternatingSeries(1, 3, (n)=>{
+                return divide(2, n, 32)
+            })).toBe("1.38130686096364843050453744294519")
+        });
+        it("Throw error if n is less than 1", function () {
+            let n = 0;
+            expect(()=>{return alternatingSeries(n, 3, (n)=>{
+                return divide(2, n, 32)
+            })}).toThrowError()
+        });
+        it("Throw error if n is fractional", function () {
+            let n = 2.5;
+            expect(()=>{return alternatingSeries(n, 3, (n)=>{
+                return divide(2, n, 32)
+            })}).toThrowError()
+        });
+        it("Throw error if limit is fractional", function () {
+            let limit = 2.5;
+            expect(()=>{return alternatingSeries(1, limit, (n)=>{
+                return divide(2, n, 32)
+            })}).toThrowError()
+        });
+        it("Throw error if limit is negative", function () {
+            let limit = -1;
+            expect(()=>{return alternatingSeries(1, limit, (n)=>{
+                return divide(2, n, 32)
+            })}).toThrowError()
+        });
+    });
     describe('factorial', function () {
         it("should: 1! = 1", function () {
             expect(factorial("1")).toBe("1")
@@ -27,23 +72,6 @@ describe('Utils', function () {
         });
         it("should: tolerance(0) = 0", function () {
             expect(tolerance(0)).toBe("0")
-        });
-    });
-    describe('Euler', function () {
-        it("should: Euler() = 2.71828...5266", function () {
-            expect(Euler()).toBe("2.71828182845904523536028747135266")
-        });
-        it("should: Euler(1) = 2.7182818284590423", function () {
-            expect(Euler(1)).toBe("2.7182818284590423")
-        });
-        it("should: Euler(10) = 2.7182818284590423", function () {
-            expect(Euler(10)).toBe("2.7182818284590423")
-        });
-        it("should: Euler(50) = 2.71828182845904523536028747135266249775724709369996", function () {
-            expect(Euler(50)).toBe("2.71828182845904523536028747135266249775724709369996")
-        });
-        it("should: Euler(100) = 2.7182818284590452353602874713526624977572470936999595749669676277240766303535475945713821785251664274", function () {
-            expect(Euler(100)).toBe("2.7182818284590452353602874713526624977572470936999595749669676277240766303535475945713821785251664274")
         });
     });
     describe('isAproxZero', function () {
@@ -93,6 +121,29 @@ describe('Utils', function () {
         });
         it("should: isAproxOne(-1.005643) is fasle", function () {
             expect(isAproxOne('-1.005643')).toBeFalse();
+        });
+    });
+    describe('sign', function () {
+        it("sign(1) is 1", function () {
+            expect(sign(1)).toBe(1);
+        });
+        it("sign(-1) is -1", function () {
+            expect(sign(-1)).toBe(-1);
+        });
+        it("sign(0) is 0", function () {
+            expect(sign(0)).toBe(0);
+        });
+        it("sign(7645) is 1", function () {
+            expect(sign(7645)).toBe(1);
+        });
+        it("sign(-7645) is -1", function () {
+            expect(sign(-7645)).toBe(-1);
+        });
+        it("sign(.000864) is 1", function () {
+            expect(sign(.000864)).toBe(1);
+        });
+        it("sign(-0.000864) is -1", function () {
+            expect(sign(-0.000864)).toBe(-1);
         });
     });
 });

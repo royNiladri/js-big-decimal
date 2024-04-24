@@ -1,4 +1,4 @@
-import { pow, nthRoot, sqRoot, cbRoot, root4, root5, root10, exp } from "./pow";
+import { pow, nthRoot, sqRoot, cbRoot, root4, root5, root10 } from "./pow";
 
 describe("Pow", function () {
 
@@ -204,8 +204,3 @@ describe('Roots', function () {
     });
 });
 
-describe('Exponentials', function () {
-    it("exp(4) = '54.59815003314423907811026120286067772760909039824031401964928069315468271580552520804729940109651850639200230030607285363846251536'", function () {
-        expect(exp(4)).toBe('54.59815003314423907811026120286067772760909039824031401964928069315468271580552520804729940109651850639200230030607285363846251536');
-    });
-});

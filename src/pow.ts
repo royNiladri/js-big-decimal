@@ -66,12 +66,12 @@ export function pow(base: number | string, exponent: number | string, precision:
         throw Error('0^(-1) is undefined');
     }
 
-    const remainder = abs(modulus(exponent));
+    const remainder = exponent.split('.')[1];
     const reciprical = exponent.includes('-');
     const negativeBase = base.includes('-');
-    const isBase10 = compareTo(abs(base), '10') == 0;
+    const isBase10 = equals(abs(base), '10');
     const negativeBase10 = isBase10 && negativeBase;
-    const orderOrprecision = reciprical && compareTo(abs(exponent), '1') == -1 ? precision : Number(abs(exponent));
+    const orderOrprecision = reciprical && lessThan(abs(exponent), '1') ? precision : Number(abs(exponent));
     const recipricalprecision = isBase10 ? orderOrprecision : precision;
 
     let fractionalExponent = '1';
@@ -82,32 +82,26 @@ export function pow(base: number | string, exponent: number | string, precision:
         negate = !negate;
     }
 
-    if (!isExatclyZero(remainder)) {
+    if (remainder) {
 
         if (negativeBase && !negativeBase10) {
             negate = !negate
         }
 
-        const mantissa = remainder.split('.').pop();
-        const spread: string[] = [];
+        precision = 32;
+        let tempBase = root10(abs(base));
 
-        for (let i = 0; i < mantissa.length; i++) {
-            if (!spread[0]) {
-                spread.push(root10(abs(base)))
-            } else {
-                spread.push(root10(spread[i - 1]))
-            }
+        for (let i = 0; i < remainder.length; i++) {
+            fractionalExponent = multiply(fractionalExponent, pow(tempBase, remainder[i]))
+            tempBase = root10(tempBase)
         }
 
-        fractionalExponent = spread.reduce((p: string | number, c: string | number, i: number) => {
-            return multiply(p, pow(c, mantissa[i]));
-        }, fractionalExponent)
     }
 
-    exponent = abs(exponent)
+    exponent = abs(exponent.split('.')[0])
 
     while (greaterThan(exponent, '0')) {
-        if (isExatclyOne(modulus(exponent, 2))) { result = multiply(result, base) }
+        if (equals(modulus(exponent, 2), '1')) { result = multiply(result, base) }
         base = multiply(base, base);
         exponent = roundOff(divide(exponent, 2), 0, RoundingModes.FLOOR);
     }
@@ -132,9 +126,9 @@ export function nthRoot(x: number | string, n: number | string, precision = 8) {
     let i = 0;
     while (i < precisionMax) {
 
-        let newGuess = divide(add(stripTrailingZero(divide(x, pow(guess, nMinusOne), precisionMax)), multiply(guess, nMinusOne)), n, precisionMax);
+        let newGuess = divide(add(stripTrailingZero(divide(x, pow(guess, nMinusOne), precision + 2)), multiply(guess, nMinusOne)), n, precision + 2);
 
-        if (lessThan(newGuess, tolerance(precision))) {
+        if (lessThan(newGuess, tolerance(precision - 1))) {
             return stripTrailingZero(roundOff(newGuess, precision + 1))
         }
 

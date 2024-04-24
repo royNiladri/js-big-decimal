@@ -1,8 +1,9 @@
 import { abs } from "./abs";
 import { add } from "./add";
-import { equals, greaterThan, isExatclyZero, lessThan } from "./compareTo";
+import { greaterThan, isExatclyZero, lessThan } from "./compareTo";
 import { divide } from "./divide";
 import { exp } from "./logarithm";
+import { modulus } from "./modulus";
 import { multiply } from "./multiply";
 import { pow, sqRoot } from "./pow";
 import { roundOff } from "./round";
@@ -15,12 +16,20 @@ export const PI = '3.14159265358979323846264338327950288419716939937510582097494
 
 // Hypotenuse 
 export function hypot(a: number | string, b: number | string){
+    a = a.toString();
+    b = b.toString();
     return sqRoot(add(pow(a, '2'), add(pow(b, '2'))));
 }
 
 // Sine functions
 export function sin(x: number | string) {
     x = x.toString();
+
+    if(greaterThan(abs(x), PI)){
+        let r = divide(x, PI, 33).split('.')
+        x = stripTrailingZero(roundOff(multiply(pow(negate(sign(x).toString()), r[0]), multiply(PI, (r[1])?'0.' + r[1]: '0')), 32));
+    }
+
     let s = roundOff(alternatingSeries(1, 32, (n: number) => {
         const N = (n * 2) - 1;
         return divide(pow(x, N, 32), factorial(N), 33);
@@ -48,13 +57,19 @@ export function asin(x: number | string) {
 
 export function sinh(x: number | string) {
     x = x.toString();
-    return stripTrailingZero(multiply('0.5', subtract(exp(x), exp(negate(x)))));
+    return stripTrailingZero(roundOff(multiply('0.5', subtract(exp(x), exp(negate(x)))),32));
 }
 
 // Cosine functions
 
 export function cos(x: number | string) {
     x = x.toString();
+
+    if(greaterThan(abs(x), PI)){
+        let r = divide(x, PI, 33).split('.')
+        x = stripTrailingZero(roundOff(multiply(pow(negate(sign(x).toString()),r[0]), multiply(PI, (r[1])?'0.' + r[1]: '0')), 32));
+    }
+
     let s = subtract('1', roundOff(alternatingSeries(1, 32, (n: number) => {
         const N = (n * 2);
         return divide(pow(x, N), factorial(N), 33);
