@@ -376,8 +376,9 @@ function adjustDecimal(number, decimal) {
     }
 }
 
-function divide(dividend, divisor, precission) {
+function divide(dividend, divisor, precission, mode) {
     if (precission === void 0) { precission = 8; }
+    if (mode === void 0) { mode = RoundingModes.HALF_EVEN; }
     if (divisor == 0) {
         throw new Error('Cannot divide by 0');
     }
@@ -456,7 +457,7 @@ function divide(dividend, divisor, precission) {
             dividend = dividend.substring(1);
         }
     }
-    return ((neg == 1) ? '-' : '') + trim(roundOff(quotent, precission - 2));
+    return ((neg == 1) ? '-' : '') + trim(roundOff(quotent, precission - 2, mode));
 }
 
 function subtract(number1, number2) {
@@ -705,13 +706,13 @@ var bigDecimal = /** @class */ (function () {
     bigDecimal.prototype.multiply = function (number) {
         return new bigDecimal(multiply(this.value, number.getValue()));
     };
-    bigDecimal.divide = function (number1, number2, precision) {
+    bigDecimal.divide = function (number1, number2, precision, mode) {
         number1 = bigDecimal.validate(number1);
         number2 = bigDecimal.validate(number2);
-        return divide(number1, number2, precision);
+        return divide(number1, number2, precision, mode);
     };
-    bigDecimal.prototype.divide = function (number, precision) {
-        return new bigDecimal(divide(this.value, number.getValue(), precision));
+    bigDecimal.prototype.divide = function (number, precision, mode) {
+        return new bigDecimal(divide(this.value, number.getValue(), precision, mode));
     };
     bigDecimal.modulus = function (number1, number2) {
         number1 = bigDecimal.validate(number1);

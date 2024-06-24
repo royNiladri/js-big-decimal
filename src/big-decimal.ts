@@ -177,14 +177,14 @@ class bigDecimal {
     return new bigDecimal(multiply(this.value, number.getValue()));
   }
 
-  static divide(number1, number2, precision?: number) {
+  static divide(number1, number2, precision?: number, mode?: RoundingModes) {
     number1 = bigDecimal.validate(number1);
     number2 = bigDecimal.validate(number2);
-    return divide(number1, number2, precision);
+    return divide(number1, number2, precision, mode);
   }
 
-  divide(number: bigDecimal, precision?: number) {
-    return new bigDecimal(divide(this.value, number.getValue(), precision));
+  divide(number: bigDecimal, precision?: number, mode?: RoundingModes) {
+    return new bigDecimal(divide(this.value, number.getValue(), precision, mode));
   }
 
   static modulus(number1, number2) {

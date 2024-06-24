@@ -1,7 +1,8 @@
 import { add, trim } from './add';
 import { roundOff } from './round';
+import { RoundingModes } from './roundingModes';
 
-export function divide(dividend, divisor, precission = 8) {
+export function divide(dividend, divisor, precission = 8, mode = RoundingModes.HALF_EVEN) {
     if (divisor == 0) {
         throw new Error('Cannot divide by 0');
     }
@@ -90,5 +91,5 @@ export function divide(dividend, divisor, precission = 8) {
         }
     }
 
-    return ((neg == 1) ? '-' : '') + trim(roundOff(quotent, precission - 2));
+    return ((neg == 1) ? '-' : '') + trim(roundOff(quotent, precission - 2, mode));
 }

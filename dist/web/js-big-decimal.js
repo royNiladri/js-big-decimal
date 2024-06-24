@@ -215,8 +215,10 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.divide = void 0;
 var add_1 = __webpack_require__(217);
 var round_1 = __webpack_require__(350);
-function divide(dividend, divisor, precission) {
+var roundingModes_1 = __webpack_require__(916);
+function divide(dividend, divisor, precission, mode) {
     if (precission === void 0) { precission = 8; }
+    if (mode === void 0) { mode = roundingModes_1.RoundingModes.HALF_EVEN; }
     if (divisor == 0) {
         throw new Error('Cannot divide by 0');
     }
@@ -295,7 +297,7 @@ function divide(dividend, divisor, precission) {
             dividend = dividend.substring(1);
         }
     }
-    return ((neg == 1) ? '-' : '') + (0, add_1.trim)((0, round_1.roundOff)(quotent, precission - 2));
+    return ((neg == 1) ? '-' : '') + (0, add_1.trim)((0, round_1.roundOff)(quotent, precission - 2, mode));
 }
 exports.divide = divide;
 
@@ -869,13 +871,13 @@ var bigDecimal = /** @class */ (function () {
     bigDecimal.prototype.multiply = function (number) {
         return new bigDecimal((0, multiply_1.multiply)(this.value, number.getValue()));
     };
-    bigDecimal.divide = function (number1, number2, precision) {
+    bigDecimal.divide = function (number1, number2, precision, mode) {
         number1 = bigDecimal.validate(number1);
         number2 = bigDecimal.validate(number2);
-        return (0, divide_1.divide)(number1, number2, precision);
+        return (0, divide_1.divide)(number1, number2, precision, mode);
     };
-    bigDecimal.prototype.divide = function (number, precision) {
-        return new bigDecimal((0, divide_1.divide)(this.value, number.getValue(), precision));
+    bigDecimal.prototype.divide = function (number, precision, mode) {
+        return new bigDecimal((0, divide_1.divide)(this.value, number.getValue(), precision, mode));
     };
     bigDecimal.modulus = function (number1, number2) {
         number1 = bigDecimal.validate(number1);

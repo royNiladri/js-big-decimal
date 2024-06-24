@@ -1,4 +1,5 @@
 import bigDecimal from "./big-decimal";
+import { RoundingModes } from "./roundingModes";
 const divide = bigDecimal.divide;
 
 describe("divide", function () {
@@ -100,4 +101,10 @@ describe("divide", function () {
   it(".102 / .0383292 = 2.66115651", function () {
     expect(divide(".102", ".0383292", 8)).toBe("2.66115651");
   });
+  it("division of 27.999972 by 128 with precision of 10 should return 0.2187497812", function() {
+    expect(divide(27.999972, 128, 10)).toBe("0.2187497812");
+  })
+  it("division of 27.999972 by 128 with precision of 10 and rounded by HALF_UP mode should return 0.2187497813", function() {
+    expect(divide(27.999972, 128, 10, RoundingModes['HALF_UP'])).toBe("0.2187497813");
+  })
 });
