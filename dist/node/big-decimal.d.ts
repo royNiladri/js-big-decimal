@@ -1,4 +1,4 @@
-import { RoundingModes as Modes } from "./roundingModes";
+import { RoundingModes as Modes, RoundingModes } from "./roundingModes";
 declare class bigDecimal {
     private value;
     static RoundingModes: typeof Modes;
@@ -22,8 +22,8 @@ declare class bigDecimal {
     subtract(number: bigDecimal): bigDecimal;
     static multiply(number1: any, number2: any): string;
     multiply(number: bigDecimal): bigDecimal;
-    static divide(number1: any, number2: any, precision?: number): string;
-    divide(number: bigDecimal, precision?: number): bigDecimal;
+    static divide(number1: any, number2: any, precision?: number, mode?: RoundingModes): string;
+    divide(number: bigDecimal, precision?: number, mode?: RoundingModes): bigDecimal;
     static modulus(number1: any, number2: any): string;
     modulus(number: bigDecimal): bigDecimal;
     static compareTo(number1: any, number2: any): 0 | 1 | -1;
