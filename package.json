@@ -56,7 +56,7 @@
     "del": "^6.1.1",
     "doctoc": "^2.2.1",
     "glob": "^8.0.3",
-    "gulp": "^4.0.2",
+    "gulp": "^5.0.0",
     "gulp-run": "^1.7.1",
     "jasmine": "^4.5.0",
     "jasmine-spec-reporter": "^7.0.0",
