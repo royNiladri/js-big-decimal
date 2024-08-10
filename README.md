@@ -266,10 +266,13 @@ var n2 = new bigDecimal('0.00130');
 var product = n1.multiply(n2); // product = new bigDecimal('-0.000169')
 ```
 
-### divide(dividend, divisor, precision)
-Divide two numbers. Pass arguments as `string` if calling on bigDecimal or pass an instance of bigDecimal if calling on object. `precision` is an optional parameter with default value of 8.
+### divide(dividend, divisor, precision, roundingMode)
+Divide two numbers. Pass arguments as `string` if calling on bigDecimal or pass an instance of bigDecimal if calling on object. `precision` is an optional parameter with default value of 8. `roundingMode` has a default value of `HALF_EVEN`.
 ```javascript
 var quotient = bigDecimal.divide('45', '4', 2); // quotient = '11.25'
+```
+```javascript
+var quotient = bigDecimal.divide('45', '4', 0, RoundingModes.CEILING); // quotient = '12'
 ```
 Alternately, use the instance property. It returns the result as new `bigDecimal`.
 ```javascript
