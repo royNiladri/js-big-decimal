@@ -105,6 +105,6 @@ describe("divide", function () {
     expect(divide(27.999972, 128, 10)).toBe("0.2187497812");
   })
   it("division of 27.999972 by 128 with precision of 10 and rounded by HALF_UP mode should return 0.2187497813", function() {
-    expect(divide(27.999972, 128, 10, RoundingModes['HALF_UP'])).toBe("0.2187497813");
+    expect(divide(27.999972, 128, 10, RoundingModes.HALF_UP)).toBe("0.2187497813");
   })
 });
