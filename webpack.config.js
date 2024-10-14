@@ -14,7 +14,8 @@ module.exports = {
         path: WEB ? path.resolve(__dirname, "dist/web") : path.resolve(__dirname, "dist/node"),
         library: "bigDecimal",
         libraryTarget: WEB ? "var" : "umd",
-        filename: PROD ? "js-big-decimal.min.js" : "js-big-decimal.js"
+        filename: PROD ? "js-big-decimal.min.js" : "js-big-decimal.js",
+        globalObject: 'typeof self !== \'undefined\' ? self : this'
     },
     resolve: {
         extensions: [".webpack.js", ".web.js", ".ts", ".js"]
@@ -31,5 +32,18 @@ module.exports = {
                 },
             })
         ] : []
-    }
+    },
+    module: {
+        rules: [
+            {
+                test: /\.worker\.ts$/,
+                loader: "worker-loader",
+                options: {
+                    inline: "no-fallback",
+                    publicPath: "/workers/",
+                },
+            },
+            { test: /\.ts$/, loader: 'ts-loader' }
+        ]
+    },
 }
