@@ -15,7 +15,7 @@ import { alternatingSeries, factorial, isAproxOne, isAproxZero, sign, tolerance 
 export const PI = '3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679821480865132823066470938446095505822317253594081284811174502841027019385211055596446229'
 
 // Hypotenuse 
-export function hypot(a: number | string, b: number | string){
+export function hypot(a: number | string, b: number | string) {
     a = a.toString();
     b = b.toString();
     return sqRoot(add(pow(a, '2'), add(pow(b, '2'))));
@@ -25,16 +25,31 @@ export function hypot(a: number | string, b: number | string){
 export function sin(x: number | string) {
     x = x.toString();
 
-    if(greaterThan(abs(x), PI)){
+    if (greaterThan(abs(x), PI)) {
         let r = divide(x, PI, 33).split('.')
-        x = stripTrailingZero(roundOff(multiply(pow(negate(sign(x).toString()), r[0]), multiply(PI, (r[1])?'0.' + r[1]: '0')), 32));
+        x = stripTrailingZero(roundOff(multiply(pow(negate(sign(x).toString()), r[0]), multiply(PI, (r[1]) ? '0.' + r[1] : '0')), 32));
     }
 
-    let s = roundOff(alternatingSeries(1, 32, (n: number) => {
-        const N = (n * 2) - 1;
-        return divide(pow(x, N, 32), factorial(N), 33);
-    }), 32);
-    return stripTrailingZero(isAproxZero(s) ? '0' : isAproxOne(s) ? multiply('1', sign(s)) : s);
+    let result = '0';
+    let _sign = '1';
+    let n = '1'; // Series iteration
+    let f = '1'; // Factorial product
+
+    while (true) {
+        const N = subtract(multiply(n, '2'), '1'); // Next real term in series (even terms cancel)
+        f = multiply(f, N);
+
+        const next = multiply(_sign, divide(pow(x, N, 33), f, 34));
+
+        if (lessThan(abs(next), tolerance(33))) {
+            result = add(result, next);
+            return stripTrailingZero(isAproxZero(result) ? '0' : isAproxOne(result) ? multiply('1', sign(result).toString()) : result);
+        }
+        result = add(result, next);
+        _sign = negate(_sign)
+        f = multiply(f, multiply(n, '2')); // Iterate once to synchronize Factorial
+        n = add(n, '1');
+    }
 }
 
 export function asin(x: number | string) {
@@ -43,21 +58,30 @@ export function asin(x: number | string) {
         throw Error('[Arcsine]: argument x is out of range.')
     }
     let result = '0';
-    let i = 0;
+    let n = '1';
+    let even = '1';
+    let odd = '1';
     while (true) {
-        let n = multiply('2', i);
-        let next = multiply(divide(factorial(n), multiply(pow('2', n), pow(factorial(i), 2)), 32), divide(pow(x, add(n, '1')), add(n, '1'), 32));
+        const N = multiply(n, '2');
+        const R = add(N, '1');
+
+        even = multiply(even, N);
+        odd = multiply(odd, subtract(N, '1'));
+        let next = divide(multiply(odd, pow(x, R)), multiply(even, R), 34);
+
         if (lessThan(next, tolerance(33))) {
-            return stripTrailingZero(roundOff(add(result, next), 32));
+            result = add(result, next);
+            return stripTrailingZero(roundOff(add(result, x), 32));
         }
+
         result = add(result, next);
-        i++
+        n = add(n, '1');
     }
 }
 
 export function sinh(x: number | string) {
     x = x.toString();
-    return stripTrailingZero(roundOff(multiply('0.5', subtract(exp(x), exp(negate(x)))),32));
+    return stripTrailingZero(subtract(divide(exp(x), '2', 33), divide(exp(negate(x)), '2', 33)));
 }
 
 // Cosine functions
@@ -65,16 +89,31 @@ export function sinh(x: number | string) {
 export function cos(x: number | string) {
     x = x.toString();
 
-    if(greaterThan(abs(x), PI)){
+    if (greaterThan(abs(x), PI)) {
         let r = divide(x, PI, 33).split('.')
-        x = stripTrailingZero(roundOff(multiply(pow(negate(sign(x).toString()),r[0]), multiply(PI, (r[1])?'0.' + r[1]: '0')), 32));
+        x = stripTrailingZero(roundOff(multiply(pow(negate(sign(x).toString()), r[0]), multiply(PI, (r[1]) ? '0.' + r[1] : '0')), 32));
     }
 
-    let s = subtract('1', roundOff(alternatingSeries(1, 32, (n: number) => {
-        const N = (n * 2);
-        return divide(pow(x, N), factorial(N), 33);
-    }), 32));
-    return stripTrailingZero(isAproxOne(s) ? multiply('1', sign(s)) : isAproxZero(s) ? '0' : s);
+    let result = '0';
+    let _sign = '1';
+    let n = '1'; // Series iteration
+    let f = '1'; // Factorial product
+
+    while (true) {
+        const N = multiply(n, '2'); // Next real term in series (odd terms cancel)
+        f = multiply(f, subtract(N, '1')); // Iterate once to synchronize Factorial
+        f = multiply(f, N);
+
+        const next = multiply(_sign, divide(pow(x, N, 33), f, 34));
+
+        if (lessThan(abs(next), tolerance(33))) {
+            result = subtract('1',add(result, next));
+            return stripTrailingZero(isAproxOne(result) ? multiply('1', sign(result).toString()) : isAproxZero(result) ? '0' : result);
+        }
+        result = add(result, next);
+        _sign = negate(_sign)
+        n = add(n, '1');
+    }
 }
 
 export function acos(x: number | string) {
@@ -87,7 +126,7 @@ export function acos(x: number | string) {
 
 export function cosh(x: number | string) {
     x = x.toString();
-    return stripTrailingZero(multiply('0.5', add(exp(x), exp(negate(x)))));
+    return stripTrailingZero(divide(add(exp(x), exp(negate(x))), '2', 32));
 }
 
 // Tangant functions
@@ -105,15 +144,15 @@ export function atan(x: number | string) {
     }
 
     let result = '0';
-    let i = 0;
+    let n = '0';
     while (true) {
-        let n = multiply('2', i);
-        let next = divide(multiply(pow('-1', i), pow(x, add(n, '1'))), add(n, '1'), 32)
+        let N = multiply('2', n);
+        let next = divide(multiply(pow('-1', n), pow(x, add(N, '1'))), add(N, '1'), 32)
         if (lessThan(abs(next), tolerance(33))) {
             return stripTrailingZero(roundOff(add(result, next), 32));
         }
         result = add(result, next);
-        i++
+        n = add(n, '1');
     }
 }
 

@@ -6,8 +6,10 @@ import { multiply } from "./multiply";
 import { pow } from "./pow";
 import { roundOff } from "./round";
 import { subtract } from "./subtract";
-import { factorial, sigma, sign, tolerance } from "./utils";
+import { E_ROOTS_FOR_POW } from "./tables/e";
+import { tolerance } from "./utils";
 
+export const E = roundOff('2.718281828459045235360287471352662497757247093699959574966967627724076630353547594571382178525166427427466391932003059921817413596629043572900334295260595630738132328627943490763233829880753195251019011573834187930702154089149934884167509244761460668082264', 257);
 export const LN2 = '0.69314718055994530941723212145818';
 export const LOG2E = '1.44269504088896340735992468100188';
 export const LN10 = '2.30258509299404568392825848336901';
@@ -15,19 +17,42 @@ export const LOG10E = '0.43429448190325182766805360691429';
 
 export function Euler(precision: number = 32) {
     precision = Math.max(16, precision)
-    return roundOff(sigma(0, precision, (n: string | number)=>{
-        return divide('1', factorial(n), precision + 1)
-    }), precision);
+    let result = '1';
+    let n = '1';
+    let f = '1';
+
+    while(true){
+        f = multiply(f, n);
+        const next = divide('1', f, precision + 2)
+
+        if(lessThan(abs(next), tolerance(precision))){
+            return roundOff(result, precision);
+        }
+
+        result = add(result, next);
+        n = add(n,'1');
+    }
 }
 
 export function exp(exponent: number | string) {
     exponent = exponent.toString();
-    return pow(Euler(34), exponent, 32);
+    const remainder = exponent.split('.')[1];
+    let result = pow(E, abs(exponent).split('.')[0], 33);
+    let fractionalExponent = '1';
+
+    if (remainder) {
+        for (let i = 0; i < Math.min(33,remainder.length); i++) {
+            fractionalExponent = multiply(fractionalExponent, E_ROOTS_FOR_POW[i][remainder[i]])
+        }
+        result = multiply(result, fractionalExponent)
+    }
+
+    return pow(E, exponent, 33);
 }
 
 export function expm1(exponent: number | string) {
     exponent = exponent.toString();
-    return subtract(pow(Euler(34), exponent, 32), '1')
+    return subtract(exp(exponent), '1')
 }
 
 export function ln(x: string | number = 2) {
