@@ -77,32 +77,16 @@ export function pad(number1: string, number2: string) {
     parts2 = number2.split(".");
 
   //pad integral part
-  let length1 = parts1[0].length,
-    length2 = parts2[0].length;
-  if (length1 > length2) {
-    parts2[0] =
-      new Array(Math.abs(length1 - length2) + 1).join("0") +
-      (parts2[0] ? parts2[0] : "");
-  } else {
-    parts1[0] =
-      new Array(Math.abs(length1 - length2) + 1).join("0") +
-      (parts1[0] ? parts1[0] : "");
-  }
+  let length = Math.max(parts1[0].length, parts2[0].length)
+  parts1[0] = parts1[0].padStart(length, "0");
+  parts2[0] = parts2[0].padStart(length, "0");
 
   //pad fractional part
-  (length1 = parts1[1] ? parts1[1].length : 0),
-    (length2 = parts2[1] ? parts2[1].length : 0);
-  if (length1 || length2) {
-    if (length1 > length2) {
-      parts2[1] =
-        (parts2[1] ? parts2[1] : "") +
-        new Array(Math.abs(length1 - length2) + 1).join("0");
-    } else {
-      parts1[1] =
-        (parts1[1] ? parts1[1] : "") +
-        new Array(Math.abs(length1 - length2) + 1).join("0");
-    }
-  }
+  parts1[1] = parts1[1] || ""
+  parts2[1] = parts2[1] || ""
+  length = Math.max(parts1[1].length, parts2[1].length)
+  parts1[1] = parts1[1].padEnd(length, "0");
+  parts2[1] = parts2[1].padEnd(length, "0");
 
   number1 = parts1[0] + (parts1[1] ? "." + parts1[1] : "");
   number2 = parts2[0] + (parts2[1] ? "." + parts2[1] : "");

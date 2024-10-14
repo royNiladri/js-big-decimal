@@ -1,0 +1,12 @@
+export declare const E: string;
+export declare const LN2 = "0.69314718055994530941723212145818";
+export declare const LOG2E = "1.44269504088896340735992468100188";
+export declare const LN10 = "2.30258509299404568392825848336901";
+export declare const LOG10E = "0.43429448190325182766805360691429";
+export declare function Euler(precision?: number): string;
+export declare function exp(exponent: number | string): string;
+export declare function expm1(exponent: number | string): string;
+export declare function ln(x?: string | number): string;
+export declare function ln2(x?: string | number): string;
+export declare function log(base: string | number): string;
+export declare function log10(base: string | number): string;

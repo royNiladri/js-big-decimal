@@ -4,12 +4,14 @@ import { roundOff } from "./round";
 import { multiply } from "./multiply";
 import { divide } from "./divide";
 import { modulus, modulusE } from "./modulus";
-import { compareTo, lessThan } from "./compareTo";
+import { compareTo, equals, greaterThan, lessThan } from "./compareTo";
 import { subtract, negate } from "./subtract";
 import { RoundingModes as Modes, RoundingModes } from "./roundingModes";
 import { stripTrailingZero } from "./stripTrailingZero";
-import { cbRoot, exp, pow, sqRoot } from "./pow";
-import { Euler, factorial } from "./utils";
+import { cbRoot, pow, sqRoot } from "./pow";
+import { factorial, sign } from "./utils";
+import { acos, asin, atan, atan2, cos, cosh, hypot, sin, sinh, tan, tanh } from "./trig";
+import { ln, log, ln2, log10, exp, LN2, LN10, LOG2E, LOG10E, Euler, expm1 } from "./logarithm";
 
 class bigDecimal {
   private value: string;
@@ -207,16 +209,6 @@ class bigDecimal {
     return new bigDecimal(modulusE(this.value, number.getValue()));
   }
 
-  static compareTo(number1, number2) {
-    number1 = bigDecimal.validate(number1);
-    number2 = bigDecimal.validate(number2);
-    return compareTo(number1, number2);
-  }
-
-  compareTo(number: bigDecimal) {
-    return compareTo(this.value, number.getValue());
-  }
-
   static negate(number) {
     number = bigDecimal.validate(number);
     return negate(number);
@@ -226,15 +218,26 @@ class bigDecimal {
     return new bigDecimal(negate(this.value));
   }
 
-  static pow(base: number|string, exponent: string) {
+  // Powers
+
+  static pow(base: number|string, exponent: number|string) {
     base = bigDecimal.validate(base);
     exponent = bigDecimal.validate(exponent);
     return pow(base, exponent);
   }
 
-  pow(exponent: number|string) {
-    exponent = bigDecimal.validate(exponent);
-    return new bigDecimal(pow(this.value, exponent, 32));
+  pow(exponent: bigDecimal) {
+    return new bigDecimal(pow(this.value, exponent.getValue(), 32));
+  }
+
+  // Roots
+
+  static get SQRT1_2() {
+    return sqRoot('.5');
+  }
+
+  static get SQRT2() {
+    return sqRoot('2');
   }
 
   static sqRoot(number: number|string): string {
@@ -255,18 +258,193 @@ class bigDecimal {
     return new bigDecimal(cbRoot(this.value));
   }
 
-  static exp(base: number|string): string {
-    base = bigDecimal.validate(base);
-    return exp(base);
-  }
+  // Logarithms
 
   static get E() {
     return Euler(32);
   }
 
-  static factorial(base: number|string): string {
-    base = bigDecimal.validate(base);
-    return factorial(base);
+  static get LN2(){
+    return LN2
+  }
+
+  static get LN10(){
+    return LN10
+  }
+
+  static get LOG2E(){
+    return LOG2E
+  }
+
+  static get LOG10E(){
+    return LOG10E
+  }
+
+  static log2(number: number|string){
+    number = bigDecimal.validate(number);
+    return ln2(number)
+  }  
+
+  static log10(number: number|string){
+    number = bigDecimal.validate(number);
+    return log10(number)
+  }
+
+  static log1p(number: number|string){
+    number = bigDecimal.validate(number);
+    return log(add('1', number))
+  }
+
+  static log(number: number|string){
+    number = bigDecimal.validate(number);
+    return log(number)
+  }
+
+  static exp(number: number|string): string {
+    number = bigDecimal.validate(number);
+    return exp(number);
+  }
+
+  static expm1(number: number|string): string {
+    number = bigDecimal.validate(number);
+    return expm1(number)
+  }
+
+  // Trig
+  static hypot(a: number|string, b: number|string){
+    a = bigDecimal.validate(a);
+    b = bigDecimal.validate(b);
+
+    return hypot(a,b);
+
+  }
+
+  static sin(number: number|string): string {
+    number = bigDecimal.validate(number);
+    return sin(number);
+  }
+
+  static sinh(number: number|string): string {
+    number = bigDecimal.validate(number);
+    return sinh(number);
+  }
+
+  static asin(number: number|string): string {
+    number = bigDecimal.validate(number);
+    return asin(number);
+  }
+
+  static cos(number: number|string): string {
+    number = bigDecimal.validate(number);
+    return cos(number);
+  }
+
+  static cosh(number: number|string): string {
+    number = bigDecimal.validate(number);
+    return cosh(number);
+  }
+
+  static acos(number: number|string): string {
+    number = bigDecimal.validate(number);
+    return acos(number);
+  }
+
+  static tan(number: number|string): string {
+    number = bigDecimal.validate(number);
+    return tan(number);
+  }
+
+  static tanh(number: number|string): string {
+    number = bigDecimal.validate(number);
+    return tanh(number);
+  }
+
+  static atan(number: number|string): string {
+    number = bigDecimal.validate(number);
+    return atan(number);
+  }
+
+  static atan2(y: number|string, x: number|string): string {
+    x = bigDecimal.validate(x);
+    y = bigDecimal.validate(y);
+    return atan2(y, x);
+  }
+
+  // Comparisons
+  static compareTo(number1: number|string, number2: number|string) {
+    number1 = bigDecimal.validate(number1);
+    number2 = bigDecimal.validate(number2);
+    return compareTo(number1, number2);
+  }
+
+  compareTo(number: bigDecimal) {
+    return compareTo(this.value, number.getValue());
+  }
+
+  static equals(number1: number|string, number2: number|string){
+    number1 = bigDecimal.validate(number1);
+    number2 = bigDecimal.validate(number2);
+    return equals(number1, number2);
+  }
+
+  equals(number: bigDecimal){
+    return equals(this.value, number.getValue());
+  }
+
+  static lt(number1: number|string, number2: number|string){
+    number1 = bigDecimal.validate(number1);
+    number2 = bigDecimal.validate(number2);
+    return lessThan(number1, number2);
+  }
+
+  lt(number: bigDecimal){
+    return lessThan(this.value, number.getValue());
+  }
+
+  static leq(number1: number|string, number2: number|string){
+    number1 = bigDecimal.validate(number1);
+    number2 = bigDecimal.validate(number2);
+    return lessThan(number1, number2, true);
+  }
+
+  leq(number: bigDecimal){
+    return lessThan(this.value, number.getValue(), true);
+  }
+
+  static gt(number1: number|string, number2: number|string){
+    number1 = bigDecimal.validate(number1);
+    number2 = bigDecimal.validate(number2);
+    return greaterThan(number1, number2);
+  }
+
+  gt(number: bigDecimal){
+    return greaterThan(this.value, number.getValue());
+  }
+
+  static geq(number1: number|string, number2: number|string){
+    number1 = bigDecimal.validate(number1);
+    number2 = bigDecimal.validate(number2);
+    return greaterThan(number1, number2, true);
+  }
+
+  geq(number: bigDecimal){
+    return greaterThan(this.value, number.getValue(), true);
+  }
+
+  static sign(number: number|string){
+    number = bigDecimal.validate(number);
+    return sign(number);
+  }
+
+  sign(){
+    return sign(this.value);
+  }
+
+  // Misc.
+
+  static factorial(number: number|string): string {
+    number = bigDecimal.validate(number);
+    return factorial(number);
   }
 
   static stripTrailingZero(number) {

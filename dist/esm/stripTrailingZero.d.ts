@@ -1,1 +1,1 @@
-export declare function stripTrailingZero(number: any): any;
+export declare function stripTrailingZero(number: string): string;

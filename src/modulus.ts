@@ -5,7 +5,7 @@ import { negate, subtract } from './subtract';
 import { RoundingModes } from './roundingModes';
 import { abs } from './abs';
 
-export function modulusE(n: number | string, base: number | string = 1, percision: number | undefined = undefined) {
+export function modulusE(n: number | string, base: number | string = 1, precision: number | undefined = undefined) {
     
     if (base == 0) {
         throw new Error('Cannot divide by 0');
@@ -16,10 +16,10 @@ export function modulusE(n: number | string, base: number | string = 1, percisio
   
     validate(base);
 
-    return subtract(n, multiply(base, roundOff(divide(n, base, percision), 0, RoundingModes.FLOOR)));
+    return subtract(n, multiply(base, roundOff(divide(n, base, precision), 0, RoundingModes.FLOOR)));
 }
 
-export function modulus(dividend: number | string, divisor: number | string = 1, percision: number | undefined = undefined) {
+export function modulus(dividend: number | string, divisor: number | string = 1, precision: number | undefined = undefined) {
     if (divisor == 0) {
         throw new Error('Cannot divide by 0');
     }
@@ -29,7 +29,7 @@ export function modulus(dividend: number | string, divisor: number | string = 1,
 
     validate(divisor);
 
-    const result = modulusE(abs(dividend), abs(divisor), percision);
+    const result = modulusE(abs(dividend), abs(divisor), precision);
     return (dividend.includes('-')) ? negate(result) : result;
 }
 
