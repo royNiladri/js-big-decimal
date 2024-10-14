@@ -49,7 +49,7 @@ import { isAproxOne, isAproxZero, sign, tolerance } from "./utils";
  * ```
  */
 
-export function pow(base: number | string, exponent: number | string, precision: number | undefined = undefined, negate: boolean | undefined = false): string {
+export function pow(base: number | string, exponent: number | string, precision: number | undefined = 32, negate: boolean | undefined = false): string {
 
 
     // AddInstantiate.then((res)=>{
@@ -124,11 +124,11 @@ export function pow(base: number | string, exponent: number | string, precision:
         //     // testworker.terminate();
         // }
 
-        let tempBase = root10(abs(base));
+        let tempBase = root10(abs(base), precision * 2);
 
         for (let i = 0; i < exponentSignificand.length; i++) {
-            fractionalExponent = multiply(fractionalExponent, pow(tempBase, exponentSignificand[i]))
-            tempBase = root10(tempBase)
+            fractionalExponent = multiply(fractionalExponent, intPow(tempBase, exponentSignificand[i], precision))
+            tempBase = root10(tempBase, precision * 2)
         }
         return finalize(multiply(result, fractionalExponent))
 
@@ -175,7 +175,7 @@ export function nthRoot(x: number | string, n: number | string, precision = 8) {
 
     validate(n);
 
-    if (lessThan(n, '4', true)) {
+    if (lessThan(n, '5', true)) {
         let guess = '1';
         let nMinusOne = subtract(n, 1);
         let difference = '0'
@@ -187,14 +187,14 @@ export function nthRoot(x: number | string, n: number | string, precision = 8) {
 
             difference = abs(subtract(guess, newGuess))
 
-            if (greaterThan(difference, lastDifference)) {
+            if (greaterThan(difference, newGuess)) {
                 // console.log('root exit under p')
-                return stripTrailingZero(roundOff(guess, precision + 1))
+                return stripTrailingZero(roundOff(guess, precision + 2))
             }
 
-            if (lessThan(difference, tolerance(precision - 1))) {
+            if (lessThan(difference, tolerance(precision + 1))) {
                 // console.log('newGuess exit under p')
-                return stripTrailingZero(roundOff(newGuess, precision + 1))
+                return stripTrailingZero(roundOff(newGuess, precision + 2))
             }
 
             lastDifference = difference;

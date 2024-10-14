@@ -220,10 +220,10 @@ class bigDecimal {
 
   // Powers
 
-  static pow(base: number|string, exponent: number|string) {
+  static pow(base: number|string, exponent: number|string, precision: number | undefined = 32) {
     base = bigDecimal.validate(base);
     exponent = bigDecimal.validate(exponent);
-    return pow(base, exponent);
+    return pow(base, exponent, precision);
   }
 
   pow(exponent: bigDecimal) {

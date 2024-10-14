@@ -30,7 +30,7 @@ declare class bigDecimal {
     modulusE(number: bigDecimal): bigDecimal;
     static negate(number: any): string;
     negate(): bigDecimal;
-    static pow(base: number | string, exponent: number | string): string;
+    static pow(base: number | string, exponent: number | string, precision?: number | undefined): string;
     pow(exponent: bigDecimal): bigDecimal;
     static get SQRT1_2(): string;
     static get SQRT2(): string;

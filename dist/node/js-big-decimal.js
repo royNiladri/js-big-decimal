@@ -814,7 +814,7 @@ function validatePositive(number) {
  * console.log(pow(2, 1)) // Prints '2'
  * ```
  */
-function pow(base, exponent, precision = undefined, negate = false) {
+function pow(base, exponent, precision = 32, negate = false) {
     // AddInstantiate.then((res)=>{
     //     console.log('custom wasm loader',res.__add('00001', '1'))
     // })
@@ -868,10 +868,10 @@ function pow(base, exponent, precision = undefined, negate = false) {
         //     return finalize(multiply(result, event.data))
         //     // testworker.terminate();
         // }
-        let tempBase = root10(abs_abs(base));
+        let tempBase = root10(abs_abs(base), precision * 2);
         for (let i = 0; i < exponentSignificand.length; i++) {
-            fractionalExponent = multiply_multiply(fractionalExponent, pow(tempBase, exponentSignificand[i]));
-            tempBase = root10(tempBase);
+            fractionalExponent = multiply_multiply(fractionalExponent, intPow(tempBase, exponentSignificand[i], precision));
+            tempBase = root10(tempBase, precision * 2);
         }
         return finalize(multiply_multiply(result, fractionalExponent));
     }
@@ -910,7 +910,7 @@ function nthRoot(x, n, precision = 8) {
     x = x.toString();
     n = n.toString();
     pow_validate(n);
-    if (compareTo_lessThan(n, '4', true)) {
+    if (compareTo_lessThan(n, '5', true)) {
         let guess = '1';
         let nMinusOne = subtract_subtract(n, 1);
         let difference = '0';
@@ -919,13 +919,13 @@ function nthRoot(x, n, precision = 8) {
         while (true) {
             let newGuess = divide_divide(add_add(stripTrailingZero_stripTrailingZero(divide_divide(x, pow(guess, nMinusOne, precision + 2), precision + 2)), multiply_multiply(guess, nMinusOne)), n, precision + 2);
             difference = abs_abs(subtract_subtract(guess, newGuess));
-            if (compareTo_greaterThan(difference, lastDifference)) {
+            if (compareTo_greaterThan(difference, newGuess)) {
                 // console.log('root exit under p')
-                return stripTrailingZero_stripTrailingZero(round_roundOff(guess, precision + 1));
+                return stripTrailingZero_stripTrailingZero(round_roundOff(guess, precision + 2));
             }
-            if (compareTo_lessThan(difference, utils_tolerance(precision - 1))) {
+            if (compareTo_lessThan(difference, utils_tolerance(precision + 1))) {
                 // console.log('newGuess exit under p')
-                return stripTrailingZero_stripTrailingZero(round_roundOff(newGuess, precision + 1));
+                return stripTrailingZero_stripTrailingZero(round_roundOff(newGuess, precision + 2));
             }
             lastDifference = difference;
             guess = stripTrailingZero_stripTrailingZero(newGuess);
@@ -1967,10 +1967,10 @@ class bigDecimal {
         return new bigDecimal(subtract_negate(this.value));
     }
     // Powers
-    static pow(base, exponent) {
+    static pow(base, exponent, precision = 32) {
         base = bigDecimal.validate(base);
         exponent = bigDecimal.validate(exponent);
-        return pow(base, exponent);
+        return pow(base, exponent, precision);
     }
     pow(exponent) {
         return new bigDecimal(pow(this.value, exponent.getValue(), 32));
