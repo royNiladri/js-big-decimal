@@ -1,6 +1,10 @@
 /*
 * Removes zero from front and back*/
 export function stripTrailingZero(number: string) {
+	
+	// number = number.replace(/(^[-]?)([0]*)/, `${1}`);
+	// number = number.replace(/([0]*$){1}/, '');
+	// return number;
 	const isNegative = number[0] === '-';
 	if (isNegative) {
 		number = number.substring(1);

@@ -37,7 +37,9 @@
  * ```
  */
 export declare function pow(base: number | string, exponent: number | string, precision?: number | undefined, negate?: boolean | undefined): string;
+export declare function intPow(base: string, exponent: string): string;
 export declare function nthRoot(x: number | string, n: number | string, precision?: number): string;
+export declare function bisectionRoot(x: string, n: string, g: string, precision?: number): string;
 export declare function inverseSqRoot(number: string): string;
 export declare function sqRoot(base: string | number, precision?: number): string;
 export declare function cbRoot(base: string | number, precision?: number): string;

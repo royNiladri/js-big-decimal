@@ -60,8 +60,8 @@ declare class bigDecimal {
     static tanh(number: number | string): string;
     static atan(number: number | string): string;
     static atan2(y: number | string, x: number | string): string;
-    static compareTo(number1: number | string, number2: number | string): 0 | 1 | -1;
-    compareTo(number: bigDecimal): 0 | 1 | -1;
+    static compareTo(number1: number | string, number2: number | string): number;
+    compareTo(number: bigDecimal): number;
     static equals(number1: number | string, number2: number | string): boolean;
     equals(number: bigDecimal): boolean;
     static lt(number1: number | string, number2: number | string): boolean;

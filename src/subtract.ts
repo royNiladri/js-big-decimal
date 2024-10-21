@@ -9,7 +9,7 @@ export function subtract(number1, number2) {
 
 export function negate(number : string){
 	if(number[0] == '-'){
-		number = number.substr(1);
+		number = number.substring(1);
 	}else{
 		number = '-' + number;
 	}

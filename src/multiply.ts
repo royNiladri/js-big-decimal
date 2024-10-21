@@ -4,16 +4,24 @@ export function multiply(number1, number2) {
 	number1 = number1.toString();
 	number2 = number2.toString();
 
+	let negativeNumber1: string = '';
+	let negativeNumber2: string = '';
+	let negativeResult: string = '';
+
+
 	/*Filter numbers*/
 	let negative = 0;
 	if (number1[0] == '-') {
 		negative++;
 		number1 = number1.substr(1);
+		negativeNumber1 = '-';
 	}
 	if (number2[0] == '-') {
 		negative++;
 		number2 = number2.substr(1);
+		negativeNumber2 = '-';
 	}
+
 	number1 = stripTrailingZero(number1);
 	number2 = stripTrailingZero(number2);
 	let decimalLength1 = 0;
@@ -26,9 +34,13 @@ export function multiply(number1, number2) {
 	if (number2.indexOf('.') != -1) {
 		decimalLength2 = number2.length - number2.indexOf('.') - 1;
 	}
+
 	let decimalLength = decimalLength1 + decimalLength2;
 	number1 = stripTrailingZero(number1.replace('.', ''));
 	number2 = stripTrailingZero(number2.replace('.', ''));
+	
+	number1 = negativeNumber1 + number1
+	number2 = negativeNumber2 + number2
 
 	if (number1.length < number2.length) {
 		let temp = number1;
@@ -39,6 +51,30 @@ export function multiply(number1, number2) {
 	if (number2 == '0') {
 		return '0';
 	}
+
+
+	const n1 = BigInt(number1)
+	const n2 = BigInt(number2)
+	let res = (n1 * n2).toString();
+
+	if (res[0] == '-') {
+		res = res.substring(1);
+		negativeResult = '-';
+	}
+
+	if (decimalLength > 0) {
+		decimalLength = res.length - decimalLength;
+		if (decimalLength < 0) {
+			res = res.padStart(res.length + Math.abs(decimalLength), '0');
+			decimalLength = 0;
+		}
+
+		res = res.slice(0, decimalLength) + '.' + res.slice(decimalLength);
+	}
+
+	if (res[0] == '.') res = '0' + res;
+	res = negativeResult + res;
+	return res;
 
 	/*
 	* Core multiplication

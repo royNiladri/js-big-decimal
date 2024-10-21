@@ -48,61 +48,61 @@ __webpack_require__.d(__webpack_exports__, {
 ;// CONCATENATED MODULE: ./lib/add.js
 //function add {
 function add_add(number1, number2 = "0") {
-    let neg = 0, ind = -1, neg_len;
+    let negativeNumber1 = '';
+    let negativeNumber2 = '';
+    let negativeResult = '';
     //check for negatives
-    if (number1[0] == "-") {
+    if (number1[0] == '-') {
         number1 = number1.substring(1);
-        if (!testZero(number1)) {
-            neg++;
-            ind = 1;
-            neg_len = number1.length;
-        }
+        if (!testZero(number1))
+            negativeNumber1 = '-';
     }
-    if (number2[0] == "-") {
+    if (number2[0] == '-') {
         number2 = number2.substring(1);
-        if (!testZero(number2)) {
-            neg++;
-            ind = 2;
-            neg_len = number2.length;
+        if (!testZero(number2))
+            negativeNumber2 = '-';
+    }
+    let exponent;
+    let values = [];
+    ({ values, exponent } = bigIntPad(number1, number2));
+    [number1, number2] = values;
+    number1 = negativeNumber1 + number1;
+    number2 = negativeNumber2 + number2;
+    let result = (BigInt(number1) + BigInt(number2)).toString();
+    if (result[0] == '-') {
+        result = result.substring(1);
+        negativeResult = '-';
+    }
+    if (exponent > 0) {
+        exponent = result.length - exponent;
+        if (exponent < 0) {
+            result = result.padStart(result.length + Math.abs(exponent), '0');
+            exponent = 0;
         }
+        result = result.slice(0, exponent) + '.' + result.slice(exponent);
     }
-    number1 = trim(number1);
-    number2 = trim(number2);
-    [number1, number2] = pad(trim(number1), trim(number2));
-    if (neg == 1) {
-        if (ind === 1)
-            number1 = compliment(number1);
-        else if (ind === 2)
-            number2 = compliment(number2);
-    }
-    let res = addCore(number1, number2);
-    if (!neg)
-        return trim(res);
-    else if (neg == 2)
-        return "-" + trim(res);
-    else {
-        if (number1.length < res.length)
-            return trim(res.substring(1));
-        else
-            return "-" + trim(compliment(res));
-    }
+    if (result[0] == '.')
+        result = '0' + result;
+    result = negativeResult + result;
+    return result;
 }
-function compliment(number) {
-    if (testZero(number)) {
-        return number;
-    }
-    let s = "", l = number.length, dec = number.split(".")[1], ld = dec ? dec.length : 0;
-    for (let i = 0; i < l; i++) {
-        if (number[i] >= "0" && number[i] <= "9")
-            s += 9 - parseInt(number[i]);
-        else
-            s += number[i];
-    }
-    let one = ld > 0 ? "0." + new Array(ld).join("0") + "1" : "1";
-    return addCore(s, one);
+function bigIntPad(number1, number2) {
+    let parts1 = number1.split("."), parts2 = number2.split(".");
+    //pad integer part
+    let length = Math.max(parts1[0].length, parts2[0].length);
+    parts1[0] = parts1[0].padStart(length, "0");
+    parts2[0] = parts2[0].padStart(length, "0");
+    //pad fractional part
+    parts1[1] = parts1[1] || "";
+    parts2[1] = parts2[1] || "";
+    length = Math.max(parts1[1].length, parts2[1].length);
+    parts1[1] = parts1[1].padEnd(length, "0");
+    parts2[1] = parts2[1].padEnd(length, "0");
+    return { values: [parts1[0] + parts1[1], parts2[0] + parts2[1]], exponent: parts1[1].length };
 }
 function trim(number) {
     let parts = number.split(".");
+    parts[0];
     if (!parts[0])
         parts[0] = "0";
     while (parts[0][0] == "0" && parts[0].length > 1)
@@ -124,20 +124,6 @@ function pad(number1, number2) {
     number1 = parts1[0] + (parts1[1] ? "." + parts1[1] : "");
     number2 = parts2[0] + (parts2[1] ? "." + parts2[1] : "");
     return [number1, number2];
-}
-function addCore(number1, number2) {
-    [number1, number2] = pad(number1, number2);
-    let sum = "", carry = 0;
-    for (let i = number1.length - 1; i >= 0; i--) {
-        if (number1[i] === ".") {
-            sum = "." + sum;
-            continue;
-        }
-        let temp = parseInt(number1[i]) + parseInt(number2[i]) + carry;
-        sum = (temp % 10) + sum;
-        carry = Math.floor(temp / 10);
-    }
-    return carry ? carry.toString() + sum : sum;
 }
 function testZero(number) {
     return /^0[0]*[.]{0,1}[0]*$/.test(number);
@@ -197,6 +183,9 @@ var RoundingModes;
 /*
 * Removes zero from front and back*/
 function stripTrailingZero_stripTrailingZero(number) {
+    // number = number.replace(/(^[-]?)([0]*)/, `${1}`);
+    // number = number.replace(/([0]*$){1}/, '');
+    // return number;
     const isNegative = number[0] === '-';
     if (isNegative) {
         number = number.substring(1);
@@ -356,15 +345,20 @@ function increment(part, c = 0) {
 function multiply_multiply(number1, number2) {
     number1 = number1.toString();
     number2 = number2.toString();
+    let negativeNumber1 = '';
+    let negativeNumber2 = '';
+    let negativeResult = '';
     /*Filter numbers*/
     let negative = 0;
     if (number1[0] == '-') {
         negative++;
         number1 = number1.substr(1);
+        negativeNumber1 = '-';
     }
     if (number2[0] == '-') {
         negative++;
         number2 = number2.substr(1);
+        negativeNumber2 = '-';
     }
     number1 = stripTrailingZero_stripTrailingZero(number1);
     number2 = stripTrailingZero_stripTrailingZero(number2);
@@ -379,6 +373,8 @@ function multiply_multiply(number1, number2) {
     let decimalLength = decimalLength1 + decimalLength2;
     number1 = stripTrailingZero_stripTrailingZero(number1.replace('.', ''));
     number2 = stripTrailingZero_stripTrailingZero(number2.replace('.', ''));
+    number1 = negativeNumber1 + number1;
+    number2 = negativeNumber2 + number2;
     if (number1.length < number2.length) {
         let temp = number1;
         number1 = number2;
@@ -387,6 +383,25 @@ function multiply_multiply(number1, number2) {
     if (number2 == '0') {
         return '0';
     }
+    const n1 = BigInt(number1);
+    const n2 = BigInt(number2);
+    let res = (n1 * n2).toString();
+    if (res[0] == '-') {
+        res = res.substring(1);
+        negativeResult = '-';
+    }
+    if (decimalLength > 0) {
+        decimalLength = res.length - decimalLength;
+        if (decimalLength < 0) {
+            res = res.padStart(res.length + Math.abs(decimalLength), '0');
+            decimalLength = 0;
+        }
+        res = res.slice(0, decimalLength) + '.' + res.slice(decimalLength);
+    }
+    if (res[0] == '.')
+        res = '0' + res;
+    res = negativeResult + res;
+    return res;
     /*
     * Core multiplication
     */
@@ -532,7 +547,7 @@ function subtract_subtract(number1, number2) {
 }
 function subtract_negate(number) {
     if (number[0] == '-') {
-        number = number.substr(1);
+        number = number.substring(1);
     }
     else {
         number = '-' + number;
@@ -574,8 +589,6 @@ function validate(oparand) {
 
 ;// CONCATENATED MODULE: ./lib/compareTo.js
 
-
-
 function compareTo(number1, number2) {
     let negative = false;
     [number1, number2] = [number1, number2].map(n => stripTrailingZero_stripTrailingZero(n));
@@ -586,72 +599,33 @@ function compareTo(number1, number2) {
     // If num 2 is negative and num 1 is positive
     if (number1[0] != '-' && number2[0] == '-')
         return 1;
-    if (number1[0] == '-' && number2[0] == '-') {
-        number1 = number1.substring(1);
-        number2 = number2.substring(1);
-        negative = true;
-    }
-    let decimal1 = number1.indexOf('.');
-    let decimal2 = number2.indexOf('.');
-    // If both numbers dont have decimals, compare lengths
-    if (decimal1 == -1 && decimal1 == decimal2) {
-        if (number1.length > number2.length)
-            return (negative) ? -1 : 1;
-        if (number1.length < number2.length)
-            return (negative) ? 1 : -1;
-    }
-    // If num 1 has no decimal, and num 2 has, then compare integer length to the decimal index of num 2
-    if (decimal1 == -1 && decimal2 !== -1) {
-        if (number1.length < decimal2)
-            return (negative) ? 1 : -1;
-        if (number1.length > decimal2)
-            return (negative) ? -1 : 1;
-    }
-    // If num 1 has a decimal, and num 2 has none, then compare integer length to the decimal index of num 1
-    if (decimal1 !== -1 && decimal2 == -1) {
-        if (number2.length < decimal1)
-            return (negative) ? 1 : -1;
-        if (number2.length > decimal1)
-            return (negative) ? -1 : 1;
-    }
-    [number1, number2] = pad(number1, number2);
-    // If equal
-    if (number1.localeCompare(number2) == 0)
-        return 0;
-    for (let i = 0; i < number1.length; i++) {
-        if (number1[i] == number2[i]) {
-            continue;
-        }
-        else if (number1[i] > number2[i]) {
-            return (negative) ? -1 : 1;
-        }
-        else {
-            return (negative) ? 1 : -1;
-        }
-    }
-    return 0;
+    return (RegExp(`^${number2}$`).test(number1)) ? 0 : number1.localeCompare(number2, undefined, { numeric: true });
 }
 // Wrapper functions
 function compareTo_lessThan(left, right, orEquals = false) {
-    return (orEquals) ? (compareTo(left, right) === 0 || compareTo(left, right) === -1) : (compareTo(left, right) === -1);
+    return (orEquals) ? (left.localeCompare(right, undefined, { numeric: true }) <= 0) : (left.localeCompare(right, undefined, { numeric: true }) < 0);
 }
 function compareTo_greaterThan(left, right, orEquals = false) {
-    return (orEquals) ? (compareTo(left, right) === 0 || compareTo(left, right) === 1) : (compareTo(left, right) === 1);
+    return (orEquals) ? (left.localeCompare(right, undefined, { numeric: true }) >= 0) : (left.localeCompare(right, undefined, { numeric: true }) > 0);
 }
 function equals(left, right) {
-    return (compareTo(stripTrailingZero_stripTrailingZero(left), stripTrailingZero_stripTrailingZero(right)) === 0);
+    return RegExp(`^${stripTrailingZero_stripTrailingZero(left)}$`).test(stripTrailingZero_stripTrailingZero(right));
 }
 function isExatclyZero(number) {
-    return equals(stripTrailingZero_stripTrailingZero(abs_abs(number)), '0');
+    return /^0[0]*[.]{0,1}[0]*$/.test(number);
 }
 function isExatclyOne(number) {
-    return equals(stripTrailingZero_stripTrailingZero(abs_abs(number)), '1');
+    return /^[0]*[1](?:[.]{1}[0]*)?$/.test(number);
 }
 function isEven(number) {
-    return /[02468]{1}$/.test(number.split('.')[0]);
+    if (number.includes('.'))
+        return /[02468]{1}$/.test(number[number.indexOf('.') - 1]);
+    return /[02468]{1}$/.test(number[number.length - 1]);
 }
 function isOdd(number) {
-    return /[13579]{1}$/.test(number.split('.')[0]);
+    if (number.includes('.'))
+        return /[13579]{1}$/.test(number[number.indexOf('.') - 1]);
+    return /[13579]{1}$/.test(number[number.length - 1]);
 }
 
 ;// CONCATENATED MODULE: ./lib/utils.js
@@ -730,15 +704,6 @@ function isAproxZero(number, precision = 8) {
         return true;
     return false;
 }
-function isAproxOne(number, precision = 8) {
-    precision = Math.max(1, precision);
-    number = abs_abs(number.toString());
-    if (isExatclyOne(number))
-        return true;
-    if (compareTo_lessThan(abs_abs(subtract_subtract('1', number)), utils_tolerance(precision), true))
-        return true;
-    return false;
-}
 function sign(number) {
     number = number.toString();
     if (isExatclyZero(number))
@@ -746,6 +711,15 @@ function sign(number) {
     if (number.includes('-'))
         return -1;
     return 1;
+}
+function isAproxOne(number, percision = 8) {
+    percision = Math.max(1, percision);
+    number = abs_abs(number.toString());
+    if (isExatclyOne(number))
+        return true;
+    if (compareTo_lessThan(abs_abs(subtract_subtract('1', number)), utils_tolerance(percision), true))
+        return true;
+    return false;
 }
 function validateInteger(number) {
     if (number.includes('.')) {
@@ -851,51 +825,65 @@ function pow(base, exponent, precision = 32, negate = false) {
             negate = !negate;
         }
         precision = Math.max(precision, 32);
-        // const testworker = new Worker(new URL("./workers/pow.worker.js", import.meta.url));
-        // testworker.postMessage({ base: abs(base), significand: exponentSignificand });
-        // testworker.onmessage = (event) => {
-        //     console.log('webresult', result)
-        //     // console.log('web', multiply(result, event.data))
-        //     // testworker.terminate();
-        //     // fractionalExponent = event.data
-        //     return finalize(multiply(result, event.data))
-        //     // testworker.terminate();
-        // }
-        let tempBase = root10(abs_abs(base), precision * 2);
+        let tempBase = base;
         for (let i = 0; i < exponentSignificand.length; i++) {
-            fractionalExponent = multiply_multiply(fractionalExponent, intPow(tempBase, exponentSignificand[i], precision));
-            tempBase = root10(tempBase, precision * 2);
+            const significandDigit = exponentSignificand[i];
+            if (isOdd(significandDigit)) {
+                switch (significandDigit) {
+                    case '9':
+                        fractionalExponent = multiply_multiply(fractionalExponent, multiply_multiply(intPow(nthRoot(tempBase, 5, precision + base.length + i), '2'), nthRoot(tempBase, 2, precision + base.length))); // (2 * 2) + 5 = 9
+                        break;
+                    case '7':
+                        fractionalExponent = multiply_multiply(fractionalExponent, multiply_multiply(nthRoot(tempBase, 5, precision + base.length + i), nthRoot(tempBase, 2, precision + base.length))); // 2 + 5 = 7
+                        break;
+                    case '5':
+                        fractionalExponent = multiply_multiply(fractionalExponent, nthRoot(tempBase, 2, precision + base.length)); // 5
+                        break;
+                    case '3':
+                        fractionalExponent = multiply_multiply(fractionalExponent, nthRoot(tempBase, 3, precision + base.length));
+                        break;
+                    case '1':
+                        fractionalExponent = multiply_multiply(fractionalExponent, nthRoot(nthRoot(tempBase, 5, precision + base.length + i), 2, precision + base.length)); // 2 / 2 = 1
+                        break;
+                }
+            }
+            if (isEven(significandDigit)) {
+                switch (significandDigit) {
+                    case '8':
+                        fractionalExponent = multiply_multiply(fractionalExponent, intPow(nthRoot(tempBase, 5, precision + base.length + i), '4')); // 2 * 4 = 8
+                        break;
+                    case '6':
+                        fractionalExponent = multiply_multiply(fractionalExponent, intPow(nthRoot(tempBase, 5, precision + base.length + i), '3')); // 2 * 3 = 6
+                        break;
+                    case '4':
+                        fractionalExponent = multiply_multiply(fractionalExponent, intPow(nthRoot(tempBase, 5, precision + base.length + i), '2')); // 2 * 2 = 4
+                        break;
+                    case '2':
+                        fractionalExponent = multiply_multiply(fractionalExponent, nthRoot(tempBase, 5, precision + base.length + i)); // 2
+                        break;
+                    case '0':
+                        break;
+                }
+            }
+            if (i < exponentSignificand.length - 1)
+                tempBase = nthRoot(nthRoot(tempBase, 5, precision + base.length + i), 2, precision + base.length);
         }
         return finalize(multiply_multiply(result, fractionalExponent));
     }
     else {
         return finalize(result);
     }
-    // let exponentIntegers = abs(exponentParts[0]);
-    // if (equals(abs(base), '10')) {
-    //     result = (negativeExponent) ? `0.${new Array(Number(exponentIntegers) - 1).join('0')}1` : `1${new Array(exponentIntegers).join('0')}`
-    //     return multiply(multiply(result, fractionalExponent), pow(sign(base), exponentIntegers))
-    // }
-    // while (greaterThan(exponentIntegers, '0')) {
-    //     if (isOdd(exponentIntegers)) { result = multiply(result, base) }
-    //     base = multiply(base, base);
-    //     exponentIntegers = divide(exponentIntegers, 2).split('.')[0];
-    // }
-    // result = multiply(result, fractionalExponent);
-    // result = (negativeExponent) ? divide(1, result, precision + 1) : result;
-    // result = (precision) ? roundOff(result, precision) : result;
-    // return (negate) ? stripTrailingZero(negateFn(result)) : stripTrailingZero(result);
 }
 ;
-function intPow(base, exponent, precision = 32) {
-    exponent = abs_abs(exponent);
+function intPow(base, exponent) {
+    let exp = parseInt(abs_abs(exponent));
     let result = '1';
-    while (compareTo_greaterThan(exponent, '0')) {
-        if (isOdd(exponent)) {
+    while (exp > 0) {
+        if (exp % 2) {
             result = multiply_multiply(result, base);
         }
         base = multiply_multiply(base, base);
-        exponent = divide_divide(exponent, 2).split('.')[0];
+        exp = exp >> 1;
     }
     return result;
 }
@@ -903,51 +891,65 @@ function nthRoot(x, n, precision = 8) {
     x = x.toString();
     n = n.toString();
     pow_validate(n);
+    const initialGuess = () => {
+        let _x = BigInt(round_roundOff(x));
+        let _n = BigInt(n);
+        let _guess = BigInt('1');
+        while (_x > _n) {
+            _x = _x >> _n;
+            _guess = _guess << BigInt('1');
+        }
+        return _guess.toString();
+    };
     if (compareTo_lessThan(n, '5', true)) {
-        let guess = '1';
+        let guess = initialGuess();
         let nMinusOne = subtract_subtract(n, 1);
         let difference = '0';
         let lastDifference = x;
-        let i = 0;
+        let i = 4;
         while (true) {
-            let newGuess = divide_divide(add_add(stripTrailingZero_stripTrailingZero(divide_divide(x, pow(guess, nMinusOne, precision + 2), precision + 2)), multiply_multiply(guess, nMinusOne)), n, precision + 2);
+            let newGuess = divide_divide(add_add(stripTrailingZero_stripTrailingZero(divide_divide(x, intPow(guess, nMinusOne), precision + i + 2)), multiply_multiply(guess, nMinusOne)), n, precision + i);
             difference = abs_abs(subtract_subtract(guess, newGuess));
-            if (compareTo_greaterThan(difference, newGuess)) {
-                // console.log('root exit under p')
-                return stripTrailingZero_stripTrailingZero(round_roundOff(guess, precision + 2));
+            if (compareTo_lessThan(difference, '1') && compareTo_greaterThan(difference, lastDifference)) {
+                return round_roundOff(bisectionRoot(x, n, newGuess, precision + 2), precision + 2);
             }
-            if (compareTo_lessThan(difference, utils_tolerance(precision + 1))) {
-                // console.log('newGuess exit under p')
+            if (compareTo_lessThan(difference, utils_tolerance(precision + 2))) {
                 return stripTrailingZero_stripTrailingZero(round_roundOff(newGuess, precision + 2));
             }
             lastDifference = difference;
             guess = stripTrailingZero_stripTrailingZero(newGuess);
             i++;
         }
-        // console.log('guess exit over itt')
-        // return stripTrailingZero(roundOff(guess, precision + 1))
     }
     else {
-        let x0 = '1';
-        let x1 = '2';
-        let x2 = '1.5';
-        let i = 0;
-        while (true) {
-            let f0 = subtract_subtract(pow(x0, n, precision + 2), x);
-            let f1 = subtract_subtract(pow(x1, n, precision + 2), x);
-            let next = multiply_multiply(f1, divide_divide(subtract_subtract(x1, x0), subtract_subtract(f1, f0), precision + 2));
-            x2 = subtract_subtract(round_roundOff(x1, precision + 2), round_roundOff(next, precision + 2));
-            if (compareTo_lessThan(abs_abs(subtract_subtract(x2, x1)), utils_tolerance(precision + 1))) {
-                return stripTrailingZero_stripTrailingZero(round_roundOff(x2, precision + 1));
-            }
-            if (sign(f0) !== sign(f1)) {
-                x1 = divide_divide(add_add(x0 + x1), 2, precision + 2); // Switch to bisection method
-            }
-            x0 = x1;
-            x1 = stripTrailingZero_stripTrailingZero(round_roundOff(x2, precision + 2));
-            i++;
+        return bisectionRoot(x, n, x, precision + 2);
+    }
+}
+function bisectionRoot(x, n, g, precision = 32) {
+    const f0 = (v, n, x) => {
+        return stripTrailingZero_stripTrailingZero(subtract_subtract(intPow(v, n), x));
+    };
+    const f1 = (x, n) => {
+        return stripTrailingZero_stripTrailingZero(multiply_multiply(n, intPow(x, subtract_subtract(n, '1'))));
+    };
+    let left = subtract_negate(g);
+    let right = g;
+    let v;
+    let prevV0 = '0';
+    while (true) {
+        v = stripTrailingZero_stripTrailingZero(divide_divide(add_add(left, right), 2, precision + 4));
+        const v0 = f0(v, n, x);
+        const v1 = f1(v, n);
+        if (compareTo_lessThan(multiply_multiply(v0, v1), '0', true)) {
+            left = stripTrailingZero_stripTrailingZero(v);
         }
-        // return stripTrailingZero(roundOff(x2, precision + 1))
+        else {
+            right = stripTrailingZero_stripTrailingZero(v);
+        }
+        if ((compareTo_lessThan(abs_abs(v0), utils_tolerance(precision)) && compareTo_greaterThan(abs_abs(v0), '0', true)) || equals(abs_abs(v0), prevV0)) {
+            return stripTrailingZero_stripTrailingZero(round_roundOff(v, precision + 2));
+        }
+        prevV0 = abs_abs(v0);
     }
 }
 function inverseSqRoot(number) {
@@ -1086,7 +1088,7 @@ function cbRoot(base, precision = 32) {
 }
 function root4(base, precision = 32) {
     precision = Math.max(precision, 32);
-    return sqRoot(sqRoot(base, precision), precision);
+    return sqRoot(sqRoot(base, precision + 4), precision);
 }
 function root5(base, precision = 32) {
     precision = Math.max(precision, 32);
@@ -1094,7 +1096,8 @@ function root5(base, precision = 32) {
 }
 function root10(base, precision = 32) {
     precision = Math.max(precision, 32);
-    return sqRoot(root5(base, precision), precision + 1);
+    return nthRoot(base, 10, precision);
+    // return sqRoot(root5(base, precision + 4), precision + 2);
 }
 function pow_validate(oparand) {
     if (oparand.includes('.')) {
@@ -1526,7 +1529,7 @@ const E_ROOTS_FOR_POW = [
 
 
 const E = round_roundOff('2.718281828459045235360287471352662497757247093699959574966967627724076630353547594571382178525166427427466391932003059921817413596629043572900334295260595630738132328627943490763233829880753195251019011573834187930702154089149934884167509244761460668082264', 257);
-const LN2 = '0.69314718055994530941723212145818';
+const LN2 = '0.693147180559945309417232121458176568075500134360255254120680009493393621969694715605863326996418687541993981020570685733685520235758130557032670751635075961930727570828371435190307038623891673471123350115364507330239120475172681574932065155524734063903421';
 const LOG2E = '1.44269504088896340735992468100188';
 const LN10 = '2.30258509299404568392825848336901';
 const LOG10E = '0.43429448190325182766805360691429';
