@@ -7,6 +7,7 @@ import { stripTrailingZero } from "./stripTrailingZero";
 import { negate as negateFn, subtract } from "./subtract";
 import { add } from "./add";
 import { isAproxOne, isAproxZero, sign, tolerance } from "./utils";
+import { RoundingModes } from "./roundingModes";
 // import { AddInstantiate } from "./assembly/math";
 
 
@@ -109,6 +110,7 @@ export function pow(base: number | string, exponent: number | string, precision:
             negate = !negate
         }
 
+        let minPrecision = Math.max(parseInt(multiply(base.length.toString(), roundOff(exponent, 0, RoundingModes.CEILING))),base.length)
         precision = Math.max(precision, 32);
 
         let tempBase = base;
@@ -119,19 +121,19 @@ export function pow(base: number | string, exponent: number | string, precision:
             if (isOdd(significandDigit)) {
                 switch (significandDigit) {
                     case '9':
-                        fractionalExponent = multiply(fractionalExponent, multiply(intPow(nthRoot(tempBase, 5, precision + base.length + i), '2'), nthRoot(tempBase, 2, precision + base.length))) // (2 * 2) + 5 = 9
+                        fractionalExponent = multiply(fractionalExponent, multiply(intPow(nthRoot(tempBase, 5, minPrecision + i), '2'), nthRoot(tempBase, 2, minPrecision))) // (2 * 2) + 5 = 9
                         break;
                     case '7':
-                        fractionalExponent = multiply(fractionalExponent, multiply(nthRoot(tempBase, 5, precision + base.length + i), nthRoot(tempBase, 2, precision + base.length))) // 2 + 5 = 7
+                        fractionalExponent = multiply(fractionalExponent, multiply(nthRoot(tempBase, 5, minPrecision + i), nthRoot(tempBase, 2, minPrecision))) // 2 + 5 = 7
                         break;
                     case '5':
-                        fractionalExponent = multiply(fractionalExponent, nthRoot(tempBase, 2, precision + base.length)) // 5
+                        fractionalExponent = multiply(fractionalExponent, nthRoot(tempBase, 2, minPrecision)) // 5
                         break;
                     case '3':
-                        fractionalExponent = multiply(fractionalExponent, nthRoot(tempBase, 3, precision + base.length))
+                        fractionalExponent = multiply(fractionalExponent, nthRoot(tempBase, 3, minPrecision))
                         break;
                     case '1':
-                        fractionalExponent = multiply(fractionalExponent, nthRoot(nthRoot(tempBase, 5, precision + base.length + i), 2, precision + base.length)) // 2 / 2 = 1
+                        fractionalExponent = multiply(fractionalExponent, nthRoot(nthRoot(tempBase, 5, minPrecision + i), 2, minPrecision)) // 2 / 2 = 1
                         break;
                 }
 
@@ -140,23 +142,23 @@ export function pow(base: number | string, exponent: number | string, precision:
             if (isEven(significandDigit)) {
                 switch (significandDigit) {
                     case '8':
-                        fractionalExponent = multiply(fractionalExponent, intPow(nthRoot(tempBase, 5, precision + base.length + i), '4')) // 2 * 4 = 8
+                        fractionalExponent = multiply(fractionalExponent, intPow(nthRoot(tempBase, 5, minPrecision + i), '4')) // 2 * 4 = 8
                         break;
                     case '6':
-                        fractionalExponent = multiply(fractionalExponent, intPow(nthRoot(tempBase, 5, precision + base.length + i), '3')) // 2 * 3 = 6
+                        fractionalExponent = multiply(fractionalExponent, intPow(nthRoot(tempBase, 5, minPrecision + i), '3')) // 2 * 3 = 6
                         break;
                     case '4':
-                        fractionalExponent = multiply(fractionalExponent, intPow(nthRoot(tempBase, 5, precision + base.length + i), '2')) // 2 * 2 = 4
+                        fractionalExponent = multiply(fractionalExponent, intPow(nthRoot(tempBase, 5, minPrecision + i), '2')) // 2 * 2 = 4
                         break;
                     case '2':
-                        fractionalExponent = multiply(fractionalExponent, nthRoot(tempBase, 5, precision + base.length + i)) // 2
+                        fractionalExponent = multiply(fractionalExponent, nthRoot(tempBase, 5, minPrecision + i)) // 2
                         break;
                     case '0':
                         break;
                 }
             }
 
-            if(i < exponentSignificand.length - 1 ) tempBase = nthRoot(nthRoot(tempBase, 5, precision + base.length + i), 2, precision + base.length);
+            if(i < exponentSignificand.length - 1 ) tempBase = nthRoot(nthRoot(tempBase, 5, minPrecision + i), 2, minPrecision);
         }
 
         return finalize(multiply(result, fractionalExponent));

@@ -742,6 +742,7 @@ function validatePositive(number) {
 
 
 
+
 // import { AddInstantiate } from "./assembly/math";
 /**
  * Calculates the power of a given base raised to an integer exponent
@@ -824,6 +825,7 @@ function pow(base, exponent, precision = 32, negate = false) {
         if (negativeBase) {
             negate = !negate;
         }
+        let minPrecision = Math.max(parseInt(multiply_multiply(base.length.toString(), round_roundOff(exponent, 0, RoundingModes.CEILING))), base.length);
         precision = Math.max(precision, 32);
         let tempBase = base;
         for (let i = 0; i < exponentSignificand.length; i++) {
@@ -831,42 +833,42 @@ function pow(base, exponent, precision = 32, negate = false) {
             if (isOdd(significandDigit)) {
                 switch (significandDigit) {
                     case '9':
-                        fractionalExponent = multiply_multiply(fractionalExponent, multiply_multiply(intPow(nthRoot(tempBase, 5, precision + base.length + i), '2'), nthRoot(tempBase, 2, precision + base.length))); // (2 * 2) + 5 = 9
+                        fractionalExponent = multiply_multiply(fractionalExponent, multiply_multiply(intPow(nthRoot(tempBase, 5, minPrecision + i), '2'), nthRoot(tempBase, 2, minPrecision))); // (2 * 2) + 5 = 9
                         break;
                     case '7':
-                        fractionalExponent = multiply_multiply(fractionalExponent, multiply_multiply(nthRoot(tempBase, 5, precision + base.length + i), nthRoot(tempBase, 2, precision + base.length))); // 2 + 5 = 7
+                        fractionalExponent = multiply_multiply(fractionalExponent, multiply_multiply(nthRoot(tempBase, 5, minPrecision + i), nthRoot(tempBase, 2, minPrecision))); // 2 + 5 = 7
                         break;
                     case '5':
-                        fractionalExponent = multiply_multiply(fractionalExponent, nthRoot(tempBase, 2, precision + base.length)); // 5
+                        fractionalExponent = multiply_multiply(fractionalExponent, nthRoot(tempBase, 2, minPrecision)); // 5
                         break;
                     case '3':
-                        fractionalExponent = multiply_multiply(fractionalExponent, nthRoot(tempBase, 3, precision + base.length));
+                        fractionalExponent = multiply_multiply(fractionalExponent, nthRoot(tempBase, 3, minPrecision));
                         break;
                     case '1':
-                        fractionalExponent = multiply_multiply(fractionalExponent, nthRoot(nthRoot(tempBase, 5, precision + base.length + i), 2, precision + base.length)); // 2 / 2 = 1
+                        fractionalExponent = multiply_multiply(fractionalExponent, nthRoot(nthRoot(tempBase, 5, minPrecision + i), 2, minPrecision)); // 2 / 2 = 1
                         break;
                 }
             }
             if (isEven(significandDigit)) {
                 switch (significandDigit) {
                     case '8':
-                        fractionalExponent = multiply_multiply(fractionalExponent, intPow(nthRoot(tempBase, 5, precision + base.length + i), '4')); // 2 * 4 = 8
+                        fractionalExponent = multiply_multiply(fractionalExponent, intPow(nthRoot(tempBase, 5, minPrecision + i), '4')); // 2 * 4 = 8
                         break;
                     case '6':
-                        fractionalExponent = multiply_multiply(fractionalExponent, intPow(nthRoot(tempBase, 5, precision + base.length + i), '3')); // 2 * 3 = 6
+                        fractionalExponent = multiply_multiply(fractionalExponent, intPow(nthRoot(tempBase, 5, minPrecision + i), '3')); // 2 * 3 = 6
                         break;
                     case '4':
-                        fractionalExponent = multiply_multiply(fractionalExponent, intPow(nthRoot(tempBase, 5, precision + base.length + i), '2')); // 2 * 2 = 4
+                        fractionalExponent = multiply_multiply(fractionalExponent, intPow(nthRoot(tempBase, 5, minPrecision + i), '2')); // 2 * 2 = 4
                         break;
                     case '2':
-                        fractionalExponent = multiply_multiply(fractionalExponent, nthRoot(tempBase, 5, precision + base.length + i)); // 2
+                        fractionalExponent = multiply_multiply(fractionalExponent, nthRoot(tempBase, 5, minPrecision + i)); // 2
                         break;
                     case '0':
                         break;
                 }
             }
             if (i < exponentSignificand.length - 1)
-                tempBase = nthRoot(nthRoot(tempBase, 5, precision + base.length + i), 2, precision + base.length);
+                tempBase = nthRoot(nthRoot(tempBase, 5, minPrecision + i), 2, minPrecision);
         }
         return finalize(multiply_multiply(result, fractionalExponent));
     }
