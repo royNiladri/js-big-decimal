@@ -1,36 +1,29 @@
 import { abs } from "./abs";
 import { add } from "./add";
 import { lessThan, equals, greaterThan } from "./compareTo";
+import { E, LN10, LN2 } from "./constants";
 import { divide } from "./divide";
 import { multiply } from "./multiply";
-import { pow } from "./pow";
+import { intPow, pow } from "./pow";
 import { roundOff } from "./round";
+import { stripTrailingZero } from "./stripTrailingZero";
 import { subtract } from "./subtract";
 import { E_ROOTS_FOR_POW } from "./tables/e";
-import { tolerance } from "./utils";
-
-export const E = roundOff('2.718281828459045235360287471352662497757247093699959574966967627724076630353547594571382178525166427427466391932003059921817413596629043572900334295260595630738132328627943490763233829880753195251019011573834187930702154089149934884167509244761460668082264', 257);
-export const LN2 = '0.693147180559945309417232121458176568075500134360255254120680009493393621969694715605863326996418687541993981020570685733685520235758130557032670751635075961930727570828371435190307038623891673471123350115364507330239120475172681574932065155524734063903421';
-export const LOG2E = '1.44269504088896340735992468100188';
-export const LN10 = '2.30258509299404568392825848336901';
-export const LOG10E = '0.43429448190325182766805360691429';
+import { testTolerance } from "./utils";
 
 export function Euler(precision: number = 32) {
     precision = Math.max(16, precision)
     let result = '1';
     let n = '1';
     let f = '1';
-
-    while(true){
+    while (true) {
         f = multiply(f, n);
-        const next = divide('1', f, precision + 2)
-
-        if(lessThan(abs(next), tolerance(precision))){
-            return roundOff(result, precision);
+        const next = divide('1', f, precision + 3)
+        if (testTolerance(abs(next), precision)) {
+            return stripTrailingZero(roundOff(result, 1024));
         }
-
         result = add(result, next);
-        n = add(n,'1');
+        n = add(n, '1');
     }
 }
 
@@ -41,7 +34,7 @@ export function exp(exponent: number | string) {
     let fractionalExponent = '1';
 
     if (remainder) {
-        for (let i = 0; i < Math.min(33,remainder.length); i++) {
+        for (let i = 0; i < Math.min(33, remainder.length); i++) {
             fractionalExponent = multiply(fractionalExponent, E_ROOTS_FOR_POW[i][remainder[i]])
         }
         result = multiply(result, fractionalExponent)
@@ -66,15 +59,31 @@ export function ln(x: string | number = 2) {
     }
 
     let result = '0';
-    let term = divide(subtract(x, '1'), add(x, '1'), 33);
+    let term = stripTrailingZero(divide(subtract(x, '1'), add(x, '1'), 64 + 2));
     let i = 0;
+
+    if (lessThan(x, '2')) {
+        while (true) {
+            i++
+            let iteration = subtract(multiply('2', i), '1');
+            let next = divide(roundOff(intPow(term, iteration), 64 + 2), iteration, 64 + 2)
+            if (testTolerance(next, 64)) {
+                return roundOff(multiply('2', add(result, next)), 64);
+            }
+            result = add(result, next);
+        }
+    }
+
+    let f = stripTrailingZero(pow(term, 2, 64 + 2));
+    let t = stripTrailingZero(pow(term, 1, 64 + 2));
     while (true) {
         i++
         let iteration = subtract(multiply('2', i), '1');
-        let next = multiply(divide('1', iteration, 33), pow(term, iteration));
-        if (lessThan(next, tolerance(33))) {
-            return roundOff(multiply('2', add(result, next)), 32);
+        let next = roundOff(multiply(divide('1', iteration, 64 + 2), t), 1024 + 4);
+        if (testTolerance(next, 64)) {
+            return roundOff(multiply('2', add(result, next)), 64);
         }
+        t = stripTrailingZero(roundOff(multiply(t, f), 64 + 2))
         result = add(result, next);
     }
 
@@ -87,18 +96,18 @@ export function ln2(x: string | number = 2) {
     }
     let result = '0';
     while (greaterThan(x, '2', true)) {
-        x = divide(x, 2, 33);
+        x = divide(x, 2, 64 + 2);
         result = add(result, '1');
     }
-    return roundOff(add(result, divide(ln(x), LN2,33)), 32);
+    return roundOff(add(result, divide(ln(x), LN2, 64 + 2)), 64);
 }
 
 export function log(base: string | number) {
     base = base.toString();
-    return roundOff(multiply(ln2(base), LN2), 32);
+    return roundOff(multiply(ln2(base), LN2), 64);
 }
 
 export function log10(base: string | number) {
     base = base.toString();
-    return divide(log(base), LN10, 32);
+    return roundOff(divide(ln(base), LN10, 64 + 2), 64);
 }

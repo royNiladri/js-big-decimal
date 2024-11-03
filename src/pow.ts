@@ -6,7 +6,7 @@ import { roundOff } from "./round";
 import { stripTrailingZero } from "./stripTrailingZero";
 import { negate as negateFn, subtract } from "./subtract";
 import { add } from "./add";
-import { isAproxOne, isAproxZero, sign, tolerance } from "./utils";
+import { tolerance } from "./utils";
 import { RoundingModes } from "./roundingModes";
 // import { AddInstantiate } from "./assembly/math";
 
@@ -52,15 +52,6 @@ import { RoundingModes } from "./roundingModes";
 
 export function pow(base: number | string, exponent: number | string, precision: number | undefined = 32, negate: boolean | undefined = false): string {
 
-
-    // AddInstantiate.then((res)=>{
-    //     console.log('custom wasm loader',res.__add('00001', '1'))
-    // })
-
-    // const v = await (async url => await AddInstantiate)();
-
-    // console.log('custom wasm loader', AddWebAssembly('1', '1'))
-
     exponent = exponent.toString();
     base = base.toString();
 
@@ -88,18 +79,11 @@ export function pow(base: number | string, exponent: number | string, precision:
     const exponentParts = exponent.split('.');
     const exponentSignificand = exponentParts[1];
 
-    const isBase10 = equals(abs(base), '10');
-
-    if (isBase10) {
-        base = abs(base);
-        negate = !negate;
-    }
-
     let fractionalExponent = '1';
     let result: string;
 
     if (equals(abs(base), '10')) {
-        result = (negativeExponent) ? `0.${new Array(Number(abs(exponentParts[0])) - 1).join('0')}1` : `1${new Array(exponentParts[0]).join('0')}`
+        result = (negativeExponent) ? tolerance(abs(exponentParts[0])) : tolerance('-' + exponentParts[0]);
     } else {
         result = intPow(abs(base), abs(exponentParts[0]))
     }
@@ -110,55 +94,53 @@ export function pow(base: number | string, exponent: number | string, precision:
             negate = !negate
         }
 
-        let minPrecision = Math.max(parseInt(multiply(base.length.toString(), roundOff(exponent, 0, RoundingModes.CEILING))),base.length)
+        let minPrecision = Math.max(precision + parseInt(multiply(base.length.toString(), roundOff(exponent, 0, RoundingModes.CEILING))), precision + base.length)
         precision = Math.max(precision, 32);
 
         let tempBase = base;
 
         for (let i = 0; i < exponentSignificand.length; i++) {
-            const significandDigit = exponentSignificand[i];
-
-            if (isOdd(significandDigit)) {
-                switch (significandDigit) {
+            if (isOdd(exponentSignificand[i])) {
+                switch (exponentSignificand[i]) {
                     case '9':
-                        fractionalExponent = multiply(fractionalExponent, multiply(intPow(nthRoot(tempBase, 5, minPrecision + i), '2'), nthRoot(tempBase, 2, minPrecision))) // (2 * 2) + 5 = 9
+                        fractionalExponent = multiply(fractionalExponent, multiply(intPow(nthRoot(tempBase, 5, minPrecision + i, precision + i), '2'), nthRoot(tempBase, 2, minPrecision, precision))) // (2 * 2) + 5 = 9
                         break;
                     case '7':
-                        fractionalExponent = multiply(fractionalExponent, multiply(nthRoot(tempBase, 5, minPrecision + i), nthRoot(tempBase, 2, minPrecision))) // 2 + 5 = 7
+                        fractionalExponent = multiply(fractionalExponent, multiply(nthRoot(tempBase, 5, minPrecision + i, precision + i), nthRoot(tempBase, 2, minPrecision, precision))) // 2 + 5 = 7
                         break;
                     case '5':
-                        fractionalExponent = multiply(fractionalExponent, nthRoot(tempBase, 2, minPrecision)) // 5
+                        fractionalExponent = multiply(fractionalExponent, nthRoot(tempBase, 2, minPrecision, precision)) // 5
                         break;
                     case '3':
-                        fractionalExponent = multiply(fractionalExponent, nthRoot(tempBase, 3, minPrecision))
+                        fractionalExponent = multiply(fractionalExponent, nthRoot(tempBase, 3, minPrecision, precision))
                         break;
                     case '1':
-                        fractionalExponent = multiply(fractionalExponent, nthRoot(nthRoot(tempBase, 5, minPrecision + i), 2, minPrecision)) // 2 / 2 = 1
+                        fractionalExponent = multiply(fractionalExponent, nthRoot(nthRoot(tempBase, 5, minPrecision + i, precision), 2, minPrecision, precision)) // 2 / 2 = 1
                         break;
                 }
 
             }
 
-            if (isEven(significandDigit)) {
-                switch (significandDigit) {
+            if (isEven(exponentSignificand[i])) {
+                switch (exponentSignificand[i]) {
                     case '8':
-                        fractionalExponent = multiply(fractionalExponent, intPow(nthRoot(tempBase, 5, minPrecision + i), '4')) // 2 * 4 = 8
+                        fractionalExponent = multiply(fractionalExponent, intPow(nthRoot(tempBase, 5, minPrecision + i, precision), '4')) // 2 * 4 = 8
                         break;
                     case '6':
-                        fractionalExponent = multiply(fractionalExponent, intPow(nthRoot(tempBase, 5, minPrecision + i), '3')) // 2 * 3 = 6
+                        fractionalExponent = multiply(fractionalExponent, intPow(nthRoot(tempBase, 5, minPrecision + i, precision), '3')) // 2 * 3 = 6
                         break;
                     case '4':
-                        fractionalExponent = multiply(fractionalExponent, intPow(nthRoot(tempBase, 5, minPrecision + i), '2')) // 2 * 2 = 4
+                        fractionalExponent = multiply(fractionalExponent, intPow(nthRoot(tempBase, 5, minPrecision + i, precision), '2')) // 2 * 2 = 4
                         break;
                     case '2':
-                        fractionalExponent = multiply(fractionalExponent, nthRoot(tempBase, 5, minPrecision + i)) // 2
+                        fractionalExponent = multiply(fractionalExponent, nthRoot(tempBase, 5, minPrecision + i, precision)) // 2
                         break;
                     case '0':
                         break;
                 }
             }
 
-            if(i < exponentSignificand.length - 1 ) tempBase = nthRoot(nthRoot(tempBase, 5, minPrecision + i), 2, minPrecision);
+            if (i < exponentSignificand.length - 1) tempBase = nthRoot(nthRoot(tempBase, 5, minPrecision + i, precision), 2, minPrecision, precision);
         }
 
         return finalize(multiply(result, fractionalExponent));
@@ -182,7 +164,7 @@ export function intPow(base: string, exponent: string) {
     return result
 }
 
-export function nthRoot(x: number | string, n: number | string, precision = 8) {
+export function nthRoot(x: number | string, n: number | string, precision = 16, t = 16) {
 
     x = x.toString();
     n = n.toString();
@@ -202,34 +184,30 @@ export function nthRoot(x: number | string, n: number | string, precision = 8) {
         return _guess.toString();
     }
 
-    if (lessThan(n, '5', true)) {
-        let guess = initialGuess();
-        let nMinusOne = subtract(n, 1);
-        let difference = '0'
-        let lastDifference = x
-        let i = 4;
-        while (true) {
 
-            let newGuess = divide(add(stripTrailingZero(divide(x, intPow(guess, nMinusOne), precision + i + 2)), multiply(guess, nMinusOne)), n, precision + i);
+    let guess = initialGuess();
+    let nMinusOne = subtract(n, 1);
+    let difference = '0'
+    let lastDifference = x
+    let i = 4;
 
-            difference = abs(subtract(guess, newGuess))
-
-            if (lessThan(difference, '1') && greaterThan(difference, lastDifference)) {
-                return roundOff(bisectionRoot(x, n, newGuess, precision + 2), precision + 2);
-            }
-
-            if (lessThan(difference, tolerance(precision + 2))) {
-                return stripTrailingZero(roundOff(newGuess, precision + 2))
-            }
-
-            lastDifference = difference;
-            guess = stripTrailingZero(newGuess);
-
-            i++;
+    while (true) {
+        let newGuess = stripTrailingZero(divide(add(stripTrailingZero(divide(x, intPow(guess, nMinusOne), precision + i + 2)), multiply(guess, nMinusOne)), n, precision + i));
+        difference = stripTrailingZero(abs(subtract(guess, newGuess)))
+        if (testTolerance(difference, t + i)) {
+            return stripTrailingZero(roundOff(newGuess, precision + 2))
         }
-    } else {
-        return bisectionRoot(x, n, x, precision + 2);
+
+        if (greaterThan(difference, lastDifference)) {
+            return stripTrailingZero(roundOff(bisectionRoot(x, n, newGuess, precision + 2), precision + 2));
+        }
+
+        lastDifference = difference;
+        guess = stripTrailingZero(newGuess);
+
+        i++;
     }
+
 
 }
 
@@ -243,13 +221,14 @@ export function bisectionRoot(x: string, n: string, g: string, precision = 32) {
         return stripTrailingZero(multiply(n, intPow(x, subtract(n, '1'))));
     }
 
+    const threshold = tolerance(precision)
     let left = negateFn(g);
     let right = g;
-    let v: string;
+    let v = '0';
     let prevV0 = '0';
     while (true) {
         v = stripTrailingZero(divide(add(left, right), 2, precision + 4));
-        const v0 = f0(v, n, x);
+        let v0 = f0(v, n, x);
         const v1 = f1(v, n);
         if (lessThan(multiply(v0, v1), '0', true)) {
             left = stripTrailingZero(v);
@@ -257,11 +236,13 @@ export function bisectionRoot(x: string, n: string, g: string, precision = 32) {
             right = stripTrailingZero(v);
         }
 
-        if ((lessThan(abs(v0), tolerance(precision)) && greaterThan(abs(v0), '0', true)) || equals(abs(v0), prevV0)) {
+        v0 = abs(v0)
+
+        if ((lessThan(v0, threshold)) || equals(v0, prevV0)) {
             return stripTrailingZero(roundOff(v, precision + 2));
         }
 
-        prevV0 = abs(v0)
+        prevV0 = v0
 
     }
 
@@ -278,20 +259,15 @@ export function inverseSqRoot(number: string) {
     let i = 0;
 
     while (i < 10) {
-        // console.log('guess', guess)
-
         let newGuess = roundOff(multiply(guess, subtract('1.5', roundOff(multiply(divide(number, 2, 33), pow(guess, 2, 33)), 33))), 33)
-        // console.log('newGuess', guess)
 
         difference = abs(subtract(guess, newGuess))
 
         if (greaterThan(difference, previousDifference)) {
-            // console.log('root exit under p')
             return stripTrailingZero(roundOff(guess, 32 + 1))
         }
 
         if (lessThan(difference, tolerance(32 - 1))) {
-            // console.log('newGuess exit under p')
             return stripTrailingZero(roundOff(guess, 32 + 1))
         }
 
@@ -301,156 +277,16 @@ export function inverseSqRoot(number: string) {
         i++;
     }
 
-
-
-    // let [integer, fraction] = n.split('.');
-    // let exponent = '0';
-
-    // let integerBits = '';
-    // let fractionBits = '';
-    // let exponentBits = '';
-    // let mantissaBits = '';
-
-    // let mantissa = divide(integer + fraction, '1');
-
-
-    // while (greaterThan(integer, '1', true)) {
-    //     integerBits = isOdd(integer) ? '1' + integerBits : '0' + integerBits;
-    //     integer = divide(integer, 2, 0);
-    // }
-
-
-    // if (fraction) {
-
-    //     let precision = '32';
-    //     fraction = '0.' + fraction;
-
-    //     while (greaterThan(precision, '0')) {
-    //         fraction = multiply(fraction, 2);
-    //         fractionBits += fraction.split('.')[0];
-    //         fraction = '0.' + fraction.split('.')[1];
-    //         if (isAproxZero(fraction, 2)) break
-    //         precision = subtract(precision, 1);
-    //     }
-    // }
-
-
-    // if (integer == '0') {
-    //     let lastDigit = '0';
-    //     let i = 1;
-
-    //     while (true) {
-    //         if (lastDigit !== fractionBits[i - 1]) {
-    //             i++
-    //             break
-    //         }
-    //         i++
-    //     }
-
-    //     exponent = negateFn(i.toString())
-    // } else {
-    //     exponent = (integerBits.length - 1).toString()
-    // }
-
-    // mantissaBits = integerBits + fractionBits;
-    // mantissa = add('1', divide(divide(mantissa, pow('2', mantissaBits.length), mantissaBits.length), '2', mantissaBits.length));
-    // console.log('log a', subtract(multiply(divide('1', pow('2', mantissaBits.length), mantissaBits.length), add(mantissa, multiply(pow('2', mantissaBits.length), add(exponent, (mantissaBits.length - 1).toString())))), (mantissaBits.length - 1).toString()))
-
-    // let E = roundOff(multiply(add(exponent, (mantissaBits.length - 1).toString()), '0.5'), 0, RoundingModes.FLOOR);
-
-    // exponent = add(exponent, (mantissaBits.length - 1).toString())
-
-    // while (greaterThan(exponent, '1', true)) {
-    //     exponentBits += isOdd(exponent) ? '1' : '0';
-    //     exponent = roundOff(divide(exponent, 2), 0, RoundingModes.FLOOR);
-    // }
-
-    // exponent = roundOff(multiply(add(exponent, (mantissaBits.length - 1).toString()), '0.5'), 0, RoundingModes.FLOOR)
-
-
-    // console.log('integer', integer)
-    // console.log('integerBits', integerBits)
-    // console.log('fractionBits', fractionBits)
-    // console.log('exponent', exponent)
-    // console.log('exponentBits', exponentBits)
-
-    // // const mantissaBits = integerBits + fractionBits;
-    // const logBits = exponentBits + mantissaBits;
-    // const binaryBits = '0' + logBits.substring(0, logBits.length - 1); //right bitshift
-
-    // exponentBits = binaryBits.substring(0, exponentBits.length)
-    // mantissaBits = binaryBits.substring(exponentBits.length)
-    // const exponentRange = pow('2', exponentBits.length);
-    // const mantissaRange = multiply('1.5', pow('2', mantissaBits.length - 1));
-    // const correction = multiply(exponentRange, mantissaRange);
-
-    // const log = '1.' + binaryBits.split('').reduce((p, c, i) => {
-    //     return add(p, (c == '0') ? '0' : pow('2', binaryBits.length - i))
-    // }, '0');
-
-
-    // // console.log('mantissa', mantissa)
-    // // console.log('mantissaBits', mantissaBits)
-    // // console.log('logBits', logBits)
-    // // console.log('binaryBits', binaryBits)
-    // // console.log('mantissaRange', mantissaRange)
-    // // console.log('exponentRange', exponentRange)
-    // // console.log('correction', correction)
-    // // console.log('log', log)
-
-    // const initial = multiply(log, '.5');
-    // const initialSq = multiply(initial, initial);
-    // // let x = multiply(multiply(multiply(number, '0.5'), multiply(initial, initial)), '.5');
-    // // x = multiply(multiply(multiply(number, '0.5'), multiply(x, x)), '.5');
-    // // const y = multiply(initial, subtract('1.5', x));
-
-
-    // let guess = initial;
-    // let difference = '0'
-    // let lastDifference = number
-    // let i = 0;
-
-    // while (i < 10) {
-    //     console.log('guess', guess)
-
-    //     guess = roundOff(multiply(guess, subtract('1.5', roundOff(multiply(divide(number, 2, 33), pow(guess, 2, 33)), 33))), 33)
-    //     console.log('newGuess', guess)
-
-    //     // difference = abs(subtract(guess, newGuess))
-
-    //     // if (greaterThan(difference, lastDifference)) {
-    //     //     // console.log('root exit under p')
-    //     //     return stripTrailingZero(roundOff(guess, 32 + 1))
-    //     // }
-
-    //     // if (lessThan(difference, tolerance(32 - 1))) {
-    //     //     // console.log('newGuess exit under p')
-    //     //     return stripTrailingZero(roundOff(guess, 32 + 1))
-    //     // }
-
-    //     // lastDifference = difference;
-    //     // guess = newGuess;
-
-    //     i++;
-    // }
-
-    // console.log('initial', initial)
-    // console.log('initialSq', initialSq)
-    // // console.log('x', x)
-    // // console.log('y', y)
-
-    // return guess
-
 }
 
 export function sqRoot(base: string | number, precision = 32) {
     precision = Math.max(precision, 32);
-    return nthRoot(base, 2, precision);
+    return nthRoot(base, 2, precision, precision + 1);
 }
 
 export function cbRoot(base: string | number, precision = 32) {
     precision = Math.max(precision, 32);
-    return nthRoot(base, 3, precision);
+    return nthRoot(base, 3, precision, precision + 1);
 }
 
 export function root4(base: string | number, precision = 32) {
@@ -460,13 +296,17 @@ export function root4(base: string | number, precision = 32) {
 
 export function root5(base: string | number, precision = 32) {
     precision = Math.max(precision, 32);
-    return nthRoot(base, 5, precision);
+    return nthRoot(base, 5, precision, precision + 1);
 }
 
 export function root10(base: string | number, precision = 32) {
     precision = Math.max(precision, 32);
-    return nthRoot(base, 10, precision);
+    return nthRoot(base, 10, precision, precision + 1);
     // return sqRoot(root5(base, precision + 4), precision + 2);
+}
+
+function testTolerance(target: string, precision: number) {
+    return RegExp(`^([0]{1}\\.[0]{${precision + 2},}[\\d]{1})`).test(target);
 }
 
 function validate(oparand: string) {

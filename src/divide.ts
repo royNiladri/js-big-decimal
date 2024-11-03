@@ -1,7 +1,6 @@
-import { add, trim } from './add';
 import { roundOff } from './round';
 
-export function divide(dividend: string | number, divisor: string | number, precission?:number) {
+export function divide(dividend: string | number, divisor: string | number, precission: number = 8) {
     // Convert to string
     if (typeof dividend == 'number' || typeof divisor == 'number') {
         dividend = dividend.toString();
@@ -10,91 +9,105 @@ export function divide(dividend: string | number, divisor: string | number, prec
 
     // Return 0 
     if (divisor == '0') {
-        return '0' + (!precission)? '': '.' + new Array(precission).join('0');
+        return '0' + (!precission) ? '' : '.' + new Array(precission).join('0');
     }
 
-    // Set default precission
-    if(typeof precission == 'undefined'){
-        precission = 8;
-    }
+    // precission = precission + 2;
+    let negativeDividend: string = '';
+    let negativeDivisor: string = '';
+    let negativeResult: string = '';
+    let dividendIndex = dividend.length;
+    let divisorIndex = divisor.length;
+    let resultIndex = 0;
 
-    // remove trailing zeros in decimal ISSUE#18
-    dividend = dividend.replace(/(\.\d*?[1-9])0+$/g, "$1").replace(/\.0+$/, "");
-    divisor = divisor.replace(/(\.\d*?[1-9])0+$/g, "$1").replace(/\.0+$/, "");
+    const findNegativeOffset = /^(?:[0]+)(?:[.])([0]+)(?:\d+)/;
+    const trimStart = /^(?:[0]+)([^0.]*)/;
+    const trimEnd = /((?:[.][0])?[0]*)$/;
 
-    let neg = 0;
-    if (divisor[0] == '-') {
-        divisor = divisor.substring(1);
-        neg++;
-    }
+    //check for negatives
     if (dividend[0] == '-') {
         dividend = dividend.substring(1);
-        neg++;
+        negativeDividend = '-'
     }
 
-    var pt_dvsr = divisor.indexOf('.') > 0 ? divisor.length - divisor.indexOf('.') - 1 : -1;
+    if (divisor[0] == '-') {
+        divisor = divisor.substring(1);
+        negativeDivisor = '-'
+    }
 
-    divisor = trim(divisor.replace('.', ''));
-    if (pt_dvsr >= 0) {
-        let pt_dvnd = dividend.indexOf('.') > 0 ? dividend.length - dividend.indexOf('.') - 1 : -1;
+    if (negativeDividend !== negativeDivisor) negativeResult = '-';
 
-        if (pt_dvnd == -1) {
-            dividend = trim(dividend + (new Array(pt_dvsr + 1)).join('0'));
+    if (dividend.includes('.')) {
+        dividend = dividend.replace(trimEnd, "");
+        if (dividend.includes('.')) {
+            if (findNegativeOffset.test(dividend))
+                dividendIndex = -(dividend.replace(findNegativeOffset, '$1').length)
+            else if (dividend[0] == '0')
+                dividendIndex = dividend.indexOf('.') - 1
+            else dividendIndex = dividend.indexOf('.');
+            dividend = dividend.substring(0, dividend.indexOf('.')) + dividend.substring(dividend.indexOf('.') + 1);
+        } else dividendIndex = dividend.length;
+    }
+
+    if (divisor.includes('.')) {
+        divisor = divisor.replace(trimEnd, "");
+        if (divisor.includes('.')) {
+            if (findNegativeOffset.test(divisor))
+                divisorIndex = -(divisor.replace(findNegativeOffset, '$1').length)
+            else  if (divisor[0] == '0')
+                divisorIndex = divisor.indexOf('.') - 1
+            else divisorIndex = divisor.indexOf('.');
+            divisor = divisor.substring(0, divisor.indexOf('.')) + divisor.substring(divisor.indexOf('.') + 1);
+        } else divisorIndex = divisor.length;
+    }
+
+    resultIndex = dividendIndex - divisorIndex;
+
+    const dividendInt = BigInt(dividend);
+    const divisorInt = BigInt(divisor);
+    const precisionInt = BigInt('1'.padEnd(Math.max(dividend.length, divisor.length) + precission + 2, '0'));
+
+    dividend = dividend.replace(trimStart, "$1");
+    divisor = divisor.replace(trimStart, "$1");
+
+    const intDifference = dividend.length - divisor.length;
+    const paddingInt = BigInt('1'.padEnd(Math.abs(intDifference) + 1, '0'));
+
+    let result = ((dividendInt * precisionInt) / divisorInt).toString();
+
+    if (resultIndex > 0) {
+        if (intDifference > 0) {
+            if (Math.sign(dividendIndex) == Math.sign(divisorIndex) && dividendInt > (divisorInt * paddingInt))
+                resultIndex++
+            else if (Math.sign(dividendIndex) >= 0 && dividendInt > (divisorInt * paddingInt)) resultIndex++;
         } else {
-            if (pt_dvsr > pt_dvnd) {
-                dividend = dividend.replace('.', '');
-                dividend = trim(dividend + (new Array(pt_dvsr - pt_dvnd + 1)).join('0'));
-            } else if (pt_dvsr < pt_dvnd) {
-                dividend = dividend.replace('.', '');
-                let loc = dividend.length - pt_dvnd + pt_dvsr;
-                dividend = trim(dividend.substring(0, loc) + '.' + dividend.substring(loc));
-            } else if (pt_dvsr == pt_dvnd) {
-                dividend = trim(dividend.replace('.', ''));
-            }
+            resultIndex++;
         }
+        return roundOff(negativeResult + (result.substring(0, resultIndex) || '0') + '.' + result.substring(resultIndex), precission)
     }
 
-    let prec = 0, dl = divisor.length, rem = '0', quotent = '';
-    let dvnd = (dividend.indexOf('.') > -1 && dividend.indexOf('.') < dl) ? dividend.substring(0, dl + 1) : dividend.substring(0, dl);
-    dividend = (dividend.indexOf('.') > -1 && dividend.indexOf('.') < dl) ? dividend.substring(dl + 1) : dividend.substring(dl);
-
-    if (dvnd.indexOf('.') > -1) {
-        let shift = dvnd.length - dvnd.indexOf('.') - 1;
-        dvnd = dvnd.replace('.', '');
-        if (dl > dvnd.length) {
-            shift += dl - dvnd.length;
-            dvnd = dvnd + (new Array(dl - dvnd.length + 1)).join('0');
-        }
-        prec = shift;
-        quotent = '0.' + (new Array(shift)).join('0');
-
-    }
-
-    precission = precission + 2;
-
-    while (prec <= precission) {
-        let qt = 0;
-        while (parseInt(dvnd) >= parseInt(divisor)) {
-            dvnd = add(dvnd, '-' + divisor);
-            qt++;
-        }
-        quotent += qt;
-
-        if (!dividend) {
-            if (!prec)
-                quotent += '.';
-            prec++;
-            dvnd = dvnd + '0';
+    if (resultIndex < 0) {
+        if (intDifference > 0) {
+            if (Math.sign(dividendIndex) == Math.sign(divisorIndex) && (dividendInt * paddingInt) > divisorInt) resultIndex++;
         } else {
-            if (dividend[0] == '.') {
-                quotent += '.';
-                prec++;
-                dividend = dividend.substring(1);
-            }
-            dvnd = dvnd + dividend.substring(0, 1);
-            dividend = dividend.substring(1);
+            if ((dividendInt * paddingInt) > divisorInt) resultIndex++;
         }
+        return roundOff(negativeResult + '0.'.padEnd(Math.abs(resultIndex) + 2, '0') + result, precission);
     }
 
-    return ((neg == 1) ? '-' : '') + trim(roundOff(quotent, precission - 2));
+    if (resultIndex == 0) {
+        if (intDifference > 0 && dividendInt > (divisorInt * paddingInt)) {
+            resultIndex++
+            return roundOff(negativeResult + (result.substring(0, resultIndex) || '0') + '.' + result.substring(resultIndex), precission);
+        }
+        if (intDifference < 0 && (dividendInt * paddingInt) > divisorInt) {
+            resultIndex++
+            return roundOff(negativeResult + (result.substring(0, resultIndex) || '0') + '.' + result.substring(resultIndex), precission);
+        }
+        if (dividendInt > (divisorInt) || dividendInt == divisorInt) {
+            resultIndex++
+            return roundOff(negativeResult + (result.substring(0, resultIndex) || '0') + '.' + result.substring(resultIndex), precission);
+        }
+        return roundOff(negativeResult + (result.substring(0, resultIndex) || '0') + '.' + result.substring(resultIndex), precission)
+    }
 }

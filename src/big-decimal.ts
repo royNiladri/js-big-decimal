@@ -9,9 +9,11 @@ import { subtract, negate } from "./subtract";
 import { RoundingModes as Modes, RoundingModes } from "./roundingModes";
 import { stripTrailingZero } from "./stripTrailingZero";
 import { cbRoot, pow, sqRoot } from "./pow";
-import { factorial, sign } from "./utils";
+import { clamp, factorial, invlerp, lerp, max, min, random, sign, step, subfactorial } from "./utils";
 import { acos, asin, atan, atan2, cos, cosh, hypot, sin, sinh, tan, tanh } from "./trig";
-import { ln, log, ln2, log10, exp, LN2, LN10, LOG2E, LOG10E, Euler, expm1 } from "./logarithm";
+import { log, ln2, log10, exp, expm1 } from "./logarithm";
+import { E, LN10, LN2, LOG2E, LOG10E } from "./constants";
+import { mean, median, mode, stdDv, variance } from "./statistics";
 
 class bigDecimal {
   private value: string;
@@ -261,7 +263,7 @@ class bigDecimal {
   // Logarithms
 
   static get E() {
-    return Euler(32);
+    return E;
   }
 
   static get LN2(){
@@ -370,6 +372,33 @@ class bigDecimal {
     return atan2(y, x);
   }
 
+  // Statistics
+
+  static mean(numbers: number[]|string[]): string {
+    numbers = numbers.map(number => bigDecimal.validate(number));
+    return mean(numbers);
+  }
+
+  static median(numbers: number[]|string[]): string {
+    numbers = numbers.map(number => bigDecimal.validate(number));
+    return median(numbers);
+  }
+
+  static mode(numbers: number[]|string[], last: boolean = false): string {
+    numbers = numbers.map(number => bigDecimal.validate(number));
+    return mode(numbers, last);
+  }
+
+  static variance(numbers: number[]|string[]): string {
+    numbers = numbers.map(number => bigDecimal.validate(number));
+    return variance(numbers);
+  }
+
+  static stdDv(numbers: number[]|string[]): string {
+    numbers = numbers.map(number => bigDecimal.validate(number));
+    return stdDv(numbers);
+  }
+
   // Comparisons
   static compareTo(number1: number|string, number2: number|string) {
     number1 = bigDecimal.validate(number1);
@@ -442,14 +471,64 @@ class bigDecimal {
 
   // Misc.
 
+  static min(numbers: string[]){
+    numbers = numbers.map(number => bigDecimal.validate(number));
+    return min(numbers);
+  }
+
+  static max(numbers: string[]){
+    numbers = numbers.map(number => bigDecimal.validate(number));
+    return max(numbers);
+  }
+
+  static clamp(number: string, min:string = '0', max:string = '1'){
+    number = bigDecimal.validate(number);
+    min = bigDecimal.validate(min);
+    max = bigDecimal.validate(max);
+    return clamp(number, min, max);
+  }
+
+  clamp(min:bigDecimal = new bigDecimal('0'), max:bigDecimal = new bigDecimal('1')){
+    return new bigDecimal(clamp(this.value, min.value, max.value));
+  }
+
+  static step(number: string, s: string = number){
+    number = bigDecimal.validate(number);
+    s = bigDecimal.validate(s);
+    return step(number, s);
+  }
+
+  static lerp(x: string, y: string, a: string = '1'){
+    x = bigDecimal.validate(x);
+    y = bigDecimal.validate(y);
+    a = bigDecimal.validate(a);
+    return lerp(x, y, a);
+  }
+
+  static invlerp(x: string, y: string, a: string = x){
+    x = bigDecimal.validate(x);
+    y = bigDecimal.validate(y);
+    a = bigDecimal.validate(a);
+    return invlerp(x, y, a);
+  }
+
   static factorial(number: number|string): string {
     number = bigDecimal.validate(number);
     return factorial(number);
+  }
+  
+  static subfactorial(number: number|string): string {
+    number = bigDecimal.validate(number);
+    return subfactorial(number);
   }
 
   static stripTrailingZero(number) {
     number = bigDecimal.validate(number);
     return stripTrailingZero(number);
+  }
+  
+  static random(length: number = 32) {
+    return random(length);
   }
 
   stripTrailingZero() {

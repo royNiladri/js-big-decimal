@@ -2,16 +2,10 @@ import { add } from './add';
 
 export function subtract(number1, number2) {
 	number1 = number1.toString();
-	number2 = number2.toString();
-	number2 = negate(number2);
+	number2 = negate(number2.toString());
 	return add(number1, number2);
 }
 
 export function negate(number : string){
-	if(number[0] == '-'){
-		number = number.substring(1);
-	}else{
-		number = '-' + number;
-	}
-	return number;
+	return (number[0] == '-')? number.substring(1): '-' + number;
 }

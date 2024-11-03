@@ -1,7 +1,16 @@
-export declare const factorial: (n: number | string) => string;
+export declare function factorial(n: number | string): string;
+export declare function subfactorial(n: number | string): string;
 export declare function sigma(n: number | string, limit: number | string, fn: (n: number | string, ...args: any[]) => any, ...args: any): string;
 export declare function alternatingSeries(n: number | string, limit: number | string, fn: (n: number | string) => any, _sign?: number | string): string;
 export declare function tolerance(precision: number | string): string;
 export declare function isAproxZero(number: string | number, precision?: number): boolean;
-export declare function sign(number: string | number): 0 | 1 | -1;
 export declare function isAproxOne(number: string | number, percision?: number): boolean;
+export declare function sign(number: string): 0 | 1 | -1;
+export declare function testTolerance(target: string, precision: number): boolean;
+export declare function min(numbers: string[]): string;
+export declare function max(numbers: string[]): string;
+export declare function clamp(n: string, x?: string, y?: string): string;
+export declare function step(number: string, step?: string): string;
+export declare function lerp(x: string, y: string, a?: string): string;
+export declare function invlerp(x: string, y: string, a: string): string;
+export declare function random(length?: number): string;

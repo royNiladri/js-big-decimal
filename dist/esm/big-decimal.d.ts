@@ -60,6 +60,11 @@ declare class bigDecimal {
     static tanh(number: number | string): string;
     static atan(number: number | string): string;
     static atan2(y: number | string, x: number | string): string;
+    static mean(numbers: number[] | string[]): string;
+    static median(numbers: number[] | string[]): string;
+    static mode(numbers: number[] | string[], last?: boolean): string;
+    static variance(numbers: number[] | string[]): string;
+    static stdDv(numbers: number[] | string[]): string;
     static compareTo(number1: number | string, number2: number | string): number;
     compareTo(number: bigDecimal): number;
     static equals(number1: number | string, number2: number | string): boolean;
@@ -74,8 +79,17 @@ declare class bigDecimal {
     geq(number: bigDecimal): boolean;
     static sign(number: number | string): 0 | 1 | -1;
     sign(): 0 | 1 | -1;
+    static min(numbers: string[]): string;
+    static max(numbers: string[]): string;
+    static clamp(number: string, min?: string, max?: string): string;
+    clamp(min?: bigDecimal, max?: bigDecimal): bigDecimal;
+    static step(number: string, s?: string): string;
+    static lerp(x: string, y: string, a?: string): string;
+    static invlerp(x: string, y: string, a?: string): string;
     static factorial(number: number | string): string;
+    static subfactorial(number: number | string): string;
     static stripTrailingZero(number: any): string;
+    static random(length?: number): string;
     stripTrailingZero(): bigDecimal;
 }
 export default bigDecimal;

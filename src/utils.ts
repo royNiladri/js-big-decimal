@@ -1,10 +1,13 @@
 import { abs } from "./abs";
 import { add } from "./add";
 import { greaterThan, isExatclyOne, isExatclyZero, lessThan } from "./compareTo";
+import { E } from "./constants";
+import { divide } from "./divide";
 import { multiply } from "./multiply";
+import { roundOff } from "./round";
 import { negate, subtract } from "./subtract";
 
-export const factorial = (n: number | string): string => {
+export function factorial(n: number | string): string {
 
     n = n.toString();
 
@@ -17,19 +20,29 @@ export const factorial = (n: number | string): string => {
 
     let result = n;
 
-    while(true){
+    while (true) {
 
-        if(isExatclyOne(n)){
-            return result;
-        }
+        if (isExatclyOne(n)) return result;
 
-        let next = subtract(n,'1');
+        let next = subtract(n, '1');
         result = multiply(result, next);
         n = next;
     }
 }
 
-export function sigma(n: number | string, limit: number | string, fn: (n:number|string, ...args) => any, ...args:any): string {
+export function subfactorial(n: number | string): string {
+
+    n = n.toString();
+
+    validateInteger(n);
+    validatePositive(n);
+
+    if (isExatclyZero(n) || isExatclyOne(n)) return '1';
+
+    return roundOff(divide(factorial(n), E))
+}
+
+export function sigma(n: number | string, limit: number | string, fn: (n: number | string, ...args) => any, ...args: any): string {
 
     n = n.toString();
     limit = limit.toString();
@@ -41,22 +54,22 @@ export function sigma(n: number | string, limit: number | string, fn: (n:number|
 
     let result = '0';
 
-    while(greaterThan(limit, subtract(n,'1'))){
+    while (greaterThan(limit, subtract(n, '1'))) {
         result = add(result, fn(limit, ...args));
-        limit = subtract(limit,'1');
+        limit = subtract(limit, '1');
     }
 
     return result
 
 }
 
-export function alternatingSeries(n: number | string, limit: number | string, fn: (n:number|string) => any, _sign: number | string = '1'): string {
+export function alternatingSeries(n: number | string, limit: number | string, fn: (n: number | string) => any, _sign: number | string = '1'): string {
 
     n = n.toString();
     limit = limit.toString();
-    _sign = sign(_sign).toString();
+    _sign = sign(_sign.toString()).toString();
 
-    if(lessThan(n, '1')){
+    if (lessThan(n, '1')) {
         throw new Error('[alternatingSeries]: Argument n is less than 1');
     }
 
@@ -65,54 +78,108 @@ export function alternatingSeries(n: number | string, limit: number | string, fn
     validatePositive(limit);
 
     let result = '0';
-    while(true){
+    while (true) {
 
         const next = multiply(_sign, fn(n))
 
-        if(lessThan(abs(next), tolerance(limit))){
-            return result;
-        }
+        if (lessThan(abs(next), tolerance(limit))) return result;
 
         result = add(result, next);
         _sign = negate(_sign)
-        n = add(n,'1');
+        n = add(n, '1');
     }
 }
 
-export function tolerance(precision: number | string){
+export function tolerance(precision: number | string) {
     precision = precision.toString();
     validateInteger(precision);
-    if(precision == '0') return '0';
-    if(precision.startsWith('-')) return `1${new Array(Number(-precision)).join('0')}`;
-    return `0.${new Array(Number(precision) - 1).join('0')}1`
+    if (isExatclyZero(precision)) return '0';
+    if (precision[0] == '-') return '1'.padEnd(Number(abs(precision)) + 1, '0');
+    return '0.'.padEnd(Number(abs(precision)) + 2, '0') + '1';
 }
 
 export function isAproxZero(number: string | number, precision: number = 8) {
-    precision = Math.max(1, precision)
+    precision = Math.max(1, precision);
     number = abs(number.toString());
-
-    if(isExatclyZero(number)) return true;
-    if(lessThan(number, tolerance(precision), true)) return true;
-
+    if (isExatclyZero(number)) return true;
+    if (lessThan(number, tolerance(precision), true)) return true;
     return false;
-}
-
-export function sign(number: string | number){
-    number = number.toString();
-    if(isExatclyZero(number)) return 0;
-    if(number.includes('-')) return -1;
-    return 1;
 }
 
 export function isAproxOne(number: string | number, percision: number = 8) {
     percision = Math.max(1, percision)
     number = abs(number.toString());
 
-    if(isExatclyOne(number)) return true;
-    if(lessThan(abs(subtract('1', number)), tolerance(percision), true)) return true;
+    if (isExatclyOne(number)) return true;
+    if (lessThan(abs(subtract('1', number)), tolerance(percision), true)) return true;
 
     return false;
 }
+
+export function sign(number: string) {
+    number = number.toString();
+    if (isExatclyZero(number)) return 0;
+    return (number[0] == '-') ? -1 : 1;
+}
+
+export function testTolerance(target: string, precision: number) {
+    return RegExp(`^([0]{1}\\.[0]{${precision + 2},}[\\d]{1})`).test(target);
+}
+
+export function min(numbers: string[]) {
+    if (numbers.length === 0) throw Error('[Min]: Empty array.');
+    if (numbers.length === 1) return numbers[0];
+    return numbers.reduce((prev, curr) => {
+        if (lessThan(prev, curr, true)) return prev;
+        return curr;
+    }, numbers[0]);
+}
+
+export function max(numbers: string[]) {
+    if (numbers.length === 0) throw Error('[Min]: Empty array.');
+    if (numbers.length === 1) return numbers[0];
+    return numbers.reduce((prev, curr) => {
+        if (greaterThan(prev, curr, true)) return prev;
+        return curr;
+    }, numbers[0]);
+}
+
+export function clamp(n: string, x: string = '0', y: string = '1') {
+    return min([y, max([x, n])]);
+}
+
+export function step(number: string, step: string = number) {
+    return multiply(roundOff(divide(number, step)), step);
+}
+
+export function lerp(x: string, y: string, a: string = '1') {
+    return add(multiply(x, subtract('1', a)), multiply(y, a));
+};
+
+export function invlerp(x: string, y: string, a: string) {
+    return clamp(divide(subtract(a, x), subtract(y, x)));
+};
+
+export function random(length: number = 32) {
+    length = Math.max(length, 32);
+
+    const n = crypto.getRandomValues(new Uint32Array(length + 10));
+    let digits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+    let r = '.'
+    let c = 10;
+
+    while (c != 0) {
+        let i = Math.floor((n[length - c] / 4294967296) * c);
+        c--;
+        [digits[c], digits[i]] = [digits[i], digits[c]];
+    }
+
+    for (let i = 0; i < length; i++) {
+        r += digits[Math.floor((n[i] / 4294967296) * 10)];
+    }
+    
+    return r;
+};
 
 function validateInteger(number: string) {
     if (number.includes('.')) {
@@ -121,7 +188,7 @@ function validateInteger(number: string) {
 }
 
 function validatePositive(number: string) {
-    if (number.includes('-')) {
+    if (number[0] == '-') {
         throw new Error('Negatives not supported');
     }
 }

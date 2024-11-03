@@ -86,7 +86,7 @@ export function roundOff(input: number | string | bigint, n: number = 0, mode = 
 }
 
 function greaterThanFive(part: string, pre: string, neg: boolean, mode: RoundingModes) {
-    if (!part || part === new Array(part.length + 1).join('0'))
+    if (!part || part === ''.padEnd(part.length + 1, '0'))
         return false;
 
     // #region UP, DOWN, CEILING, FLOOR 
@@ -100,7 +100,7 @@ function greaterThanFive(part: string, pre: string, neg: boolean, mode: Rounding
     // #endregion
 
     // case when part !== five
-    let five = '5' + (new Array(part.length).join('0'));
+    let five = '5'.padEnd(part.length + 1, '0');
     if (part > five)
         return true;
     else if (part < five)
@@ -131,10 +131,11 @@ function increment(part, c: number = 0) {
         } else {
             c = 0;
         }
-        s += x;
+        s = x + s;
     }
     if (c)
-        s += c;
+        s = c + s;
 
-    return s.split('').reverse().join('');
+    return s
+    // return s.split('').reverse().join('');
 }

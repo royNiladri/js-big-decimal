@@ -46,8 +46,8 @@ __webpack_require__.d(__webpack_exports__, {
 });
 
 ;// CONCATENATED MODULE: ./lib/add.js
-//function add {
 function add_add(number1, number2 = "0") {
+    let exponent = 0;
     let negativeNumber1 = '';
     let negativeNumber2 = '';
     let negativeResult = '';
@@ -56,16 +56,17 @@ function add_add(number1, number2 = "0") {
         number1 = number1.substring(1);
         if (!testZero(number1))
             negativeNumber1 = '-';
+        else
+            return number2;
     }
     if (number2[0] == '-') {
         number2 = number2.substring(1);
         if (!testZero(number2))
             negativeNumber2 = '-';
+        else
+            return negativeNumber1 + number1;
     }
-    let exponent;
-    let values = [];
-    ({ values, exponent } = bigIntPad(number1, number2));
-    [number1, number2] = values;
+    ({ number1, number2, exponent } = pad(number1, number2));
     number1 = negativeNumber1 + number1;
     number2 = negativeNumber2 + number2;
     let result = (BigInt(number1) + BigInt(number2)).toString();
@@ -86,44 +87,39 @@ function add_add(number1, number2 = "0") {
     result = negativeResult + result;
     return result;
 }
-function bigIntPad(number1, number2) {
-    let parts1 = number1.split("."), parts2 = number2.split(".");
-    //pad integer part
-    let length = Math.max(parts1[0].length, parts2[0].length);
-    parts1[0] = parts1[0].padStart(length, "0");
-    parts2[0] = parts2[0].padStart(length, "0");
-    //pad fractional part
-    parts1[1] = parts1[1] || "";
-    parts2[1] = parts2[1] || "";
-    length = Math.max(parts1[1].length, parts2[1].length);
-    parts1[1] = parts1[1].padEnd(length, "0");
-    parts2[1] = parts2[1].padEnd(length, "0");
-    return { values: [parts1[0] + parts1[1], parts2[0] + parts2[1]], exponent: parts1[1].length };
+function pad(number1, number2) {
+    const length1 = number1.length;
+    const length2 = number2.length;
+    let decimalIndex1 = (number1.includes('.')) ? number1.indexOf('.') : length1;
+    let decimalLength1 = length1 - decimalIndex1;
+    let decimalIndex2 = (number2.includes('.')) ? number2.indexOf('.') : length2;
+    let decimalLength2 = length2 - decimalIndex2;
+    let pad1 = number1.substring(0, decimalIndex1) + number1.substring(decimalIndex1 + 1);
+    let pad2 = number2.substring(0, decimalIndex2) + number2.substring(decimalIndex2 + 1);
+    const decimalDifference = decimalLength1 - decimalLength2;
+    const decimalLength = Math.max(decimalLength1, decimalLength2) - 1;
+    const decimalIndex = Math.min(decimalIndex1, decimalIndex2);
+    if (decimalDifference < 0) {
+        pad1 = pad1.padEnd(decimalIndex1 + decimalLength, '0');
+        pad2 = pad2.padEnd(decimalIndex + decimalLength, '0');
+    }
+    if (decimalDifference > 0) {
+        pad1 = pad1.padEnd(decimalIndex + decimalLength - 1, '0');
+        pad2 = pad2.padEnd(decimalIndex2 + decimalLength, '0');
+    }
+    return {
+        number1: pad1,
+        number2: pad2,
+        exponent: Math.max(decimalLength, 0)
+    };
 }
 function trim(number) {
     let parts = number.split(".");
-    parts[0];
     if (!parts[0])
         parts[0] = "0";
     while (parts[0][0] == "0" && parts[0].length > 1)
         parts[0] = parts[0].substring(1);
     return parts[0] + (parts[1] ? "." + parts[1] : "");
-}
-function pad(number1, number2) {
-    let parts1 = number1.split("."), parts2 = number2.split(".");
-    //pad integral part
-    let length = Math.max(parts1[0].length, parts2[0].length);
-    parts1[0] = parts1[0].padStart(length, "0");
-    parts2[0] = parts2[0].padStart(length, "0");
-    //pad fractional part
-    parts1[1] = parts1[1] || "";
-    parts2[1] = parts2[1] || "";
-    length = Math.max(parts1[1].length, parts2[1].length);
-    parts1[1] = parts1[1].padEnd(length, "0");
-    parts2[1] = parts2[1].padEnd(length, "0");
-    number1 = parts1[0] + (parts1[1] ? "." + parts1[1] : "");
-    number2 = parts2[0] + (parts2[1] ? "." + parts2[1] : "");
-    return [number1, number2];
 }
 function testZero(number) {
     return /^0[0]*[.]{0,1}[0]*$/.test(number);
@@ -186,17 +182,21 @@ function stripTrailingZero_stripTrailingZero(number) {
     // number = number.replace(/(^[-]?)([0]*)/, `${1}`);
     // number = number.replace(/([0]*$){1}/, '');
     // return number;
+    const trimStart = /^(?:[0]+)([^0.]*)/;
+    const trimEnd = /((?:[.][0])?[0]*)$/;
     const isNegative = number[0] === '-';
     if (isNegative) {
         number = number.substring(1);
     }
-    while (number[0] == '0') {
-        number = number.substring(1);
-    }
+    number = number.replace(trimStart, "$1");
+    // while (number[0] == '0') {
+    // 	number = number.replace(trimStart, "$1");
+    // }
     if (number.indexOf('.') != -1) {
         while (number[number.length - 1] == '0') {
             number = number.substring(0, number.length - 1);
         }
+        // number = number.replace(trimEnd, "")
     }
     if (number == "" || number == ".") {
         number = '0';
@@ -294,7 +294,7 @@ function round_roundOff(input, n = 0, mode = RoundingModes.HALF_EVEN) {
     return (neg && (parseInt(partInt) || parseInt(partDec)) ? '-' : '') + partInt + '.' + partDec;
 }
 function greaterThanFive(part, pre, neg, mode) {
-    if (!part || part === new Array(part.length + 1).join('0'))
+    if (!part || part === ''.padEnd(part.length + 1, '0'))
         return false;
     // #region UP, DOWN, CEILING, FLOOR 
     if (mode === RoundingModes.DOWN || (!neg && mode === RoundingModes.FLOOR) ||
@@ -305,7 +305,7 @@ function greaterThanFive(part, pre, neg, mode) {
         return true;
     // #endregion
     // case when part !== five
-    let five = '5' + (new Array(part.length).join('0'));
+    let five = '5'.padEnd(part.length + 1, '0');
     if (part > five)
         return true;
     else if (part < five)
@@ -333,14 +333,71 @@ function increment(part, c = 0) {
         else {
             c = 0;
         }
-        s += x;
+        s = x + s;
     }
     if (c)
-        s += c;
-    return s.split('').reverse().join('');
+        s = c + s;
+    return s;
+    // return s.split('').reverse().join('');
+}
+
+;// CONCATENATED MODULE: ./lib/compareTo.js
+
+
+function compareTo(number1, number2) {
+    let negative = '';
+    [number1, number2] = [number1, number2].map(n => stripTrailingZero_stripTrailingZero(n));
+    // Early escapes
+    // If num 1 is negative and num 2 is positive
+    if (number1[0] == '-' && number2[0] != "-")
+        return -1;
+    // If num 2 is negative and num 1 is positive
+    if (number1[0] != '-' && number2[0] == '-')
+        return 1;
+    // If num 1 and num 2 are negative
+    if (number1[0] == '-' && number2[0] == '-') {
+        number1 = number1.substring(1);
+        number2 = number2.substring(1);
+        negative = '-';
+    }
+    ;
+    ({ number1, number2 } = pad(number1, number2));
+    if (number1.length > number2.length)
+        return parseInt(negative + '1');
+    if (number1.length < number2.length)
+        return (negative) ? 1 : -1;
+    [number1, number2] = [negative + number1, negative + number2];
+    return number1.localeCompare(number2, undefined, { numeric: true });
+}
+// Wrapper functions
+function compareTo_lessThan(left, right, orEquals = false) {
+    return (orEquals) ? (compareTo(left, right) <= 0) : (compareTo(left, right) < 0);
+}
+function compareTo_greaterThan(left, right, orEquals = false) {
+    return (orEquals) ? (compareTo(left, right) >= 0) : (compareTo(left, right) > 0);
+}
+function equals(left, right) {
+    return (compareTo(left, right) == 0);
+}
+function isExatclyZero(number) {
+    return /^0[0]*[.]{0,1}[0]*$/.test(number);
+}
+function isExatclyOne(number) {
+    return /^[0]*[1](?:[.]{1}[0]*)?$/.test(number);
+}
+function isEven(number) {
+    if (number.includes('.'))
+        return /[02468]{1}$/.test(number[number.indexOf('.') - 1]);
+    return /[02468]{1}$/.test(number[number.length - 1]);
+}
+function isOdd(number) {
+    if (number.includes('.'))
+        return /[13579]{1}$/.test(number[number.indexOf('.') - 1]);
+    return /[13579]{1}$/.test(number[number.length - 1]);
 }
 
 ;// CONCATENATED MODULE: ./lib/multiply.js
+
 
 function multiply_multiply(number1, number2) {
     number1 = number1.toString();
@@ -349,107 +406,48 @@ function multiply_multiply(number1, number2) {
     let negativeNumber2 = '';
     let negativeResult = '';
     /*Filter numbers*/
-    let negative = 0;
     if (number1[0] == '-') {
-        negative++;
         number1 = number1.substr(1);
         negativeNumber1 = '-';
     }
     if (number2[0] == '-') {
-        negative++;
         number2 = number2.substr(1);
         negativeNumber2 = '-';
     }
+    if (isExatclyZero(number1) || isExatclyZero(number2))
+        return '0';
     number1 = stripTrailingZero_stripTrailingZero(number1);
     number2 = stripTrailingZero_stripTrailingZero(number2);
     let decimalLength1 = 0;
     let decimalLength2 = 0;
-    if (number1.indexOf('.') != -1) {
+    if (number1.indexOf('.') + 1) {
         decimalLength1 = number1.length - number1.indexOf('.') - 1;
     }
-    if (number2.indexOf('.') != -1) {
+    if (number2.indexOf('.') + 1) {
         decimalLength2 = number2.length - number2.indexOf('.') - 1;
     }
     let decimalLength = decimalLength1 + decimalLength2;
-    number1 = stripTrailingZero_stripTrailingZero(number1.replace('.', ''));
-    number2 = stripTrailingZero_stripTrailingZero(number2.replace('.', ''));
-    number1 = negativeNumber1 + number1;
-    number2 = negativeNumber2 + number2;
-    if (number1.length < number2.length) {
-        let temp = number1;
-        number1 = number2;
-        number2 = temp;
-    }
-    if (number2 == '0') {
-        return '0';
-    }
-    const n1 = BigInt(number1);
-    const n2 = BigInt(number2);
-    let res = (n1 * n2).toString();
-    if (res[0] == '-') {
-        res = res.substring(1);
+    number1 = negativeNumber1 + stripTrailingZero_stripTrailingZero(number1.replace('.', ''));
+    number2 = negativeNumber2 + stripTrailingZero_stripTrailingZero(number2.replace('.', ''));
+    let result = (BigInt(number1) * BigInt(number2)).toString();
+    if (result[0] == '-') {
+        result = result.substring(1);
         negativeResult = '-';
     }
     if (decimalLength > 0) {
-        decimalLength = res.length - decimalLength;
+        decimalLength = result.length - decimalLength;
         if (decimalLength < 0) {
-            res = res.padStart(res.length + Math.abs(decimalLength), '0');
+            result = result.padStart(result.length + Math.abs(decimalLength), '0');
             decimalLength = 0;
         }
-        res = res.slice(0, decimalLength) + '.' + res.slice(decimalLength);
+        result = (result.slice(0, decimalLength) || '0') + '.' + result.slice(decimalLength);
     }
-    if (res[0] == '.')
-        res = '0' + res;
-    res = negativeResult + res;
-    return res;
-    /*
-    * Core multiplication
-    */
-    let length = number2.length;
-    let carry = 0;
-    let positionVector = [];
-    let currentPosition = length - 1;
-    let result = "";
-    for (let i = 0; i < length; i++) {
-        positionVector[i] = number1.length - 1;
-    }
-    for (let i = 0; i < 2 * number1.length; i++) {
-        let sum = 0;
-        for (let j = number2.length - 1; j >= currentPosition && j >= 0; j--) {
-            if (positionVector[j] > -1 && positionVector[j] < number1.length) {
-                sum += parseInt(number1[positionVector[j]--]) * parseInt(number2[j]);
-            }
-        }
-        sum += carry;
-        carry = Math.floor(sum / 10);
-        result = sum % 10 + result;
-        currentPosition--;
-    }
-    /*
-    * Formatting result
-    */
-    result = stripTrailingZero_stripTrailingZero(adjustDecimal(result, decimalLength));
-    if (negative == 1) {
-        result = '-' + result;
-    }
-    return result;
-}
-/*
-* Add decimal point
-*/
-function adjustDecimal(number, decimal) {
-    if (decimal == 0)
-        return number;
-    else {
-        number = (decimal >= number.length) ? ((new Array(decimal - number.length + 1)).join('0') + number) : number;
-        return number.substr(0, number.length - decimal) + '.' + number.substr(number.length - decimal, decimal);
-    }
+    return negativeResult + result;
 }
 
 ;// CONCATENATED MODULE: ./lib/divide.js
 
-
-function divide_divide(dividend, divisor, precission) {
+function divide_divide(dividend, divisor, precission = 8) {
     // Convert to string
     if (typeof dividend == 'number' || typeof divisor == 'number') {
         dividend = dividend.toString();
@@ -459,100 +457,113 @@ function divide_divide(dividend, divisor, precission) {
     if (divisor == '0') {
         return '0' + (!precission) ? '' : 0;
     }
-    // Set default precission
-    if (typeof precission == 'undefined') {
-        precission = 8;
-    }
-    // remove trailing zeros in decimal ISSUE#18
-    dividend = dividend.replace(/(\.\d*?[1-9])0+$/g, "$1").replace(/\.0+$/, "");
-    divisor = divisor.replace(/(\.\d*?[1-9])0+$/g, "$1").replace(/\.0+$/, "");
-    let neg = 0;
-    if (divisor[0] == '-') {
-        divisor = divisor.substring(1);
-        neg++;
-    }
+    // precission = precission + 2;
+    let negativeDividend = '';
+    let negativeDivisor = '';
+    let negativeResult = '';
+    let dividendIndex = dividend.length;
+    let divisorIndex = divisor.length;
+    let resultIndex = 0;
+    const findNegativeOffset = /^(?:[0]+)(?:[.])([0]+)(?:\d+)/;
+    const trimStart = /^(?:[0]+)([^0.]*)/;
+    const trimEnd = /((?:[.][0])?[0]*)$/;
+    //check for negatives
     if (dividend[0] == '-') {
         dividend = dividend.substring(1);
-        neg++;
+        negativeDividend = '-';
     }
-    var pt_dvsr = divisor.indexOf('.') > 0 ? divisor.length - divisor.indexOf('.') - 1 : -1;
-    divisor = trim(divisor.replace('.', ''));
-    if (pt_dvsr >= 0) {
-        let pt_dvnd = dividend.indexOf('.') > 0 ? dividend.length - dividend.indexOf('.') - 1 : -1;
-        if (pt_dvnd == -1) {
-            dividend = trim(dividend + (new Array(pt_dvsr + 1)).join('0'));
+    if (divisor[0] == '-') {
+        divisor = divisor.substring(1);
+        negativeDivisor = '-';
+    }
+    if (negativeDividend !== negativeDivisor)
+        negativeResult = '-';
+    if (dividend.includes('.')) {
+        dividend = dividend.replace(trimEnd, "");
+        if (dividend.includes('.')) {
+            if (findNegativeOffset.test(dividend))
+                dividendIndex = -(dividend.replace(findNegativeOffset, '$1').length);
+            else if (dividend[0] == '0')
+                dividendIndex = dividend.indexOf('.') - 1;
+            else
+                dividendIndex = dividend.indexOf('.');
+            dividend = dividend.substring(0, dividend.indexOf('.')) + dividend.substring(dividend.indexOf('.') + 1);
+        }
+        else
+            dividendIndex = dividend.length;
+    }
+    if (divisor.includes('.')) {
+        divisor = divisor.replace(trimEnd, "");
+        if (divisor.includes('.')) {
+            if (findNegativeOffset.test(divisor))
+                divisorIndex = -(divisor.replace(findNegativeOffset, '$1').length);
+            else if (divisor[0] == '0')
+                divisorIndex = divisor.indexOf('.') - 1;
+            else
+                divisorIndex = divisor.indexOf('.');
+            divisor = divisor.substring(0, divisor.indexOf('.')) + divisor.substring(divisor.indexOf('.') + 1);
+        }
+        else
+            divisorIndex = divisor.length;
+    }
+    resultIndex = dividendIndex - divisorIndex;
+    const dividendInt = BigInt(dividend);
+    const divisorInt = BigInt(divisor);
+    const precisionInt = BigInt('1'.padEnd(Math.max(dividend.length, divisor.length) + precission + 2, '0'));
+    dividend = dividend.replace(trimStart, "$1");
+    divisor = divisor.replace(trimStart, "$1");
+    const intDifference = dividend.length - divisor.length;
+    const paddingInt = BigInt('1'.padEnd(Math.abs(intDifference) + 1, '0'));
+    let result = ((dividendInt * precisionInt) / divisorInt).toString();
+    if (resultIndex > 0) {
+        if (intDifference > 0) {
+            if (Math.sign(dividendIndex) == Math.sign(divisorIndex) && dividendInt > (divisorInt * paddingInt))
+                resultIndex++;
+            else if (Math.sign(dividendIndex) >= 0 && dividendInt > (divisorInt * paddingInt))
+                resultIndex++;
         }
         else {
-            if (pt_dvsr > pt_dvnd) {
-                dividend = dividend.replace('.', '');
-                dividend = trim(dividend + (new Array(pt_dvsr - pt_dvnd + 1)).join('0'));
-            }
-            else if (pt_dvsr < pt_dvnd) {
-                dividend = dividend.replace('.', '');
-                let loc = dividend.length - pt_dvnd + pt_dvsr;
-                dividend = trim(dividend.substring(0, loc) + '.' + dividend.substring(loc));
-            }
-            else if (pt_dvsr == pt_dvnd) {
-                dividend = trim(dividend.replace('.', ''));
-            }
+            resultIndex++;
         }
+        return round_roundOff(negativeResult + (result.substring(0, resultIndex) || '0') + '.' + result.substring(resultIndex), precission);
     }
-    let prec = 0, dl = divisor.length, rem = '0', quotent = '';
-    let dvnd = (dividend.indexOf('.') > -1 && dividend.indexOf('.') < dl) ? dividend.substring(0, dl + 1) : dividend.substring(0, dl);
-    dividend = (dividend.indexOf('.') > -1 && dividend.indexOf('.') < dl) ? dividend.substring(dl + 1) : dividend.substring(dl);
-    if (dvnd.indexOf('.') > -1) {
-        let shift = dvnd.length - dvnd.indexOf('.') - 1;
-        dvnd = dvnd.replace('.', '');
-        if (dl > dvnd.length) {
-            shift += dl - dvnd.length;
-            dvnd = dvnd + (new Array(dl - dvnd.length + 1)).join('0');
-        }
-        prec = shift;
-        quotent = '0.' + (new Array(shift)).join('0');
-    }
-    precission = precission + 2;
-    while (prec <= precission) {
-        let qt = 0;
-        while (parseInt(dvnd) >= parseInt(divisor)) {
-            dvnd = add_add(dvnd, '-' + divisor);
-            qt++;
-        }
-        quotent += qt;
-        if (!dividend) {
-            if (!prec)
-                quotent += '.';
-            prec++;
-            dvnd = dvnd + '0';
+    if (resultIndex < 0) {
+        if (intDifference > 0) {
+            if (Math.sign(dividendIndex) == Math.sign(divisorIndex) && (dividendInt * paddingInt) > divisorInt)
+                resultIndex++;
         }
         else {
-            if (dividend[0] == '.') {
-                quotent += '.';
-                prec++;
-                dividend = dividend.substring(1);
-            }
-            dvnd = dvnd + dividend.substring(0, 1);
-            dividend = dividend.substring(1);
+            if ((dividendInt * paddingInt) > divisorInt)
+                resultIndex++;
         }
+        return round_roundOff(negativeResult + '0.'.padEnd(Math.abs(resultIndex) + 2, '0') + result, precission);
     }
-    return ((neg == 1) ? '-' : '') + trim(round_roundOff(quotent, precission - 2));
+    if (resultIndex == 0) {
+        if (intDifference > 0 && dividendInt > (divisorInt * paddingInt)) {
+            resultIndex++;
+            return round_roundOff(negativeResult + (result.substring(0, resultIndex) || '0') + '.' + result.substring(resultIndex), precission);
+        }
+        if (intDifference < 0 && (dividendInt * paddingInt) > divisorInt) {
+            resultIndex++;
+            return round_roundOff(negativeResult + (result.substring(0, resultIndex) || '0') + '.' + result.substring(resultIndex), precission);
+        }
+        if (dividendInt > (divisorInt) || dividendInt == divisorInt) {
+            resultIndex++;
+            return round_roundOff(negativeResult + (result.substring(0, resultIndex) || '0') + '.' + result.substring(resultIndex), precission);
+        }
+        return round_roundOff(negativeResult + (result.substring(0, resultIndex) || '0') + '.' + result.substring(resultIndex), precission);
+    }
 }
 
 ;// CONCATENATED MODULE: ./lib/subtract.js
 
 function subtract_subtract(number1, number2) {
     number1 = number1.toString();
-    number2 = number2.toString();
-    number2 = subtract_negate(number2);
+    number2 = subtract_negate(number2.toString());
     return add_add(number1, number2);
 }
 function subtract_negate(number) {
-    if (number[0] == '-') {
-        number = number.substring(1);
-    }
-    else {
-        number = '-' + number;
-    }
-    return number;
+    return (number[0] == '-') ? number.substring(1) : '-' + number;
 }
 
 ;// CONCATENATED MODULE: ./lib/modulus.js
@@ -587,46 +598,12 @@ function validate(oparand) {
     }
 }
 
-;// CONCATENATED MODULE: ./lib/compareTo.js
-
-function compareTo(number1, number2) {
-    let negative = false;
-    [number1, number2] = [number1, number2].map(n => stripTrailingZero_stripTrailingZero(n));
-    // Early escapes
-    // If num 1 is negative and num 2 is positive
-    if (number1[0] == '-' && number2[0] != "-")
-        return -1;
-    // If num 2 is negative and num 1 is positive
-    if (number1[0] != '-' && number2[0] == '-')
-        return 1;
-    return (RegExp(`^${number2}$`).test(number1)) ? 0 : number1.localeCompare(number2, undefined, { numeric: true });
-}
-// Wrapper functions
-function compareTo_lessThan(left, right, orEquals = false) {
-    return (orEquals) ? (left.localeCompare(right, undefined, { numeric: true }) <= 0) : (left.localeCompare(right, undefined, { numeric: true }) < 0);
-}
-function compareTo_greaterThan(left, right, orEquals = false) {
-    return (orEquals) ? (left.localeCompare(right, undefined, { numeric: true }) >= 0) : (left.localeCompare(right, undefined, { numeric: true }) > 0);
-}
-function equals(left, right) {
-    return RegExp(`^${stripTrailingZero_stripTrailingZero(left)}$`).test(stripTrailingZero_stripTrailingZero(right));
-}
-function isExatclyZero(number) {
-    return /^0[0]*[.]{0,1}[0]*$/.test(number);
-}
-function isExatclyOne(number) {
-    return /^[0]*[1](?:[.]{1}[0]*)?$/.test(number);
-}
-function isEven(number) {
-    if (number.includes('.'))
-        return /[02468]{1}$/.test(number[number.indexOf('.') - 1]);
-    return /[02468]{1}$/.test(number[number.length - 1]);
-}
-function isOdd(number) {
-    if (number.includes('.'))
-        return /[13579]{1}$/.test(number[number.indexOf('.') - 1]);
-    return /[13579]{1}$/.test(number[number.length - 1]);
-}
+;// CONCATENATED MODULE: ./lib/constants.js
+const E = '2.7182818284590452353602874713526624977572470936999595749669676277240766303535475945713821785251664274274663919320030599218174135966290435729003342952605956307381323286279434907632338298807531952510190115738341879307021540891499348841675092447614606680822648001684774118537423454424371075390777449920695517027618386062613313845830007520449338265602976067371132007093287091274437470472306969772093101416928368190255151086574637721112523897844250569536967707854499699679468644549059879316368892300987931277361782154249992295763514822082698951936680331825288693984964651058209392398294887933203625094431173012381970684161403970198376793206832823764648042953118023287825098194558153017567173613320698112509961818815930416903515988885193458072738667385894228792284998920868058257492796104841984443634632449684875602336248270419786232090021609902353043699418491463140934317381436405462531520961836908887070167683964243781405927145635490613031072085103837505101157477041718986106873969655212671546889570350354021234078498193343210682';
+const LN2 = '0.6931471805599453094172321214581765680755001343602552541206800094933936219696947156058633269964186875420014810205706857336855202357581305570326707516350759619307275708283714351903070386238916734711233501153644979552391204751726815749320651555247341395258829504530070953263666426541042391578149520437404303855008019441706416715186447128399681717845469570262716310645461502572074024816377733896385506952606683411372738737229289564935470257626520988596932019650585547647033067936544325476327449512504060694381471046899465062201677204245245296126879465461931651746813926725041038025462596568691441928716082938031727143677826548775664850856740776484514644399404614226031930967354025744460703080960850474866385231381816767514386674766478908814371419854942315199735488037516586127535291661000710535582498794147295092931138971559982056543928717000721808576102523688921324497138932037843935308877482597017155910708823683627589842589185353024363421436706118923678919237231467232172053401649256872747782344535347648114941864238677677441';
+const LOG2E = '1.4426950408889634073599246810018921374266459541529859341354494069311092191811850798855266228935063444969975183096525442555931016871683596427206621582234793362745373698847184936307013876635320155338943189166648376431286154240474784222894979047950915303513385880549688658930969963680361105110756308441454272158283449418919339085777157900441712802468483413745226951823690112390940344599685399061134217228862780291580106300619767624456526059950737532406256558154759381783052397255107248130771562675458075781713301935730061687619373729826758974156238179835671034434897506807055180884865613868329177321829349139684310593454022025186369345262692150955971910022196792243214334244941790714551184993859212216753653113007746327672064612337411082119137944333984805793109128776096702003757589981588518061267880997609562525078410248470569007687680584613278654747820278086594620609107490153248199697305790152723247872987409812541000334486875738223647164945447537067167595899428099818267834901316666335348036789869446887091166604973537292585';
+const LN10 = '2.3025850929940456840179914546843642076011014886287729760333279009675726096773524802359972050895982983419677840422862486334095254650828067566662873690987816894829072083255546808437998948262331985283935053089653777326288461633662222876982198867465436674744042432743651550489343149393914796194044002221051017141748003688084012647080685567743216228355220114804663715659121373450747856947683463616792101806445070648000277502684916746550586856935673420670581136429224554405758925724208241314695689016758940256776311356919292033376587141660230105703089634572075440370847469940168269282808481184289314848524948644871927809676271275775397027668605952496716674183485704422507197965004714951050492214776567636938662976979522110718264549734772662425709429322582798502585509785265383207606726317164309505995087807523710333101197857547331541421808427543863591778117054309827482385045648019095610299291824318237525357709750539565187697510374970888692180205189339507238539205144634197265287286965110862571492198849978748873771345686209167058';
+const LOG10E = '0.4342944819032518276511289189166050822943970058036665661144537831658646492088707747292249493384317483187061067447663037336416792871589639065692210646628122658521270865686703295933708696588266883311636077384905142844348666768646586085135561482123487653435434357317253835622281395603048646652366095539377356176323431916710991411597894962993512457934926357655469077671082419150479910989674900103277537653570270087328550951731440674697951899513594088040423931518868108402544654089797029863286828762624144013457043546132920600712605104028367125954846287707861998992326748439902348171535934551079475492552482577820679220140931468164467381030560475635720408883383209488996522717494541331791417640247407505788767860971099257547730046048656049515610057985741340272675201439247917970859047931285212493341197329877226463885350226083881626316463883553685501768460295286399391633510647555704050513182342988874882120643595023818902643317711537382203362634416478397146001858396093006317333986134035135741787144971453076492968331392399810609';
 
 ;// CONCATENATED MODULE: ./lib/utils.js
 
@@ -634,7 +611,10 @@ function isOdd(number) {
 
 
 
-const factorial = (n) => {
+
+
+
+function factorial(n) {
     n = n.toString();
     validateInteger(n);
     validatePositive(n);
@@ -643,14 +623,21 @@ const factorial = (n) => {
     }
     let result = n;
     while (true) {
-        if (isExatclyOne(n)) {
+        if (isExatclyOne(n))
             return result;
-        }
         let next = subtract_subtract(n, '1');
         result = multiply_multiply(result, next);
         n = next;
     }
-};
+}
+function subfactorial(n) {
+    n = n.toString();
+    validateInteger(n);
+    validatePositive(n);
+    if (isExatclyZero(n) || isExatclyOne(n))
+        return '1';
+    return round_roundOff(divide_divide(factorial(n), E));
+}
 function sigma(n, limit, fn, ...args) {
     n = n.toString();
     limit = limit.toString();
@@ -668,7 +655,7 @@ function sigma(n, limit, fn, ...args) {
 function alternatingSeries(n, limit, fn, _sign = '1') {
     n = n.toString();
     limit = limit.toString();
-    _sign = sign(_sign).toString();
+    _sign = sign(_sign.toString()).toString();
     if (lessThan(n, '1')) {
         throw new Error('[alternatingSeries]: Argument n is less than 1');
     }
@@ -678,9 +665,8 @@ function alternatingSeries(n, limit, fn, _sign = '1') {
     let result = '0';
     while (true) {
         const next = multiply(_sign, fn(n));
-        if (lessThan(abs(next), utils_tolerance(limit))) {
+        if (lessThan(abs(next), utils_tolerance(limit)))
             return result;
-        }
         result = add(result, next);
         _sign = negate(_sign);
         n = add(n, '1');
@@ -689,11 +675,11 @@ function alternatingSeries(n, limit, fn, _sign = '1') {
 function utils_tolerance(precision) {
     precision = precision.toString();
     validateInteger(precision);
-    if (precision == '0')
+    if (isExatclyZero(precision))
         return '0';
-    if (precision.startsWith('-'))
-        return `1${new Array(Number(-precision)).join('0')}`;
-    return `0.${new Array(Number(precision) - 1).join('0')}1`;
+    if (precision[0] == '-')
+        return '1'.padEnd(Number(abs_abs(precision)) + 1, '0');
+    return '0.'.padEnd(Number(abs_abs(precision)) + 2, '0') + '1';
 }
 function isAproxZero(number, precision = 8) {
     precision = Math.max(1, precision);
@@ -704,14 +690,6 @@ function isAproxZero(number, precision = 8) {
         return true;
     return false;
 }
-function sign(number) {
-    number = number.toString();
-    if (isExatclyZero(number))
-        return 0;
-    if (number.includes('-'))
-        return -1;
-    return 1;
-}
 function isAproxOne(number, percision = 8) {
     percision = Math.max(1, percision);
     number = abs_abs(number.toString());
@@ -721,13 +699,75 @@ function isAproxOne(number, percision = 8) {
         return true;
     return false;
 }
+function sign(number) {
+    number = number.toString();
+    if (isExatclyZero(number))
+        return 0;
+    return (number[0] == '-') ? -1 : 1;
+}
+function utils_testTolerance(target, precision) {
+    return RegExp(`^([0]{1}\\.[0]{${precision + 2},}[\\d]{1})`).test(target);
+}
+function min(numbers) {
+    if (numbers.length === 0)
+        throw Error('[Min]: Empty array.');
+    if (numbers.length === 1)
+        return numbers[0];
+    return numbers.reduce((prev, curr) => {
+        if (compareTo_lessThan(prev, curr, true))
+            return prev;
+        return curr;
+    }, numbers[0]);
+}
+function max(numbers) {
+    if (numbers.length === 0)
+        throw Error('[Min]: Empty array.');
+    if (numbers.length === 1)
+        return numbers[0];
+    return numbers.reduce((prev, curr) => {
+        if (compareTo_greaterThan(prev, curr, true))
+            return prev;
+        return curr;
+    }, numbers[0]);
+}
+function clamp(n, x = '0', y = '1') {
+    return min([y, max([x, n])]);
+}
+function step(number, step = number) {
+    return multiply_multiply(round_roundOff(divide_divide(number, step)), step);
+}
+function lerp(x, y, a = '1') {
+    return add_add(multiply_multiply(x, subtract_subtract('1', a)), multiply_multiply(y, a));
+}
+;
+function invlerp(x, y, a) {
+    return clamp(divide_divide(subtract_subtract(a, x), subtract_subtract(y, x)));
+}
+;
+function random(length = 32) {
+    length = Math.max(length, 32);
+    const n = crypto.getRandomValues(new Uint32Array(length + 10));
+    let digits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+    let r = '.';
+    let c = 10;
+    while (c != 0) {
+        let i = Math.floor((n[length - c] / 4294967296) * c);
+        c--;
+        [digits[c], digits[i]] = [digits[i], digits[c]];
+    }
+    for (let i = 0; i < length; i++) {
+        r += digits[Math.floor((n[i] / 4294967296) * 10)];
+    }
+    return r;
+}
+;
 function validateInteger(number) {
     if (number.includes('.')) {
         throw new Error('Non-integers not supported');
     }
 }
 function validatePositive(number) {
-    if (number.includes('-')) {
+    if (number[0] == '-') {
         throw new Error('Negatives not supported');
     }
 }
@@ -783,11 +823,6 @@ function validatePositive(number) {
  * ```
  */
 function pow(base, exponent, precision = 32, negate = false) {
-    // AddInstantiate.then((res)=>{
-    //     console.log('custom wasm loader',res.__add('00001', '1'))
-    // })
-    // const v = await (async url => await AddInstantiate)();
-    // console.log('custom wasm loader', AddWebAssembly('1', '1'))
     exponent = exponent.toString();
     base = base.toString();
     if (isExatclyZero(exponent)) {
@@ -808,15 +843,10 @@ function pow(base, exponent, precision = 32, negate = false) {
     const negativeExponent = exponent.includes('-');
     const exponentParts = exponent.split('.');
     const exponentSignificand = exponentParts[1];
-    const isBase10 = equals(abs_abs(base), '10');
-    if (isBase10) {
-        base = abs_abs(base);
-        negate = !negate;
-    }
     let fractionalExponent = '1';
     let result;
     if (equals(abs_abs(base), '10')) {
-        result = (negativeExponent) ? `0.${new Array(Number(abs_abs(exponentParts[0])) - 1).join('0')}1` : `1${new Array(exponentParts[0]).join('0')}`;
+        result = (negativeExponent) ? utils_tolerance(abs_abs(exponentParts[0])) : utils_tolerance('-' + exponentParts[0]);
     }
     else {
         result = intPow(abs_abs(base), abs_abs(exponentParts[0]));
@@ -825,50 +855,49 @@ function pow(base, exponent, precision = 32, negate = false) {
         if (negativeBase) {
             negate = !negate;
         }
-        let minPrecision = Math.max(parseInt(multiply_multiply(base.length.toString(), round_roundOff(exponent, 0, RoundingModes.CEILING))), base.length);
+        let minPrecision = Math.max(precision + parseInt(multiply_multiply(base.length.toString(), round_roundOff(exponent, 0, RoundingModes.CEILING))), precision + base.length);
         precision = Math.max(precision, 32);
         let tempBase = base;
         for (let i = 0; i < exponentSignificand.length; i++) {
-            const significandDigit = exponentSignificand[i];
-            if (isOdd(significandDigit)) {
-                switch (significandDigit) {
+            if (isOdd(exponentSignificand[i])) {
+                switch (exponentSignificand[i]) {
                     case '9':
-                        fractionalExponent = multiply_multiply(fractionalExponent, multiply_multiply(intPow(nthRoot(tempBase, 5, minPrecision + i), '2'), nthRoot(tempBase, 2, minPrecision))); // (2 * 2) + 5 = 9
+                        fractionalExponent = multiply_multiply(fractionalExponent, multiply_multiply(intPow(nthRoot(tempBase, 5, minPrecision + i, precision + i), '2'), nthRoot(tempBase, 2, minPrecision, precision))); // (2 * 2) + 5 = 9
                         break;
                     case '7':
-                        fractionalExponent = multiply_multiply(fractionalExponent, multiply_multiply(nthRoot(tempBase, 5, minPrecision + i), nthRoot(tempBase, 2, minPrecision))); // 2 + 5 = 7
+                        fractionalExponent = multiply_multiply(fractionalExponent, multiply_multiply(nthRoot(tempBase, 5, minPrecision + i, precision + i), nthRoot(tempBase, 2, minPrecision, precision))); // 2 + 5 = 7
                         break;
                     case '5':
-                        fractionalExponent = multiply_multiply(fractionalExponent, nthRoot(tempBase, 2, minPrecision)); // 5
+                        fractionalExponent = multiply_multiply(fractionalExponent, nthRoot(tempBase, 2, minPrecision, precision)); // 5
                         break;
                     case '3':
-                        fractionalExponent = multiply_multiply(fractionalExponent, nthRoot(tempBase, 3, minPrecision));
+                        fractionalExponent = multiply_multiply(fractionalExponent, nthRoot(tempBase, 3, minPrecision, precision));
                         break;
                     case '1':
-                        fractionalExponent = multiply_multiply(fractionalExponent, nthRoot(nthRoot(tempBase, 5, minPrecision + i), 2, minPrecision)); // 2 / 2 = 1
+                        fractionalExponent = multiply_multiply(fractionalExponent, nthRoot(nthRoot(tempBase, 5, minPrecision + i, precision), 2, minPrecision, precision)); // 2 / 2 = 1
                         break;
                 }
             }
-            if (isEven(significandDigit)) {
-                switch (significandDigit) {
+            if (isEven(exponentSignificand[i])) {
+                switch (exponentSignificand[i]) {
                     case '8':
-                        fractionalExponent = multiply_multiply(fractionalExponent, intPow(nthRoot(tempBase, 5, minPrecision + i), '4')); // 2 * 4 = 8
+                        fractionalExponent = multiply_multiply(fractionalExponent, intPow(nthRoot(tempBase, 5, minPrecision + i, precision), '4')); // 2 * 4 = 8
                         break;
                     case '6':
-                        fractionalExponent = multiply_multiply(fractionalExponent, intPow(nthRoot(tempBase, 5, minPrecision + i), '3')); // 2 * 3 = 6
+                        fractionalExponent = multiply_multiply(fractionalExponent, intPow(nthRoot(tempBase, 5, minPrecision + i, precision), '3')); // 2 * 3 = 6
                         break;
                     case '4':
-                        fractionalExponent = multiply_multiply(fractionalExponent, intPow(nthRoot(tempBase, 5, minPrecision + i), '2')); // 2 * 2 = 4
+                        fractionalExponent = multiply_multiply(fractionalExponent, intPow(nthRoot(tempBase, 5, minPrecision + i, precision), '2')); // 2 * 2 = 4
                         break;
                     case '2':
-                        fractionalExponent = multiply_multiply(fractionalExponent, nthRoot(tempBase, 5, minPrecision + i)); // 2
+                        fractionalExponent = multiply_multiply(fractionalExponent, nthRoot(tempBase, 5, minPrecision + i, precision)); // 2
                         break;
                     case '0':
                         break;
                 }
             }
             if (i < exponentSignificand.length - 1)
-                tempBase = nthRoot(nthRoot(tempBase, 5, minPrecision + i), 2, minPrecision);
+                tempBase = nthRoot(nthRoot(tempBase, 5, minPrecision + i, precision), 2, minPrecision, precision);
         }
         return finalize(multiply_multiply(result, fractionalExponent));
     }
@@ -889,7 +918,7 @@ function intPow(base, exponent) {
     }
     return result;
 }
-function nthRoot(x, n, precision = 8) {
+function nthRoot(x, n, precision = 16, t = 16) {
     x = x.toString();
     n = n.toString();
     pow_validate(n);
@@ -903,28 +932,23 @@ function nthRoot(x, n, precision = 8) {
         }
         return _guess.toString();
     };
-    if (compareTo_lessThan(n, '5', true)) {
-        let guess = initialGuess();
-        let nMinusOne = subtract_subtract(n, 1);
-        let difference = '0';
-        let lastDifference = x;
-        let i = 4;
-        while (true) {
-            let newGuess = divide_divide(add_add(stripTrailingZero_stripTrailingZero(divide_divide(x, intPow(guess, nMinusOne), precision + i + 2)), multiply_multiply(guess, nMinusOne)), n, precision + i);
-            difference = abs_abs(subtract_subtract(guess, newGuess));
-            if (compareTo_lessThan(difference, '1') && compareTo_greaterThan(difference, lastDifference)) {
-                return round_roundOff(bisectionRoot(x, n, newGuess, precision + 2), precision + 2);
-            }
-            if (compareTo_lessThan(difference, utils_tolerance(precision + 2))) {
-                return stripTrailingZero_stripTrailingZero(round_roundOff(newGuess, precision + 2));
-            }
-            lastDifference = difference;
-            guess = stripTrailingZero_stripTrailingZero(newGuess);
-            i++;
+    let guess = initialGuess();
+    let nMinusOne = subtract_subtract(n, 1);
+    let difference = '0';
+    let lastDifference = x;
+    let i = 4;
+    while (true) {
+        let newGuess = stripTrailingZero_stripTrailingZero(divide_divide(add_add(stripTrailingZero_stripTrailingZero(divide_divide(x, intPow(guess, nMinusOne), precision + i + 2)), multiply_multiply(guess, nMinusOne)), n, precision + i));
+        difference = stripTrailingZero_stripTrailingZero(abs_abs(subtract_subtract(guess, newGuess)));
+        if (pow_testTolerance(difference, t + i)) {
+            return stripTrailingZero_stripTrailingZero(round_roundOff(newGuess, precision + 2));
         }
-    }
-    else {
-        return bisectionRoot(x, n, x, precision + 2);
+        if (compareTo_greaterThan(difference, lastDifference)) {
+            return stripTrailingZero_stripTrailingZero(round_roundOff(bisectionRoot(x, n, newGuess, precision + 2), precision + 2));
+        }
+        lastDifference = difference;
+        guess = stripTrailingZero_stripTrailingZero(newGuess);
+        i++;
     }
 }
 function bisectionRoot(x, n, g, precision = 32) {
@@ -934,13 +958,14 @@ function bisectionRoot(x, n, g, precision = 32) {
     const f1 = (x, n) => {
         return stripTrailingZero_stripTrailingZero(multiply_multiply(n, intPow(x, subtract_subtract(n, '1'))));
     };
+    const threshold = utils_tolerance(precision);
     let left = subtract_negate(g);
     let right = g;
-    let v;
+    let v = '0';
     let prevV0 = '0';
     while (true) {
         v = stripTrailingZero_stripTrailingZero(divide_divide(add_add(left, right), 2, precision + 4));
-        const v0 = f0(v, n, x);
+        let v0 = f0(v, n, x);
         const v1 = f1(v, n);
         if (compareTo_lessThan(multiply_multiply(v0, v1), '0', true)) {
             left = stripTrailingZero_stripTrailingZero(v);
@@ -948,10 +973,11 @@ function bisectionRoot(x, n, g, precision = 32) {
         else {
             right = stripTrailingZero_stripTrailingZero(v);
         }
-        if ((compareTo_lessThan(abs_abs(v0), utils_tolerance(precision)) && compareTo_greaterThan(abs_abs(v0), '0', true)) || equals(abs_abs(v0), prevV0)) {
+        v0 = abs_abs(v0);
+        if ((compareTo_lessThan(v0, threshold)) || equals(v0, prevV0)) {
             return stripTrailingZero_stripTrailingZero(round_roundOff(v, precision + 2));
         }
-        prevV0 = abs_abs(v0);
+        prevV0 = v0;
     }
 }
 function inverseSqRoot(number) {
@@ -962,131 +988,26 @@ function inverseSqRoot(number) {
     let previousDifference = n;
     let i = 0;
     while (i < 10) {
-        // console.log('guess', guess)
         let newGuess = roundOff(multiply(guess, subtract('1.5', roundOff(multiply(divide(number, 2, 33), pow(guess, 2, 33)), 33))), 33);
-        // console.log('newGuess', guess)
         difference = abs(subtract(guess, newGuess));
         if (greaterThan(difference, previousDifference)) {
-            // console.log('root exit under p')
             return stripTrailingZero(roundOff(guess, 32 + 1));
         }
         if (lessThan(difference, tolerance(32 - 1))) {
-            // console.log('newGuess exit under p')
             return stripTrailingZero(roundOff(guess, 32 + 1));
         }
         previousDifference = difference;
         guess = newGuess;
         i++;
     }
-    // let [integer, fraction] = n.split('.');
-    // let exponent = '0';
-    // let integerBits = '';
-    // let fractionBits = '';
-    // let exponentBits = '';
-    // let mantissaBits = '';
-    // let mantissa = divide(integer + fraction, '1');
-    // while (greaterThan(integer, '1', true)) {
-    //     integerBits = isOdd(integer) ? '1' + integerBits : '0' + integerBits;
-    //     integer = divide(integer, 2, 0);
-    // }
-    // if (fraction) {
-    //     let precision = '32';
-    //     fraction = '0.' + fraction;
-    //     while (greaterThan(precision, '0')) {
-    //         fraction = multiply(fraction, 2);
-    //         fractionBits += fraction.split('.')[0];
-    //         fraction = '0.' + fraction.split('.')[1];
-    //         if (isAproxZero(fraction, 2)) break
-    //         precision = subtract(precision, 1);
-    //     }
-    // }
-    // if (integer == '0') {
-    //     let lastDigit = '0';
-    //     let i = 1;
-    //     while (true) {
-    //         if (lastDigit !== fractionBits[i - 1]) {
-    //             i++
-    //             break
-    //         }
-    //         i++
-    //     }
-    //     exponent = negateFn(i.toString())
-    // } else {
-    //     exponent = (integerBits.length - 1).toString()
-    // }
-    // mantissaBits = integerBits + fractionBits;
-    // mantissa = add('1', divide(divide(mantissa, pow('2', mantissaBits.length), mantissaBits.length), '2', mantissaBits.length));
-    // console.log('log a', subtract(multiply(divide('1', pow('2', mantissaBits.length), mantissaBits.length), add(mantissa, multiply(pow('2', mantissaBits.length), add(exponent, (mantissaBits.length - 1).toString())))), (mantissaBits.length - 1).toString()))
-    // let E = roundOff(multiply(add(exponent, (mantissaBits.length - 1).toString()), '0.5'), 0, RoundingModes.FLOOR);
-    // exponent = add(exponent, (mantissaBits.length - 1).toString())
-    // while (greaterThan(exponent, '1', true)) {
-    //     exponentBits += isOdd(exponent) ? '1' : '0';
-    //     exponent = roundOff(divide(exponent, 2), 0, RoundingModes.FLOOR);
-    // }
-    // exponent = roundOff(multiply(add(exponent, (mantissaBits.length - 1).toString()), '0.5'), 0, RoundingModes.FLOOR)
-    // console.log('integer', integer)
-    // console.log('integerBits', integerBits)
-    // console.log('fractionBits', fractionBits)
-    // console.log('exponent', exponent)
-    // console.log('exponentBits', exponentBits)
-    // // const mantissaBits = integerBits + fractionBits;
-    // const logBits = exponentBits + mantissaBits;
-    // const binaryBits = '0' + logBits.substring(0, logBits.length - 1); //right bitshift
-    // exponentBits = binaryBits.substring(0, exponentBits.length)
-    // mantissaBits = binaryBits.substring(exponentBits.length)
-    // const exponentRange = pow('2', exponentBits.length);
-    // const mantissaRange = multiply('1.5', pow('2', mantissaBits.length - 1));
-    // const correction = multiply(exponentRange, mantissaRange);
-    // const log = '1.' + binaryBits.split('').reduce((p, c, i) => {
-    //     return add(p, (c == '0') ? '0' : pow('2', binaryBits.length - i))
-    // }, '0');
-    // // console.log('mantissa', mantissa)
-    // // console.log('mantissaBits', mantissaBits)
-    // // console.log('logBits', logBits)
-    // // console.log('binaryBits', binaryBits)
-    // // console.log('mantissaRange', mantissaRange)
-    // // console.log('exponentRange', exponentRange)
-    // // console.log('correction', correction)
-    // // console.log('log', log)
-    // const initial = multiply(log, '.5');
-    // const initialSq = multiply(initial, initial);
-    // // let x = multiply(multiply(multiply(number, '0.5'), multiply(initial, initial)), '.5');
-    // // x = multiply(multiply(multiply(number, '0.5'), multiply(x, x)), '.5');
-    // // const y = multiply(initial, subtract('1.5', x));
-    // let guess = initial;
-    // let difference = '0'
-    // let lastDifference = number
-    // let i = 0;
-    // while (i < 10) {
-    //     console.log('guess', guess)
-    //     guess = roundOff(multiply(guess, subtract('1.5', roundOff(multiply(divide(number, 2, 33), pow(guess, 2, 33)), 33))), 33)
-    //     console.log('newGuess', guess)
-    //     // difference = abs(subtract(guess, newGuess))
-    //     // if (greaterThan(difference, lastDifference)) {
-    //     //     // console.log('root exit under p')
-    //     //     return stripTrailingZero(roundOff(guess, 32 + 1))
-    //     // }
-    //     // if (lessThan(difference, tolerance(32 - 1))) {
-    //     //     // console.log('newGuess exit under p')
-    //     //     return stripTrailingZero(roundOff(guess, 32 + 1))
-    //     // }
-    //     // lastDifference = difference;
-    //     // guess = newGuess;
-    //     i++;
-    // }
-    // console.log('initial', initial)
-    // console.log('initialSq', initialSq)
-    // // console.log('x', x)
-    // // console.log('y', y)
-    // return guess
 }
 function sqRoot(base, precision = 32) {
     precision = Math.max(precision, 32);
-    return nthRoot(base, 2, precision);
+    return nthRoot(base, 2, precision, precision + 1);
 }
 function cbRoot(base, precision = 32) {
     precision = Math.max(precision, 32);
-    return nthRoot(base, 3, precision);
+    return nthRoot(base, 3, precision, precision + 1);
 }
 function root4(base, precision = 32) {
     precision = Math.max(precision, 32);
@@ -1094,12 +1015,15 @@ function root4(base, precision = 32) {
 }
 function root5(base, precision = 32) {
     precision = Math.max(precision, 32);
-    return nthRoot(base, 5, precision);
+    return nthRoot(base, 5, precision, precision + 1);
 }
 function root10(base, precision = 32) {
     precision = Math.max(precision, 32);
-    return nthRoot(base, 10, precision);
+    return nthRoot(base, 10, precision, precision + 1);
     // return sqRoot(root5(base, precision + 4), precision + 2);
+}
+function pow_testTolerance(target, precision) {
+    return RegExp(`^([0]{1}\\.[0]{${precision + 2},}[\\d]{1})`).test(target);
 }
 function pow_validate(oparand) {
     if (oparand.includes('.')) {
@@ -1530,24 +1454,21 @@ const E_ROOTS_FOR_POW = [
 
 
 
-const E = round_roundOff('2.718281828459045235360287471352662497757247093699959574966967627724076630353547594571382178525166427427466391932003059921817413596629043572900334295260595630738132328627943490763233829880753195251019011573834187930702154089149934884167509244761460668082264', 257);
-const LN2 = '0.693147180559945309417232121458176568075500134360255254120680009493393621969694715605863326996418687541993981020570685733685520235758130557032670751635075961930727570828371435190307038623891673471123350115364507330239120475172681574932065155524734063903421';
-const LOG2E = '1.44269504088896340735992468100188';
-const LN10 = '2.30258509299404568392825848336901';
-const LOG10E = '0.43429448190325182766805360691429';
+
+
 function Euler(precision = 32) {
     precision = Math.max(16, precision);
     let result = '1';
     let n = '1';
     let f = '1';
     while (true) {
-        f = multiply_multiply(f, n);
-        const next = divide_divide('1', f, precision + 2);
-        if (compareTo_lessThan(abs_abs(next), utils_tolerance(precision))) {
-            return round_roundOff(result, precision);
+        f = multiply(f, n);
+        const next = divide('1', f, precision + 3);
+        if (testTolerance(abs(next), precision)) {
+            return stripTrailingZero(roundOff(result, 1024));
         }
-        result = add_add(result, next);
-        n = add_add(n, '1');
+        result = add(result, next);
+        n = add(n, '1');
     }
 }
 function exp(exponent) {
@@ -1576,15 +1497,29 @@ function ln(x = 2) {
         return '0'; // ln(1) = 0
     }
     let result = '0';
-    let term = divide_divide(subtract_subtract(x, '1'), add_add(x, '1'), 33);
+    let term = stripTrailingZero_stripTrailingZero(divide_divide(subtract_subtract(x, '1'), add_add(x, '1'), 64 + 2));
     let i = 0;
+    if (compareTo_lessThan(x, '2')) {
+        while (true) {
+            i++;
+            let iteration = subtract_subtract(multiply_multiply('2', i), '1');
+            let next = divide_divide(round_roundOff(intPow(term, iteration), 64 + 2), iteration, 64 + 2);
+            if (utils_testTolerance(next, 64)) {
+                return round_roundOff(multiply_multiply('2', add_add(result, next)), 64);
+            }
+            result = add_add(result, next);
+        }
+    }
+    let f = stripTrailingZero_stripTrailingZero(pow(term, 2, 64 + 2));
+    let t = stripTrailingZero_stripTrailingZero(pow(term, 1, 64 + 2));
     while (true) {
         i++;
         let iteration = subtract_subtract(multiply_multiply('2', i), '1');
-        let next = multiply_multiply(divide_divide('1', iteration, 33), pow(term, iteration));
-        if (compareTo_lessThan(next, utils_tolerance(33))) {
-            return round_roundOff(multiply_multiply('2', add_add(result, next)), 32);
+        let next = round_roundOff(multiply_multiply(divide_divide('1', iteration, 64 + 2), t), 1024 + 4);
+        if (utils_testTolerance(next, 64)) {
+            return round_roundOff(multiply_multiply('2', add_add(result, next)), 64);
         }
+        t = stripTrailingZero_stripTrailingZero(round_roundOff(multiply_multiply(t, f), 64 + 2));
         result = add_add(result, next);
     }
 }
@@ -1595,18 +1530,18 @@ function ln2(x = 2) {
     }
     let result = '0';
     while (compareTo_greaterThan(x, '2', true)) {
-        x = divide_divide(x, 2, 33);
+        x = divide_divide(x, 2, 64 + 2);
         result = add_add(result, '1');
     }
-    return round_roundOff(add_add(result, divide_divide(ln(x), LN2, 33)), 32);
+    return round_roundOff(add_add(result, divide_divide(ln(x), LN2, 64 + 2)), 64);
 }
 function log(base) {
     base = base.toString();
-    return round_roundOff(multiply_multiply(ln2(base), LN2), 32);
+    return round_roundOff(multiply_multiply(ln2(base), LN2), 64);
 }
 function log10(base) {
     base = base.toString();
-    return divide_divide(log(base), LN10, 32);
+    return round_roundOff(divide_divide(ln(base), LN10, 64 + 2), 64);
 }
 
 ;// CONCATENATED MODULE: ./lib/trig.js
@@ -1636,6 +1571,7 @@ function sin(x) {
         let r = divide_divide(x, PI, 33).split('.');
         x = stripTrailingZero_stripTrailingZero(round_roundOff(multiply_multiply(pow(subtract_negate(sign(x).toString()), r[0]), multiply_multiply(PI, (r[1]) ? '0.' + r[1] : '0')), 32));
     }
+    const threshold = utils_tolerance(33);
     let result = '0';
     let _sign = '1';
     let n = '1'; // Series iteration
@@ -1644,7 +1580,7 @@ function sin(x) {
         const N = subtract_subtract(multiply_multiply(n, '2'), '1'); // Next real term in series (even terms cancel)
         f = multiply_multiply(f, N);
         const next = multiply_multiply(_sign, divide_divide(pow(x, N, 33), f, 34));
-        if (compareTo_lessThan(abs_abs(next), utils_tolerance(33))) {
+        if (compareTo_lessThan(abs_abs(next), threshold)) {
             result = add_add(result, next);
             return stripTrailingZero_stripTrailingZero(isAproxZero(result) ? '0' : isAproxOne(result) ? multiply_multiply('1', sign(result).toString()) : result);
         }
@@ -1659,6 +1595,7 @@ function asin(x) {
     if (compareTo_greaterThan(abs_abs(x), '1')) {
         throw Error('[Arcsine]: argument x is out of range.');
     }
+    const threshold = utils_tolerance(33);
     let result = '0';
     let n = '1';
     let even = '1';
@@ -1669,7 +1606,7 @@ function asin(x) {
         even = multiply_multiply(even, N);
         odd = multiply_multiply(odd, subtract_subtract(N, '1'));
         let next = divide_divide(multiply_multiply(odd, pow(x, R)), multiply_multiply(even, R), 34);
-        if (compareTo_lessThan(next, utils_tolerance(33))) {
+        if (compareTo_lessThan(next, threshold)) {
             result = add_add(result, next);
             return stripTrailingZero_stripTrailingZero(round_roundOff(add_add(result, x), 32));
         }
@@ -1688,6 +1625,7 @@ function cos(x) {
         let r = divide_divide(x, PI, 33).split('.');
         x = stripTrailingZero_stripTrailingZero(round_roundOff(multiply_multiply(pow(subtract_negate(sign(x).toString()), r[0]), multiply_multiply(PI, (r[1]) ? '0.' + r[1] : '0')), 32));
     }
+    const threshold = utils_tolerance(33);
     let result = '0';
     let _sign = '1';
     let n = '1'; // Series iteration
@@ -1697,7 +1635,7 @@ function cos(x) {
         f = multiply_multiply(f, subtract_subtract(N, '1')); // Iterate once to synchronize Factorial
         f = multiply_multiply(f, N);
         const next = multiply_multiply(_sign, divide_divide(pow(x, N, 33), f, 34));
-        if (compareTo_lessThan(abs_abs(next), utils_tolerance(33))) {
+        if (compareTo_lessThan(abs_abs(next), threshold)) {
             result = subtract_subtract('1', add_add(result, next));
             return stripTrailingZero_stripTrailingZero(isAproxOne(result) ? multiply_multiply('1', sign(result).toString()) : isAproxZero(result) ? '0' : result);
         }
@@ -1727,12 +1665,13 @@ function atan(x) {
     if (compareTo_greaterThan(abs_abs(x), '1')) {
         return stripTrailingZero_stripTrailingZero(subtract_subtract(divide_divide(PI, 2, 33), atan(divide_divide(1, x, 33))));
     }
+    const threshold = utils_tolerance(33);
     let result = '0';
     let n = '0';
     while (true) {
         let N = multiply_multiply('2', n);
         let next = divide_divide(multiply_multiply(pow('-1', n), pow(x, add_add(N, '1'))), add_add(N, '1'), 32);
-        if (compareTo_lessThan(abs_abs(next), utils_tolerance(33))) {
+        if (compareTo_lessThan(abs_abs(next), threshold)) {
             return stripTrailingZero_stripTrailingZero(round_roundOff(add_add(result, next), 32));
         }
         result = add_add(result, next);
@@ -1762,7 +1701,83 @@ function tanh(x) {
     return stripTrailingZero_stripTrailingZero(divide_divide(sinh(x), cosh(x), 32));
 }
 
+;// CONCATENATED MODULE: ./lib/statistics.js
+
+
+
+
+
+
+function mean(numbers) {
+    if (numbers.length === 0)
+        throw Error('[Mean]: Empty array.');
+    if (numbers.length === 1)
+        return numbers[0];
+    return divide_divide(numbers.reduce((prev, curr) => {
+        return add_add(prev, curr);
+    }, '0'), numbers.length.toString());
+}
+;
+function median(numbers) {
+    if (numbers.length === 0)
+        throw Error('[Median]: Empty array.');
+    if (numbers.length === 1)
+        return numbers[0];
+    const n = numbers.length.toString();
+    numbers = numbers.sort((a, b) => compareTo(a, b));
+    if (isOdd(n))
+        return numbers[parseInt(divide_divide(add_add(n, '1'), 2))];
+    let n0 = numbers[parseInt(divide_divide(n, 2))];
+    let n1 = numbers[parseInt(add_add(divide_divide(n, 2), '1'))];
+    return divide_divide(add_add(n0, n1), 2);
+}
+;
+function mode(numbers, last = false) {
+    if (numbers.length === 0)
+        throw Error('[Mode]: Empty array.');
+    if (numbers.length === 1)
+        return numbers[0];
+    numbers = numbers.sort((a, b) => compareTo(a, b));
+    const values = [];
+    const counts = [];
+    numbers.forEach((value) => {
+        let i = values.indexOf(value);
+        if (i === -1) {
+            values.push(value);
+            i = values.indexOf(value);
+            counts[i] = '0';
+        }
+        ;
+        counts[i] = add_add(counts[i], '1');
+    });
+    let m = (last) ? counts.lastIndexOf(max(counts)) : counts.indexOf(max(counts));
+    return values[m];
+}
+;
+function variance(numbers) {
+    if (numbers.length === 0)
+        throw Error('[Variance]: Empty array.');
+    if (numbers.length === 1)
+        return '0';
+    const m = mean(numbers);
+    numbers = numbers.map((value) => {
+        return intPow(subtract_subtract(value, m), '2');
+    });
+    return mean(numbers);
+}
+;
+function stdDv(numbers) {
+    if (numbers.length === 0)
+        throw Error('[Standard Deviation]: Empty array.');
+    if (numbers.length === 1)
+        return '0';
+    return sqRoot(variance(numbers));
+}
+;
+
 ;// CONCATENATED MODULE: ./lib/big-decimal.js
+
+
 
 
 
@@ -1996,7 +2011,7 @@ class bigDecimal {
     }
     // Logarithms
     static get E() {
-        return Euler(32);
+        return E;
     }
     static get LN2() {
         return LN2;
@@ -2081,6 +2096,27 @@ class bigDecimal {
         y = bigDecimal.validate(y);
         return atan2(y, x);
     }
+    // Statistics
+    static mean(numbers) {
+        numbers = numbers.map(number => bigDecimal.validate(number));
+        return mean(numbers);
+    }
+    static median(numbers) {
+        numbers = numbers.map(number => bigDecimal.validate(number));
+        return median(numbers);
+    }
+    static mode(numbers, last = false) {
+        numbers = numbers.map(number => bigDecimal.validate(number));
+        return mode(numbers, last);
+    }
+    static variance(numbers) {
+        numbers = numbers.map(number => bigDecimal.validate(number));
+        return variance(numbers);
+    }
+    static stdDv(numbers) {
+        numbers = numbers.map(number => bigDecimal.validate(number));
+        return stdDv(numbers);
+    }
     // Comparisons
     static compareTo(number1, number2) {
         number1 = bigDecimal.validate(number1);
@@ -2138,13 +2174,54 @@ class bigDecimal {
         return sign(this.value);
     }
     // Misc.
+    static min(numbers) {
+        numbers = numbers.map(number => bigDecimal.validate(number));
+        return min(numbers);
+    }
+    static max(numbers) {
+        numbers = numbers.map(number => bigDecimal.validate(number));
+        return max(numbers);
+    }
+    static clamp(number, min = '0', max = '1') {
+        number = bigDecimal.validate(number);
+        min = bigDecimal.validate(min);
+        max = bigDecimal.validate(max);
+        return clamp(number, min, max);
+    }
+    clamp(min = new bigDecimal('0'), max = new bigDecimal('1')) {
+        return new bigDecimal(clamp(this.value, min.value, max.value));
+    }
+    static step(number, s = number) {
+        number = bigDecimal.validate(number);
+        s = bigDecimal.validate(s);
+        return step(number, s);
+    }
+    static lerp(x, y, a = '1') {
+        x = bigDecimal.validate(x);
+        y = bigDecimal.validate(y);
+        a = bigDecimal.validate(a);
+        return lerp(x, y, a);
+    }
+    static invlerp(x, y, a = x) {
+        x = bigDecimal.validate(x);
+        y = bigDecimal.validate(y);
+        a = bigDecimal.validate(a);
+        return invlerp(x, y, a);
+    }
     static factorial(number) {
         number = bigDecimal.validate(number);
         return factorial(number);
     }
+    static subfactorial(number) {
+        number = bigDecimal.validate(number);
+        return subfactorial(number);
+    }
     static stripTrailingZero(number) {
         number = bigDecimal.validate(number);
         return stripTrailingZero_stripTrailingZero(number);
+    }
+    static random(length = 32) {
+        return random(length);
     }
     stripTrailingZero() {
         return new bigDecimal(stripTrailingZero_stripTrailingZero(this.value));

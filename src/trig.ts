@@ -29,7 +29,7 @@ export function sin(x: number | string) {
         let r = divide(x, PI, 33).split('.')
         x = stripTrailingZero(roundOff(multiply(pow(negate(sign(x).toString()), r[0]), multiply(PI, (r[1]) ? '0.' + r[1] : '0')), 32));
     }
-
+    const threshold = tolerance(33);
     let result = '0';
     let _sign = '1';
     let n = '1'; // Series iteration
@@ -41,7 +41,7 @@ export function sin(x: number | string) {
 
         const next = multiply(_sign, divide(pow(x, N, 33), f, 34));
 
-        if (lessThan(abs(next), tolerance(33))) {
+        if (lessThan(abs(next), threshold)) {
             result = add(result, next);
             return stripTrailingZero(isAproxZero(result) ? '0' : isAproxOne(result) ? multiply('1', sign(result).toString()) : result);
         }
@@ -57,6 +57,7 @@ export function asin(x: number | string) {
     if (greaterThan(abs(x), '1')) {
         throw Error('[Arcsine]: argument x is out of range.')
     }
+    const threshold = tolerance(33);
     let result = '0';
     let n = '1';
     let even = '1';
@@ -69,7 +70,7 @@ export function asin(x: number | string) {
         odd = multiply(odd, subtract(N, '1'));
         let next = divide(multiply(odd, pow(x, R)), multiply(even, R), 34);
 
-        if (lessThan(next, tolerance(33))) {
+        if (lessThan(next, threshold)) {
             result = add(result, next);
             return stripTrailingZero(roundOff(add(result, x), 32));
         }
@@ -93,7 +94,7 @@ export function cos(x: number | string) {
         let r = divide(x, PI, 33).split('.')
         x = stripTrailingZero(roundOff(multiply(pow(negate(sign(x).toString()), r[0]), multiply(PI, (r[1]) ? '0.' + r[1] : '0')), 32));
     }
-
+    const threshold = tolerance(33);
     let result = '0';
     let _sign = '1';
     let n = '1'; // Series iteration
@@ -106,7 +107,7 @@ export function cos(x: number | string) {
 
         const next = multiply(_sign, divide(pow(x, N, 33), f, 34));
 
-        if (lessThan(abs(next), tolerance(33))) {
+        if (lessThan(abs(next), threshold)) {
             result = subtract('1',add(result, next));
             return stripTrailingZero(isAproxOne(result) ? multiply('1', sign(result).toString()) : isAproxZero(result) ? '0' : result);
         }
@@ -142,13 +143,13 @@ export function atan(x: number | string) {
     if (greaterThan(abs(x), '1')) {
         return stripTrailingZero(subtract(divide(PI, 2, 33), atan(divide(1, x, 33))));
     }
-
+    const threshold = tolerance(33);
     let result = '0';
     let n = '0';
     while (true) {
         let N = multiply('2', n);
         let next = divide(multiply(pow('-1', n), pow(x, add(N, '1'))), add(N, '1'), 32)
-        if (lessThan(abs(next), tolerance(33))) {
+        if (lessThan(abs(next), threshold)) {
             return stripTrailingZero(roundOff(add(result, next), 32));
         }
         result = add(result, next);

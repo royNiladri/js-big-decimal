@@ -1,6 +1,6 @@
-//function add {
 export function add(number1: string, number2 = "0") {
 
+  let exponent: number = 0;
   let negativeNumber1: string = '';
   let negativeNumber2: string = '';
   let negativeResult: string = '';
@@ -8,18 +8,19 @@ export function add(number1: string, number2 = "0") {
   //check for negatives
   if (number1[0] == '-') {
     number1 = number1.substring(1);
-    if (!testZero(number1)) negativeNumber1 = '-';
+    if (!testZero(number1))
+      negativeNumber1 = '-'
+    else return number2;
   }
 
   if (number2[0] == '-') {
     number2 = number2.substring(1);
-    if (!testZero(number2)) negativeNumber2 = '-';
+    if (!testZero(number2))
+      negativeNumber2 = '-'
+    else return negativeNumber1 + number1;
   }
 
-  let exponent: number;
-  let values: string[] = [];
-  ({ values, exponent } = bigIntPad(number1, number2));
-  [number1, number2] = values;
+  ({ number1, number2, exponent } = pad(number1, number2));
 
   number1 = negativeNumber1 + number1
   number2 = negativeNumber2 + number2
@@ -33,8 +34,8 @@ export function add(number1: string, number2 = "0") {
 
   if (exponent > 0) {
     exponent = result.length - exponent;
-    if(exponent < 0) {
-      result = result.padStart(result.length + Math.abs(exponent),'0');
+    if (exponent < 0) {
+      result = result.padStart(result.length + Math.abs(exponent), '0');
       exponent = 0;
     }
 
@@ -47,28 +48,43 @@ export function add(number1: string, number2 = "0") {
   return result;
 }
 
-function bigIntPad(number1: string, number2: string) {
-  let parts1 = number1.split("."),
-    parts2 = number2.split(".");
+export function pad(number1: string, number2: string) {
 
-  //pad integer part
-  let length = Math.max(parts1[0].length, parts2[0].length)
-  parts1[0] = parts1[0].padStart(length, "0");
-  parts2[0] = parts2[0].padStart(length, "0");
+  const length1 = number1.length;
+  const length2 = number2.length;
 
-  //pad fractional part
-  parts1[1] = parts1[1] || ""
-  parts2[1] = parts2[1] || ""
-  length = Math.max(parts1[1].length, parts2[1].length)
-  parts1[1] = parts1[1].padEnd(length, "0");
-  parts2[1] = parts2[1].padEnd(length, "0");
+  let decimalIndex1 = (number1.includes('.')) ? number1.indexOf('.') : length1;
+  let decimalLength1 = length1 - decimalIndex1;
 
-  return { values: [parts1[0] + parts1[1], parts2[0] + parts2[1]], exponent: parts1[1].length };
+  let decimalIndex2 = (number2.includes('.')) ? number2.indexOf('.') : length2;
+  let decimalLength2 = length2 - decimalIndex2;
+
+  let pad1 = number1.substring(0, decimalIndex1) + number1.substring(decimalIndex1 + 1);
+  let pad2 = number2.substring(0, decimalIndex2) + number2.substring(decimalIndex2 + 1);
+
+  const decimalDifference = decimalLength1 - decimalLength2;
+  const decimalLength = Math.max(decimalLength1, decimalLength2) - 1;
+  const decimalIndex = Math.min(decimalIndex1, decimalIndex2);
+
+  if (decimalDifference < 0) {
+    pad1 = pad1.padEnd(decimalIndex1 + decimalLength, '0');
+    pad2 = pad2.padEnd(decimalIndex + decimalLength, '0');
+  }
+
+  if (decimalDifference > 0) {
+    pad1 = pad1.padEnd(decimalIndex + decimalLength - 1, '0');
+    pad2 = pad2.padEnd(decimalIndex2 + decimalLength, '0');
+  }
+
+  return {
+    number1: pad1,
+    number2: pad2,
+    exponent: Math.max(decimalLength, 0)
+  };
 }
 
 export function trim(number: string) {
   let parts = number.split(".");
-  parts[0]
 
   if (!parts[0]) parts[0] = "0";
 
@@ -76,28 +92,6 @@ export function trim(number: string) {
     parts[0] = parts[0].substring(1);
 
   return parts[0] + (parts[1] ? "." + parts[1] : "");
-}
-
-export function pad(number1: string, number2: string) {
-  let parts1 = number1.split("."),
-    parts2 = number2.split(".");
-
-  //pad integral part
-  let length = Math.max(parts1[0].length, parts2[0].length)
-  parts1[0] = parts1[0].padStart(length, "0");
-  parts2[0] = parts2[0].padStart(length, "0");
-
-  //pad fractional part
-  parts1[1] = parts1[1] || ""
-  parts2[1] = parts2[1] || ""
-  length = Math.max(parts1[1].length, parts2[1].length)
-  parts1[1] = parts1[1].padEnd(length, "0");
-  parts2[1] = parts2[1].padEnd(length, "0");
-
-  number1 = parts1[0] + (parts1[1] ? "." + parts1[1] : "");
-  number2 = parts2[0] + (parts2[1] ? "." + parts2[1] : "");
-
-  return [number1, number2];
 }
 
 function testZero(number: string) {
