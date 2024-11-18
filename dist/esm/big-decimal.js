@@ -702,48 +702,49 @@ function pow(base, exponent, precision = 32, negate$1 = false) {
         if (negativeBase) {
             negate$1 = !negate$1;
         }
-        let minPrecision = Math.max(precision + parseInt(multiply(base.length.toString(), roundOff(exponent, 0, RoundingModes.CEILING))), precision + base.length);
         precision = Math.max(precision, 32);
+        let minPrecision = base.length * Math.ceil(parseFloat(abs(exponent))) + precision;
         let tempBase = abs(base);
         for (let i = 0; i < exponentSignificand.length; i++) {
             if (isOdd(exponentSignificand[i])) {
                 switch (exponentSignificand[i]) {
                     case '9':
-                        fractionalExponent = multiply(fractionalExponent, multiply(intPow(nthRoot(tempBase, '5', minPrecision + i, precision + i), '2'), nthRoot(tempBase, '2', minPrecision, precision))); // (2 * 2) + 5 = 9
+                        fractionalExponent = multiply(fractionalExponent, multiply(intPow(nthRoot(tempBase, '5', minPrecision + i + 1), '2'), nthRoot(tempBase, '2', minPrecision + i + 1))); // (2 * 2) + 5 = 9
                         break;
                     case '7':
-                        fractionalExponent = multiply(fractionalExponent, multiply(nthRoot(tempBase, '5', minPrecision + i, precision + i), nthRoot(tempBase, '2', minPrecision, precision))); // 2 + 5 = 7
+                        fractionalExponent = multiply(fractionalExponent, multiply(nthRoot(tempBase, '5', minPrecision + i + 1), nthRoot(tempBase, '2', minPrecision + i + 1))); // 2 + 5 = 7
                         break;
                     case '5':
-                        fractionalExponent = multiply(fractionalExponent, nthRoot(tempBase, '2', minPrecision, precision)); // 5
+                        fractionalExponent = multiply(fractionalExponent, nthRoot(tempBase, '2', minPrecision + i + 1)); // 5
                         break;
                     case '3':
-                        fractionalExponent = multiply(fractionalExponent, nthRoot(tempBase, '3', minPrecision, precision));
+                        fractionalExponent = multiply(fractionalExponent, nthRoot(tempBase, '3', minPrecision + i + 1));
                         break;
                     case '1':
-                        fractionalExponent = multiply(fractionalExponent, nthRoot(nthRoot(tempBase, '5', minPrecision + i, precision), '2', minPrecision, precision)); // 2 / 2 = 1
+                        fractionalExponent = multiply(fractionalExponent, nthRoot(nthRoot(tempBase, '5', minPrecision + i + 2), '2', minPrecision + i + 1)); // 2 / 2 = 1
                         break;
                 }
             }
             if (isEven(exponentSignificand[i])) {
                 switch (exponentSignificand[i]) {
                     case '8':
-                        fractionalExponent = multiply(fractionalExponent, intPow(nthRoot(tempBase, '5', minPrecision + i, precision), '4')); // 2 * 4 = 8
+                        fractionalExponent = multiply(fractionalExponent, intPow(nthRoot(tempBase, '5', minPrecision + i + 1), '4')); // 2 * 4 = 8
                         break;
                     case '6':
-                        fractionalExponent = multiply(fractionalExponent, intPow(nthRoot(tempBase, '5', minPrecision + i, precision), '3')); // 2 * 3 = 6
+                        fractionalExponent = multiply(fractionalExponent, intPow(nthRoot(tempBase, '5', minPrecision + i + 1), '3')); // 2 * 3 = 6
                         break;
                     case '4':
-                        fractionalExponent = multiply(fractionalExponent, intPow(nthRoot(tempBase, '5', minPrecision + i, precision), '2')); // 2 * 2 = 4
+                        fractionalExponent = multiply(fractionalExponent, intPow(nthRoot(tempBase, '5', minPrecision + i + 1), '2')); // 2 * 2 = 4
                         break;
                     case '2':
-                        fractionalExponent = multiply(fractionalExponent, nthRoot(tempBase, '5', minPrecision + i, precision)); // 2
+                        fractionalExponent = multiply(fractionalExponent, nthRoot(tempBase, '5', minPrecision + i + 1)); // 2
                         break;
                 }
             }
             if (i < exponentSignificand.length - 1)
-                tempBase = nthRoot(nthRoot(tempBase, '5', minPrecision + i, precision), '2', minPrecision, precision);
+                tempBase = nthRoot(nthRoot(tempBase, '5', minPrecision + i + 2), '2', minPrecision + i + 1);
         }
+        // console.log(fractionalExponent)
         return finalize(multiply(result, fractionalExponent));
     }
     else {
@@ -770,7 +771,7 @@ function intPow(base, exponent) {
     }
     return negative + result;
 }
-function nthRoot(x, n, precision = 16, t = 16) {
+function nthRoot(x, n, precision = 16) {
     x = x.toString();
     n = n.toString();
     validateInteger(n, 'nthRoot n');
@@ -790,13 +791,15 @@ function nthRoot(x, n, precision = 16, t = 16) {
     let lastDifference = abs(x);
     let i = 4;
     while (true) {
-        let newGuess = stripTrailingZero(divide(add(stripTrailingZero(divide(x, intPow(guess, nMinusOne), precision + i + 2)), multiply(guess, nMinusOne)), n, precision + i));
+        let newGuess = stripTrailingZero(divide(add(stripTrailingZero(divide(x, intPow(guess, nMinusOne), precision + i + 2)), multiply(guess, nMinusOne)), n, precision + i + 1));
         difference = stripTrailingZero(abs(subtract(guess, newGuess)));
-        if (testTolerance(difference, t + i)) {
-            return stripTrailingZero(roundOff(newGuess, precision + 2));
-        }
+        // console.log(newGuess)
+        // console.log(difference)
         if (greaterThan(difference, lastDifference)) {
-            return stripTrailingZero(roundOff(bisectionRoot(x, n, newGuess, precision + 2), precision + 2));
+            return stripTrailingZero(roundOff(bisectionRoot(x, n, newGuess, precision + i), precision));
+        }
+        if (testTolerance(difference, precision + i)) {
+            return stripTrailingZero(roundOff(newGuess, precision));
         }
         lastDifference = difference;
         guess = stripTrailingZero(newGuess);
@@ -815,8 +818,9 @@ function bisectionRoot(x, n, g, precision = 32) {
     let right = g;
     let v = '0';
     let prevV0 = '0';
+    let i = 4;
     while (true) {
-        v = stripTrailingZero(divide(add(left, right), '2', precision + 4));
+        v = stripTrailingZero(divide(add(left, right), '2', precision + i));
         let v0 = f0(v, n, x);
         const v1 = f1(v, n);
         if (lessThan(multiply(v0, v1), '0', true)) {
@@ -828,19 +832,20 @@ function bisectionRoot(x, n, g, precision = 32) {
         v0 = abs(v0);
         // console.log(v)
         if (testTolerance(v0, precision) || equals(v0, prevV0)) {
-            return stripTrailingZero(roundOff(v, precision + 2));
+            return stripTrailingZero(v);
         }
         // console.log(v)
         prevV0 = v0;
+        i++;
     }
 }
 function sqRoot(base, precision = 32) {
     precision = Math.max(precision, 32);
-    return nthRoot(base, '2', precision, precision + 1);
+    return stripTrailingZero(nthRoot(base, '2', precision));
 }
 function cbRoot(base, precision = 32) {
     precision = Math.max(precision, 32);
-    return nthRoot(base, '3', precision, precision + 1);
+    return stripTrailingZero(nthRoot(base, '3', precision));
 }
 
 const E = '2.7182818284590452353602874713526624977572470936999595749669676277240766303535475945713821785251664274274663919320030599218174135966290435729003342952605956307381323286279434907632338298807531952510190115738341879307021540891499348841675092447614606680822648001684774118537423454424371075390777449920695517027618386062613313845830007520449338265602976067371132007093287091274437470472306969772093101416928368190255151086574637721112523897844250569536967707854499699679468644549059879316368892300987931277361782154249992295763514822082698951936680331825288693984964651058209392398294887933203625094431173012381970684161403970198376793206832823764648042953118023287825098194558153017567173613320698112509961818815930416903515988885193458072738667385894228792284998920868058257492796104841984443634632449684875602336248270419786232090021609902353043699418491463140934317381436405462531520961836908887070167683964243781405927145635490613031072085103837505101157477041718986106873969655212671546889570350354021234078498193343210682';

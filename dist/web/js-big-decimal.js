@@ -631,8 +631,6 @@ function modulus(n, base = '1', precision = 64) {
 
 
 
-// import * as crypto from "node:crypto"
-// const crypto = require('node:crypto');
 function sigma(n, limit, fn, ...args) {
     n = n.toString();
     limit = limit.toString();
@@ -773,7 +771,6 @@ function random(length = 32) {
 
 
 
-
 /**
  * Calculates the power of a given base raised to an integer exponent
  *
@@ -843,50 +840,51 @@ function pow(base, exponent, precision = 32, negate = false) {
         if (negativeBase) {
             negate = !negate;
         }
-        let minPrecision = Math.max(precision + parseInt(multiply_multiply(base.length.toString(), round_roundOff(exponent, 0, RoundingModes.CEILING))), precision + base.length);
         precision = Math.max(precision, 32);
+        let minPrecision = base.length * Math.ceil(parseFloat(abs_abs(exponent))) + precision;
         let tempBase = abs_abs(base);
         for (let i = 0; i < exponentSignificand.length; i++) {
             if (isOdd(exponentSignificand[i])) {
                 switch (exponentSignificand[i]) {
                     case '9':
-                        fractionalExponent = multiply_multiply(fractionalExponent, multiply_multiply(intPow(nthRoot(tempBase, '5', minPrecision + i, precision + i), '2'), nthRoot(tempBase, '2', minPrecision, precision))); // (2 * 2) + 5 = 9
+                        fractionalExponent = multiply_multiply(fractionalExponent, multiply_multiply(intPow(nthRoot(tempBase, '5', minPrecision + i + 1), '2'), nthRoot(tempBase, '2', minPrecision + i + 1))); // (2 * 2) + 5 = 9
                         break;
                     case '7':
-                        fractionalExponent = multiply_multiply(fractionalExponent, multiply_multiply(nthRoot(tempBase, '5', minPrecision + i, precision + i), nthRoot(tempBase, '2', minPrecision, precision))); // 2 + 5 = 7
+                        fractionalExponent = multiply_multiply(fractionalExponent, multiply_multiply(nthRoot(tempBase, '5', minPrecision + i + 1), nthRoot(tempBase, '2', minPrecision + i + 1))); // 2 + 5 = 7
                         break;
                     case '5':
-                        fractionalExponent = multiply_multiply(fractionalExponent, nthRoot(tempBase, '2', minPrecision, precision)); // 5
+                        fractionalExponent = multiply_multiply(fractionalExponent, nthRoot(tempBase, '2', minPrecision + i + 1)); // 5
                         break;
                     case '3':
-                        fractionalExponent = multiply_multiply(fractionalExponent, nthRoot(tempBase, '3', minPrecision, precision));
+                        fractionalExponent = multiply_multiply(fractionalExponent, nthRoot(tempBase, '3', minPrecision + i + 1));
                         break;
                     case '1':
-                        fractionalExponent = multiply_multiply(fractionalExponent, nthRoot(nthRoot(tempBase, '5', minPrecision + i, precision), '2', minPrecision, precision)); // 2 / 2 = 1
+                        fractionalExponent = multiply_multiply(fractionalExponent, nthRoot(nthRoot(tempBase, '5', minPrecision + i + 2), '2', minPrecision + i + 1)); // 2 / 2 = 1
                         break;
                 }
             }
             if (isEven(exponentSignificand[i])) {
                 switch (exponentSignificand[i]) {
                     case '8':
-                        fractionalExponent = multiply_multiply(fractionalExponent, intPow(nthRoot(tempBase, '5', minPrecision + i, precision), '4')); // 2 * 4 = 8
+                        fractionalExponent = multiply_multiply(fractionalExponent, intPow(nthRoot(tempBase, '5', minPrecision + i + 1), '4')); // 2 * 4 = 8
                         break;
                     case '6':
-                        fractionalExponent = multiply_multiply(fractionalExponent, intPow(nthRoot(tempBase, '5', minPrecision + i, precision), '3')); // 2 * 3 = 6
+                        fractionalExponent = multiply_multiply(fractionalExponent, intPow(nthRoot(tempBase, '5', minPrecision + i + 1), '3')); // 2 * 3 = 6
                         break;
                     case '4':
-                        fractionalExponent = multiply_multiply(fractionalExponent, intPow(nthRoot(tempBase, '5', minPrecision + i, precision), '2')); // 2 * 2 = 4
+                        fractionalExponent = multiply_multiply(fractionalExponent, intPow(nthRoot(tempBase, '5', minPrecision + i + 1), '2')); // 2 * 2 = 4
                         break;
                     case '2':
-                        fractionalExponent = multiply_multiply(fractionalExponent, nthRoot(tempBase, '5', minPrecision + i, precision)); // 2
+                        fractionalExponent = multiply_multiply(fractionalExponent, nthRoot(tempBase, '5', minPrecision + i + 1)); // 2
                         break;
                     case '0':
                         break;
                 }
             }
             if (i < exponentSignificand.length - 1)
-                tempBase = nthRoot(nthRoot(tempBase, '5', minPrecision + i, precision), '2', minPrecision, precision);
+                tempBase = nthRoot(nthRoot(tempBase, '5', minPrecision + i + 2), '2', minPrecision + i + 1);
         }
+        // console.log(fractionalExponent)
         return finalize(multiply_multiply(result, fractionalExponent));
     }
     else {
@@ -914,7 +912,7 @@ function intPow(base, exponent) {
     }
     return negative + result;
 }
-function nthRoot(x, n, precision = 16, t = 16) {
+function nthRoot(x, n, precision = 16) {
     x = x.toString();
     n = n.toString();
     validators_validateInteger(n, 'nthRoot n');
@@ -934,13 +932,15 @@ function nthRoot(x, n, precision = 16, t = 16) {
     let lastDifference = abs_abs(x);
     let i = 4;
     while (true) {
-        let newGuess = stripTrailingZero_stripTrailingZero(divide_divide(add_add(stripTrailingZero_stripTrailingZero(divide_divide(x, intPow(guess, nMinusOne), precision + i + 2)), multiply_multiply(guess, nMinusOne)), n, precision + i));
+        let newGuess = stripTrailingZero_stripTrailingZero(divide_divide(add_add(stripTrailingZero_stripTrailingZero(divide_divide(x, intPow(guess, nMinusOne), precision + i + 2)), multiply_multiply(guess, nMinusOne)), n, precision + i + 1));
         difference = stripTrailingZero_stripTrailingZero(abs_abs(subtract_subtract(guess, newGuess)));
-        if (utils_testTolerance(difference, t + i)) {
-            return stripTrailingZero_stripTrailingZero(round_roundOff(newGuess, precision + 2));
-        }
+        // console.log(newGuess)
+        // console.log(difference)
         if (compareTo_greaterThan(difference, lastDifference)) {
-            return stripTrailingZero_stripTrailingZero(round_roundOff(bisectionRoot(x, n, newGuess, precision + 2), precision + 2));
+            return stripTrailingZero_stripTrailingZero(round_roundOff(bisectionRoot(x, n, newGuess, precision + i), precision));
+        }
+        if (utils_testTolerance(difference, precision + i)) {
+            return stripTrailingZero_stripTrailingZero(round_roundOff(newGuess, precision));
         }
         lastDifference = difference;
         guess = stripTrailingZero_stripTrailingZero(newGuess);
@@ -959,8 +959,9 @@ function bisectionRoot(x, n, g, precision = 32) {
     let right = g;
     let v = '0';
     let prevV0 = '0';
+    let i = 4;
     while (true) {
-        v = stripTrailingZero_stripTrailingZero(divide_divide(add_add(left, right), '2', precision + 4));
+        v = stripTrailingZero_stripTrailingZero(divide_divide(add_add(left, right), '2', precision + i));
         let v0 = f0(v, n, x);
         const v1 = f1(v, n);
         if (compareTo_lessThan(multiply_multiply(v0, v1), '0', true)) {
@@ -972,10 +973,11 @@ function bisectionRoot(x, n, g, precision = 32) {
         v0 = abs_abs(v0);
         // console.log(v)
         if (utils_testTolerance(v0, precision) || equals(v0, prevV0)) {
-            return stripTrailingZero_stripTrailingZero(round_roundOff(v, precision + 2));
+            return stripTrailingZero_stripTrailingZero(v);
         }
         // console.log(v)
         prevV0 = v0;
+        i++;
     }
 }
 function inverseSqRoot(number) {
@@ -1001,23 +1003,23 @@ function inverseSqRoot(number) {
 }
 function sqRoot(base, precision = 32) {
     precision = Math.max(precision, 32);
-    return nthRoot(base, '2', precision, precision + 1);
+    return stripTrailingZero_stripTrailingZero(nthRoot(base, '2', precision));
 }
 function cbRoot(base, precision = 32) {
     precision = Math.max(precision, 32);
-    return nthRoot(base, '3', precision, precision + 1);
+    return stripTrailingZero_stripTrailingZero(nthRoot(base, '3', precision));
 }
 function root4(base, precision = 32) {
     precision = Math.max(precision, 32);
-    return sqRoot(sqRoot(base, precision + 4), precision);
+    return stripTrailingZero(sqRoot(sqRoot(base, precision + 4), precision));
 }
 function root5(base, precision = 32) {
     precision = Math.max(precision, 32);
-    return nthRoot(base, '5', precision, precision + 1);
+    return stripTrailingZero(nthRoot(base, '5', precision));
 }
 function root10(base, precision = 32) {
     precision = Math.max(precision, 32);
-    return nthRoot(base, '10', precision, precision + 1);
+    return stripTrailingZero(nthRoot(base, '10', precision));
 }
 
 ;// CONCATENATED MODULE: ./lib/constants.js

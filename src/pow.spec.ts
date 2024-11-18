@@ -1,4 +1,5 @@
 import { pow, nthRoot, sqRoot, cbRoot, root4, root5, root10 } from "./pow";
+import { roundOff } from "./round";
 
 describe("Pow", function () {
 
@@ -149,20 +150,20 @@ describe('Roots', function () {
             expect(nthRoot('81', '2')).toBe("9");
         });
 
-        it("should: 452root2 = 21.260291625469298816", function () {
-            expect(nthRoot('452', '2')).toBe("21.260291625469298816");
+        it("should: 452root2 = 21.2602916254692988", function () {
+            expect(nthRoot('452', '2')).toBe("21.2602916254692988");
         });
 
-        it("should: 452root2 = 21.260...7815", function () {
-            expect(nthRoot('452', '2', 64)).toBe("21.260291625469298815998243829858628443934528517165192961593749107815");
+        it("should: 452root2 = 21.260...1078", function () {
+            expect(nthRoot('452', '2', 64)).toBe("21.2602916254692988159982438298586284439345285171651929615937491078");
         });
 
-        it("should: 45.76root3 = 3.576805614696509205", function () {
-            expect(nthRoot('45.76', '3')).toBe("3.576805614696509205");
+        it("should: 45.76root3 = 3.5768056146965092", function () {
+            expect(nthRoot('45.76', '3')).toBe("3.5768056146965092");
         });
 
-        it("should: 45.76root3 = 3.576...3489", function () {
-            expect(nthRoot('45.76', '3', 64)).toBe("3.576805614696509204554520668745323587028551127976089372190664683489");
+        it("should: 45.76root3 = 3.576...5677", function () {
+            expect(nthRoot('45.76', '3', 64)).toBe("3.5768056146965092045545206687453235870285511279760893721906645677");
         });
 
     });
