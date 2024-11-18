@@ -1,46 +1,11 @@
 import { abs } from "./abs";
 import { add } from "./add";
 import { greaterThan, isExatclyOne, isExatclyZero, lessThan } from "./compareTo";
-import { E } from "./constants";
 import { divide } from "./divide";
 import { multiply } from "./multiply";
 import { roundOff } from "./round";
 import { negate, subtract } from "./subtract";
-
-export function factorial(n: number | string): string {
-
-    n = n.toString();
-
-    validateInteger(n);
-    validatePositive(n);
-
-    if (isExatclyZero(n) || isExatclyOne(n)) {
-        return '1';
-    }
-
-    let result = n;
-
-    while (true) {
-
-        if (isExatclyOne(n)) return result;
-
-        let next = subtract(n, '1');
-        result = multiply(result, next);
-        n = next;
-    }
-}
-
-export function subfactorial(n: number | string): string {
-
-    n = n.toString();
-
-    validateInteger(n);
-    validatePositive(n);
-
-    if (isExatclyZero(n) || isExatclyOne(n)) return '1';
-
-    return roundOff(divide(factorial(n), E))
-}
+import { validateInteger, validatePositive } from "./validators";
 
 export function sigma(n: number | string, limit: number | string, fn: (n: number | string, ...args) => any, ...args: any): string {
 
@@ -92,38 +57,37 @@ export function alternatingSeries(n: number | string, limit: number | string, fn
 
 export function tolerance(precision: number | string) {
     precision = precision.toString();
-    validateInteger(precision);
+    validateInteger(precision.toString());
     if (isExatclyZero(precision)) return '0';
     if (precision[0] == '-') return '1'.padEnd(Number(abs(precision)) + 1, '0');
-    return '0.'.padEnd(Number(abs(precision)) + 2, '0') + '1';
+    return '0.'.padEnd(Number(abs(precision)) + 1, '0') + '1';
 }
 
 export function isAproxZero(number: string | number, precision: number = 8) {
     precision = Math.max(1, precision);
     number = abs(number.toString());
     if (isExatclyZero(number)) return true;
-    if (lessThan(number, tolerance(precision), true)) return true;
+    if (lessThan(number, tolerance(precision - 1), true)) return true;
     return false;
 }
 
-export function isAproxOne(number: string | number, percision: number = 8) {
+export function isAproxOne(number: string, percision: number = 8) {
     percision = Math.max(1, percision)
-    number = abs(number.toString());
+    number = abs(number);
 
     if (isExatclyOne(number)) return true;
-    if (lessThan(abs(subtract('1', number)), tolerance(percision), true)) return true;
+    if (lessThan(abs(subtract('1', number)), tolerance(percision - 1), true)) return true;
 
     return false;
 }
 
 export function sign(number: string) {
-    number = number.toString();
     if (isExatclyZero(number)) return 0;
     return (number[0] == '-') ? -1 : 1;
 }
 
 export function testTolerance(target: string, precision: number) {
-    return RegExp(`^([0]{1}\\.[0]{${precision + 2},}[\\d]{1})`).test(target);
+    return (RegExp(`^([0]{1}\\.[0]{${precision + 2},}[\\d]{1})`).test(target) || target == '0');
 }
 
 export function min(numbers: string[]) {
@@ -166,31 +130,26 @@ export function random(length: number = 32) {
     const n = crypto.getRandomValues(new Uint32Array(length + 10));
     let digits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
     let r = '.'
-    let c = 10;
+    // let c = 10;
 
-    while (c != 0) {
-        let i = Math.floor((n[length - c] / 4294967296) * c);
-        c--;
-        [digits[c], digits[i]] = [digits[i], digits[c]];
-    }
+    // while (c != 0) {
+    //     let i = Math.floor((n[length - c] / 4294967296) * c);
+    //     c--;
+    //     [digits[c], digits[i]] = [digits[i], digits[c]];
+    // }
 
     for (let i = 0; i < length; i++) {
+        let c = 10;
+
+        while (c != 0) {
+            let i = Math.floor((n[length - c] / 4294967296) * c);
+            c--;
+            [digits[c], digits[i]] = [digits[i], digits[c]];
+        }
         r += digits[Math.floor((n[i] / 4294967296) * 10)];
     }
-    
+
     return r;
 };
-
-function validateInteger(number: string) {
-    if (number.includes('.')) {
-        throw new Error('Non-integers not supported');
-    }
-}
-
-function validatePositive(number: string) {
-    if (number[0] == '-') {
-        throw new Error('Negatives not supported');
-    }
-}
 
 

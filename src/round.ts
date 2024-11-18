@@ -6,9 +6,7 @@ import { stripTrailingZero } from './stripTrailingZero';
  * @param n precision
  * @param mode Rounding Mode
  */
-export function roundOff(input: number | string | bigint, n: number = 0, mode = RoundingModes.HALF_EVEN) {
-    if (typeof (input) == 'number' || typeof (input) == 'bigint') input = input.toString();
-
+export function roundOff(input: string, n: number = 0, mode = RoundingModes.HALF_EVEN) {
     if (mode === RoundingModes.UNNECESSARY) {
         let [integers, mantissa] = stripTrailingZero(input.replace('-', '')).split('.');
         if (n > 0 && mantissa) {
@@ -86,7 +84,7 @@ export function roundOff(input: number | string | bigint, n: number = 0, mode = 
 }
 
 function greaterThanFive(part: string, pre: string, neg: boolean, mode: RoundingModes) {
-    if (!part || part === ''.padEnd(part.length + 1, '0'))
+    if (!part || part == ''.padEnd(part.length, '0'))
         return false;
 
     // #region UP, DOWN, CEILING, FLOOR 
@@ -100,7 +98,7 @@ function greaterThanFive(part: string, pre: string, neg: boolean, mode: Rounding
     // #endregion
 
     // case when part !== five
-    let five = '5'.padEnd(part.length + 1, '0');
+    let five = '5'.padEnd(part.length, '0');
     if (part > five)
         return true;
     else if (part < five)
@@ -137,5 +135,4 @@ function increment(part, c: number = 0) {
         s = c + s;
 
     return s
-    // return s.split('').reverse().join('');
 }

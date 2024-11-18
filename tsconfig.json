@@ -2,8 +2,8 @@
     "compilerOptions": {
         "lib": ["es5", "es2015.symbol", "es2015.symbol.wellknown", "es2020", "es2022", "WebWorker"],
         "target": "es2022",
-        "module": "es2022",
-        "moduleResolution": "Node10",
+        // "module": "es2022",
+        // "moduleResolution": "Node10",
         "declaration": true,
         "noImplicitAny": false,
         "outDir": "lib"

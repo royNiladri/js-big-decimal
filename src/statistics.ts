@@ -1,12 +1,16 @@
 import { add } from "./add";
-import { compareTo, isOdd } from "./compareTo";
+import { compareTo, isExatclyOne, isExatclyZero, isOdd } from "./compareTo";
+import { E } from "./constants";
 import { divide } from "./divide";
+import { multiply } from "./multiply";
 import { intPow, sqRoot } from "./pow";
+import { roundOff } from "./round";
 import { subtract } from "./subtract";
 import { max } from "./utils";
+import { validateArray, validateInteger, validatePositive } from "./validators";
 
 export function mean(numbers: string[]) {
-    if (numbers.length === 0) throw Error('[Mean]: Empty array.');
+    validateArray(numbers, 'mean');
     if (numbers.length === 1) return numbers[0];
     return divide(numbers.reduce((prev, curr) => {
         return add(prev, curr);
@@ -14,21 +18,21 @@ export function mean(numbers: string[]) {
 };
 
 export function median(numbers: string[]) {
-    if (numbers.length === 0) throw Error('[Median]: Empty array.');
+    validateArray(numbers, 'median');
     if (numbers.length === 1) return numbers[0];
 
     const n = numbers.length.toString();
     numbers = numbers.sort((a, b) => compareTo(a, b));
 
-    if (isOdd(n)) return numbers[parseInt(divide(add(n, '1'), 2))];
+    if (isOdd(n)) return numbers[parseInt(divide(add(n, '1'), '2'))];
 
-    let n0 = numbers[parseInt(divide(n, 2))];
-    let n1 = numbers[parseInt(add(divide(n, 2), '1'))];
-    return divide(add(n0, n1), 2);
+    let n0 = numbers[parseInt(divide(n, '2'))];
+    let n1 = numbers[parseInt(add(divide(n, '2'), '1'))];
+    return divide(add(n0, n1), '2');
 };
 
 export function mode(numbers: string[], last: boolean = false) {
-    if (numbers.length === 0) throw Error('[Mode]: Empty array.');
+    validateArray(numbers, 'mode');
     if (numbers.length === 1) return numbers[0];
     
     numbers = numbers.sort((a, b) => compareTo(a, b));
@@ -53,7 +57,7 @@ export function mode(numbers: string[], last: boolean = false) {
 };
 
 export function variance(numbers: string[]) {
-    if (numbers.length === 0) throw Error('[Variance]: Empty array.');
+    validateArray(numbers, 'variance');
     if (numbers.length === 1) return '0';
 
     const m = mean(numbers);
@@ -66,8 +70,37 @@ export function variance(numbers: string[]) {
 };
 
 export function stdDv(numbers: string[]) {
-    if (numbers.length === 0) throw Error('[Standard Deviation]: Empty array.');
+    validateArray(numbers, 'stdDv');
     if (numbers.length === 1) return '0';
     return sqRoot(variance(numbers));
 };
+
+export function factorial(n: string): string {
+    validateInteger(n, 'factorial');
+    validatePositive(n, 'factorial');
+
+    if (isExatclyZero(n) || isExatclyOne(n)) {
+        return '1';
+    }
+
+    let result = n;
+
+    while (true) {
+
+        if (isExatclyOne(n)) return result;
+
+        let next = subtract(n, '1');
+        result = multiply(result, next);
+        n = next;
+    }
+}
+
+export function subfactorial(n: string): string {
+    validateInteger(n, 'subfactorial');
+    validatePositive(n, 'subfactorial');
+
+    if (isExatclyZero(n) || isExatclyOne(n)) return '1';
+
+    return roundOff(divide(factorial(n), E))
+}
 

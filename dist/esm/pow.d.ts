@@ -36,13 +36,13 @@
  * console.log(pow(2, 1)) // Prints '2'
  * ```
  */
-export declare function pow(base: number | string, exponent: number | string, precision?: number | undefined, negate?: boolean | undefined): string;
+export declare function pow(base: string, exponent: string, precision?: number, negate?: boolean): string;
 export declare function intPow(base: string, exponent: string): string;
-export declare function nthRoot(x: number | string, n: number | string, precision?: number, t?: number): string;
+export declare function nthRoot(x: string, n: string, precision?: number, t?: number): string;
 export declare function bisectionRoot(x: string, n: string, g: string, precision?: number): string;
 export declare function inverseSqRoot(number: string): string;
-export declare function sqRoot(base: string | number, precision?: number): string;
-export declare function cbRoot(base: string | number, precision?: number): string;
-export declare function root4(base: string | number, precision?: number): string;
-export declare function root5(base: string | number, precision?: number): string;
-export declare function root10(base: string | number, precision?: number): string;
+export declare function sqRoot(base: string, precision?: number): string;
+export declare function cbRoot(base: string, precision?: number): string;
+export declare function root4(base: string, precision?: number): string;
+export declare function root5(base: string, precision?: number): string;
+export declare function root10(base: string, precision?: number): string;

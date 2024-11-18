@@ -4,39 +4,18 @@ import { multiply } from './multiply';
 import { negate, subtract } from './subtract';
 import { RoundingModes } from './roundingModes';
 import { abs } from './abs';
+import { validateDivideByZero } from './validators';
+import { stripTrailingZero } from './stripTrailingZero';
 
-export function modulusE(n: number | string, base: number | string = 1, precision: number | undefined = undefined) {
-    
-    if (base == 0) {
-        throw new Error('Cannot divide by 0');
-    }
-
-    n = n.toString();
-    base = base.toString();
-  
-    validate(base);
-
-    return subtract(n, multiply(base, roundOff(divide(n, base, precision), 0, RoundingModes.FLOOR)));
+export function modulusE(n: string, base: string = '1', precision: number = 64) {
+    validateDivideByZero(base, 'modulus');
+    return stripTrailingZero(roundOff(subtract(n, multiply(base, roundOff(divide(n, base, precision + 1), 0, RoundingModes.FLOOR))), precision));
 }
 
-export function modulus(dividend: number | string, divisor: number | string = 1, precision: number | undefined = undefined) {
-    if (divisor == 0) {
-        throw new Error('Cannot divide by 0');
-    }
-
-    dividend = dividend.toString();
-    divisor = divisor.toString();
-
-    validate(divisor);
-
-    const result = modulusE(abs(dividend), abs(divisor), precision);
-    return (dividend.includes('-')) ? negate(result) : result;
-}
-
-function validate(oparand: string) {
-    if (oparand.includes('.')) {
-        throw new Error('Modulus of non-integers not supported');
-    }
+export function modulus(n: string, base: string = '1', precision: number = 64) {
+    validateDivideByZero(base, 'modulus');
+    const result = modulusE(abs(n), abs(base), precision);
+    return stripTrailingZero((n.includes('-')) ? negate(result) : result);
 }
 
 

@@ -1,22 +1,17 @@
 import { isExatclyZero } from "./compareTo";
 import { stripTrailingZero } from "./stripTrailingZero"
 
-export function multiply(number1, number2) {
-	number1 = number1.toString();
-	number2 = number2.toString();
+export function multiply(number1: string, number2: string) {
+	let negativeNumber1 = '';
+	let negativeNumber2 = '';
+	let negativeResult = '';
 
-	let negativeNumber1: string = '';
-	let negativeNumber2: string = '';
-	let negativeResult: string = '';
-
-
-	/*Filter numbers*/
 	if (number1[0] == '-') {
-		number1 = number1.substr(1);
+		number1 = number1.substring(1);
 		negativeNumber1 = '-';
 	}
 	if (number2[0] == '-') {
-		number2 = number2.substr(1);
+		number2 = number2.substring(1);
 		negativeNumber2 = '-';
 	}
 
@@ -57,5 +52,5 @@ export function multiply(number1, number2) {
 		result = (result.slice(0, decimalLength) || '0') + '.' + result.slice(decimalLength);
 	}
 
-	return negativeResult + result;
+	return stripTrailingZero(negativeResult + result);
 }

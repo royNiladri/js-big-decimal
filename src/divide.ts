@@ -1,15 +1,17 @@
+import { abs } from './abs';
+import { equals } from './compareTo';
+import { multiply } from './multiply';
 import { roundOff } from './round';
 
-export function divide(dividend: string | number, divisor: string | number, precission: number = 8) {
-    // Convert to string
-    if (typeof dividend == 'number' || typeof divisor == 'number') {
-        dividend = dividend.toString();
-        divisor = divisor.toString();
-    }
+export function divide(dividend: string, divisor: string, precission: number = 8) {
 
     // Return 0 
     if (divisor == '0') {
         return '0' + (!precission) ? '' : '.' + new Array(precission).join('0');
+    }
+
+    if (equals(abs(divisor), '1')) {
+        return multiply(dividend, divisor);
     }
 
     // precission = precission + 2;
@@ -28,11 +30,13 @@ export function divide(dividend: string | number, divisor: string | number, prec
     if (dividend[0] == '-') {
         dividend = dividend.substring(1);
         negativeDividend = '-'
+        dividendIndex--;
     }
 
     if (divisor[0] == '-') {
         divisor = divisor.substring(1);
-        negativeDivisor = '-'
+        negativeDivisor = '-';
+        divisorIndex--;
     }
 
     if (negativeDividend !== negativeDivisor) negativeResult = '-';
@@ -54,7 +58,7 @@ export function divide(dividend: string | number, divisor: string | number, prec
         if (divisor.includes('.')) {
             if (findNegativeOffset.test(divisor))
                 divisorIndex = -(divisor.replace(findNegativeOffset, '$1').length)
-            else  if (divisor[0] == '0')
+            else if (divisor[0] == '0')
                 divisorIndex = divisor.indexOf('.') - 1
             else divisorIndex = divisor.indexOf('.');
             divisor = divisor.substring(0, divisor.indexOf('.')) + divisor.substring(divisor.indexOf('.') + 1);
@@ -81,14 +85,16 @@ export function divide(dividend: string | number, divisor: string | number, prec
                 resultIndex++
             else if (Math.sign(dividendIndex) >= 0 && dividendInt > (divisorInt * paddingInt)) resultIndex++;
         } else {
-            resultIndex++;
+            if ((dividendInt * paddingInt) > divisorInt) resultIndex++;
         }
         return roundOff(negativeResult + (result.substring(0, resultIndex) || '0') + '.' + result.substring(resultIndex), precission)
     }
 
     if (resultIndex < 0) {
         if (intDifference > 0) {
-            if (Math.sign(dividendIndex) == Math.sign(divisorIndex) && (dividendInt * paddingInt) > divisorInt) resultIndex++;
+            if (Math.sign(dividendIndex) == Math.sign(divisorIndex) && dividendInt > (divisorInt * paddingInt))
+                resultIndex++
+            else if (Math.sign(dividendIndex) >= 0 && dividendInt > (divisorInt * paddingInt)) resultIndex++;
         } else {
             if ((dividendInt * paddingInt) > divisorInt) resultIndex++;
         }
@@ -100,11 +106,12 @@ export function divide(dividend: string | number, divisor: string | number, prec
             resultIndex++
             return roundOff(negativeResult + (result.substring(0, resultIndex) || '0') + '.' + result.substring(resultIndex), precission);
         }
-        if (intDifference < 0 && (dividendInt * paddingInt) > divisorInt) {
+        if (intDifference <= 0 && (dividendInt * paddingInt) > divisorInt) {
             resultIndex++
             return roundOff(negativeResult + (result.substring(0, resultIndex) || '0') + '.' + result.substring(resultIndex), precission);
         }
-        if (dividendInt > (divisorInt) || dividendInt == divisorInt) {
+
+        if (dividendInt == divisorInt) {
             resultIndex++
             return roundOff(negativeResult + (result.substring(0, resultIndex) || '0') + '.' + result.substring(resultIndex), precission);
         }

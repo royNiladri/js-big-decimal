@@ -14,7 +14,7 @@ describe("multiply", function () {
       //if(divisor==0)
       //continue;
       let jsOut = dividend * divisor;
-      let myOut = parseFloat(multiply(dividend, divisor));
+      let myOut = parseFloat(multiply(dividend.toString(), divisor.toString()));
       if (Math.abs(jsOut - myOut) > 0.001) {
         //console.log(`${dividend}/${divisor} = ${jsOut} != ${myOut}`);
         err++;

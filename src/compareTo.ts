@@ -26,10 +26,11 @@ export function compareTo(number1: string, number2: string) {
 	if (number1.length > number2.length) return parseInt(negative + '1');
 	if (number1.length < number2.length) return (negative) ? 1 : -1;
 
-	[number1, number2] = [negative + number1, negative + number2]
-
-	return number1.localeCompare(number2, undefined, { numeric: true })
-
+	const n1 = BigInt(negative + number1)
+	const n2 = BigInt(negative + number2)
+	if(n1 < n2) return -1;
+	if(n1 > n2) return 1;
+	return 0;
 }
 
 // Wrapper functions

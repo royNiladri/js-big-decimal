@@ -9,11 +9,11 @@ import { subtract, negate } from "./subtract";
 import { RoundingModes as Modes, RoundingModes } from "./roundingModes";
 import { stripTrailingZero } from "./stripTrailingZero";
 import { cbRoot, pow, sqRoot } from "./pow";
-import { clamp, factorial, invlerp, lerp, max, min, random, sign, step, subfactorial } from "./utils";
+import { clamp, invlerp, lerp, max, min, random, sign, step } from "./utils";
 import { acos, asin, atan, atan2, cos, cosh, hypot, sin, sinh, tan, tanh } from "./trig";
 import { log, ln2, log10, exp, expm1 } from "./logarithm";
-import { E, LN10, LN2, LOG2E, LOG10E } from "./constants";
-import { mean, median, mode, stdDv, variance } from "./statistics";
+import { E, LN10, LN2, LOG2E, LOG10E, PI, PI2, PI_DIV_2, PI_DIV_4 } from "./constants";
+import { factorial, mean, median, mode, stdDv, subfactorial, variance } from "./statistics";
 
 class bigDecimal {
   private value: string;
@@ -262,25 +262,11 @@ class bigDecimal {
 
   // Logarithms
 
-  static get E() {
-    return E;
-  }
-
-  static get LN2(){
-    return LN2
-  }
-
-  static get LN10(){
-    return LN10
-  }
-
-  static get LOG2E(){
-    return LOG2E
-  }
-
-  static get LOG10E(){
-    return LOG10E
-  }
+  static readonly E = E
+  static readonly LN2 = LN2
+  static readonly LN10 = LN10
+  static readonly LOG2E = LOG2E
+  static readonly LOG10E = LOG10E
 
   static log2(number: number|string){
     number = bigDecimal.validate(number);
@@ -313,6 +299,11 @@ class bigDecimal {
   }
 
   // Trig
+  static readonly PI = PI;
+  static readonly PI2 = PI2;
+  static readonly PI_DIV_2 = PI_DIV_2;
+  static readonly PI_DIV_4 = PI_DIV_4;
+
   static hypot(a: number|string, b: number|string){
     a = bigDecimal.validate(a);
     b = bigDecimal.validate(b);
@@ -397,6 +388,16 @@ class bigDecimal {
   static stdDv(numbers: number[]|string[]): string {
     numbers = numbers.map(number => bigDecimal.validate(number));
     return stdDv(numbers);
+  }
+
+  static factorial(number: number|string): string {
+    number = bigDecimal.validate(number);
+    return factorial(number);
+  }
+  
+  static subfactorial(number: number|string): string {
+    number = bigDecimal.validate(number);
+    return subfactorial(number);
   }
 
   // Comparisons
@@ -510,16 +511,6 @@ class bigDecimal {
     y = bigDecimal.validate(y);
     a = bigDecimal.validate(a);
     return invlerp(x, y, a);
-  }
-
-  static factorial(number: number|string): string {
-    number = bigDecimal.validate(number);
-    return factorial(number);
-  }
-  
-  static subfactorial(number: number|string): string {
-    number = bigDecimal.validate(number);
-    return subfactorial(number);
   }
 
   static stripTrailingZero(number) {
