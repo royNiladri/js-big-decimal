@@ -718,10 +718,10 @@ function pow(base, exponent, precision = 32, negate$1 = false) {
                         fractionalExponent = multiply(fractionalExponent, nthRoot(tempBase, '2', minPrecision + i + 1)); // 5
                         break;
                     case '3':
-                        fractionalExponent = multiply(fractionalExponent, nthRoot(tempBase, '3', minPrecision + i + 1));
+                        fractionalExponent = multiply(fractionalExponent, intPow(nthRoot(tempBase, '10', minPrecision + i + 1), '3')); // 1 * 3 = 3
                         break;
                     case '1':
-                        fractionalExponent = multiply(fractionalExponent, nthRoot(nthRoot(tempBase, '5', minPrecision + i + 2), '2', minPrecision + i + 1)); // 2 / 2 = 1
+                        fractionalExponent = multiply(fractionalExponent, nthRoot(tempBase, '10', minPrecision + i + 1)); // 2 / 2 = 1
                         break;
                 }
             }
@@ -742,7 +742,7 @@ function pow(base, exponent, precision = 32, negate$1 = false) {
                 }
             }
             if (i < exponentSignificand.length - 1)
-                tempBase = nthRoot(nthRoot(tempBase, '5', minPrecision + i + 2), '2', minPrecision + i + 1);
+                tempBase = nthRoot(tempBase, '10', minPrecision + i + 2);
         }
         // console.log(fractionalExponent)
         return finalize(multiply(result, fractionalExponent));
