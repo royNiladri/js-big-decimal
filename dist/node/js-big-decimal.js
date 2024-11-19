@@ -524,38 +524,42 @@ function divide_divide(dividend, divisor, precission = 8) {
     const intDifference = dividend.length - divisor.length;
     const paddingInt = BigInt('1'.padEnd(Math.abs(intDifference) + 1, '0'));
     let result = ((dividendInt * precisionInt) / divisorInt).toString();
+    // console.log('resultIndex', resultIndex)
+    // console.log('intDifference', intDifference)
     if (resultIndex > 0) {
         if (intDifference > 0) {
-            if (Math.sign(dividendIndex) == Math.sign(divisorIndex) && dividendInt > (divisorInt * paddingInt))
+            // console.log('dividendInt', dividendInt)
+            // console.log('divisorInt', (divisorInt * paddingInt))
+            if (Math.sign(dividendIndex) == Math.sign(divisorIndex) && dividendInt >= (divisorInt * paddingInt))
                 resultIndex++;
-            else if (Math.sign(dividendIndex) >= 0 && dividendInt > (divisorInt * paddingInt))
+            else if (Math.sign(dividendIndex) >= 0 && dividendInt >= (divisorInt * paddingInt))
                 resultIndex++;
         }
         else {
-            if ((dividendInt * paddingInt) > divisorInt)
+            if ((dividendInt * paddingInt) >= divisorInt)
                 resultIndex++;
         }
         return round_roundOff(negativeResult + (result.substring(0, resultIndex) || '0') + '.' + result.substring(resultIndex), precission);
     }
     if (resultIndex < 0) {
         if (intDifference > 0) {
-            if (Math.sign(dividendIndex) == Math.sign(divisorIndex) && dividendInt > (divisorInt * paddingInt))
+            if (Math.sign(dividendIndex) == Math.sign(divisorIndex) && dividendInt >= (divisorInt * paddingInt))
                 resultIndex++;
-            else if (Math.sign(dividendIndex) >= 0 && dividendInt > (divisorInt * paddingInt))
+            else if (Math.sign(dividendIndex) >= 0 && dividendInt >= (divisorInt * paddingInt))
                 resultIndex++;
         }
         else {
-            if ((dividendInt * paddingInt) > divisorInt)
+            if ((dividendInt * paddingInt) >= divisorInt)
                 resultIndex++;
         }
         return round_roundOff(negativeResult + '0.'.padEnd(Math.abs(resultIndex) + 2, '0') + result, precission);
     }
     if (resultIndex == 0) {
-        if (intDifference > 0 && dividendInt > (divisorInt * paddingInt)) {
+        if (intDifference > 0 && dividendInt >= (divisorInt * paddingInt)) {
             resultIndex++;
             return round_roundOff(negativeResult + (result.substring(0, resultIndex) || '0') + '.' + result.substring(resultIndex), precission);
         }
-        if (intDifference <= 0 && (dividendInt * paddingInt) > divisorInt) {
+        if (intDifference <= 0 && (dividendInt * paddingInt) >= divisorInt) {
             resultIndex++;
             return round_roundOff(negativeResult + (result.substring(0, resultIndex) || '0') + '.' + result.substring(resultIndex), precission);
         }
@@ -837,8 +841,9 @@ function pow(base, exponent, precision = 32, negate = false) {
     const exponentSignificand = exponentParts[1];
     let fractionalExponent = '1';
     let result = '1';
-    if (equals(abs_abs(base), '10')) {
-        result = (negativeExponent) ? utils_tolerance(add_add(exponentParts[0], '1')) : utils_tolerance('-' + exponentParts[0]);
+    if (equals(abs_abs(base), '10') && !exponentSignificand) {
+        result = utils_tolerance(subtract_negate(exponentParts[0]));
+        return (negativeBase) ? '-' + result : result;
     }
     else {
         result = intPow(base, abs_abs(exponentParts[0]));
@@ -1261,9 +1266,9 @@ function median(numbers) {
     const n = numbers.length.toString();
     numbers = numbers.sort((a, b) => compareTo(a, b));
     if (isOdd(n))
-        return numbers[parseInt(divide_divide(add_add(n, '1'), '2'))];
-    let n0 = numbers[parseInt(divide_divide(n, '2'))];
-    let n1 = numbers[parseInt(add_add(divide_divide(n, '2'), '1'))];
+        return numbers[parseInt(subtract_subtract(divide_divide(add_add(n, '1'), '2', 0), '1'))];
+    let n0 = numbers[parseInt(subtract_subtract(divide_divide(n, '2'), '1'))];
+    let n1 = numbers[parseInt(divide_divide(n, '2'))];
     return divide_divide(add_add(n0, n1), '2');
 }
 ;
@@ -1439,7 +1444,6 @@ class bigDecimal {
     }
     static round(number, precision = 0, mode = RoundingModes.HALF_EVEN) {
         number = bigDecimal.validate(number);
-        // console.log(number)
         if (isNaN(precision))
             throw Error("Precision is not a number: " + precision);
         return round_roundOff(number, precision, mode);

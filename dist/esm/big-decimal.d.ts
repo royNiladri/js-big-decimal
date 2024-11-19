@@ -12,9 +12,9 @@ declare class bigDecimal {
     round(precision?: number, mode?: Modes): bigDecimal;
     static abs(number: any): string;
     abs(): bigDecimal;
-    static floor(number: any): any;
+    static floor(number: any): string;
     floor(): bigDecimal;
-    static ceil(number: any): any;
+    static ceil(number: any): string;
     ceil(): bigDecimal;
     static add(number1: any, number2: any): string;
     add(number: bigDecimal): bigDecimal;
@@ -30,7 +30,7 @@ declare class bigDecimal {
     modulusE(number: bigDecimal): bigDecimal;
     static negate(number: any): string;
     negate(): bigDecimal;
-    static pow(base: number | string, exponent: number | string, precision?: number | undefined): string;
+    static pow(base: number | string, exponent: number | string, precision?: number): string;
     pow(exponent: bigDecimal): bigDecimal;
     static get SQRT1_2(): string;
     static get SQRT2(): string;
@@ -83,8 +83,8 @@ declare class bigDecimal {
     gt(number: bigDecimal): boolean;
     static geq(number1: number | string, number2: number | string): boolean;
     geq(number: bigDecimal): boolean;
-    static sign(number: number | string): 0 | 1 | -1;
-    sign(): 0 | 1 | -1;
+    static sign(number: number | string): number;
+    sign(): number;
     static min(numbers: string[]): string;
     static max(numbers: string[]): string;
     static clamp(number: string, min?: string, max?: string): string;

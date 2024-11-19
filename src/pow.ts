@@ -78,8 +78,9 @@ export function pow(base: string, exponent: string, precision: number = 32, nega
     let fractionalExponent = '1';
     let result: string = '1';
 
-    if (equals(abs(base), '10')) {
-        result = (negativeExponent) ? tolerance(add(exponentParts[0], '1')) : tolerance('-' + exponentParts[0]);
+    if (equals(abs(base), '10') && !exponentSignificand) {
+        result = tolerance(negateFn(exponentParts[0]));
+        return (negativeBase) ? '-' + result : result;
     } else {
         result = intPow(base, abs(exponentParts[0]))
     }

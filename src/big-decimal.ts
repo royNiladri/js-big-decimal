@@ -105,9 +105,8 @@ class bigDecimal {
     return bigDecimal.getPrettyValue(this.value, digits, separator);
   }
 
-  static round(number, precision = 0, mode = Modes.HALF_EVEN) {
+  static round(number, precision = 0, mode = Modes.HALF_EVEN): string {
     number = bigDecimal.validate(number);
-    // console.log(number)
     if (isNaN(precision))
       throw Error("Precision is not a number: " + precision);
     return roundOff(number, precision, mode);
@@ -120,7 +119,7 @@ class bigDecimal {
     return new bigDecimal(roundOff(this.value, precision, mode));
   }
 
-  static abs(number) {
+  static abs(number): string {
     number = bigDecimal.validate(number);
     return abs(number);
   }
@@ -129,7 +128,7 @@ class bigDecimal {
     return new bigDecimal(abs(this.value));
   }
 
-  static floor(number) {
+  static floor(number): string {
     number = bigDecimal.validate(number);
     if (number.indexOf(".") === -1) return number;
     return bigDecimal.round(number, 0, RoundingModes.FLOOR);
@@ -140,7 +139,7 @@ class bigDecimal {
     return new bigDecimal(this.value).round(0, RoundingModes.FLOOR);
   }
 
-  static ceil(number) {
+  static ceil(number): string {
     number = bigDecimal.validate(number);
     if (number.indexOf(".") === -1) return number;
     return bigDecimal.round(number, 0, RoundingModes.CEILING);
@@ -151,7 +150,7 @@ class bigDecimal {
     return new bigDecimal(this.value).round(0, RoundingModes.CEILING);
   }
 
-  static add(number1, number2) {
+  static add(number1, number2): string {
     number1 = bigDecimal.validate(number1);
     number2 = bigDecimal.validate(number2);
     return add(number1, number2);
@@ -161,7 +160,7 @@ class bigDecimal {
     return new bigDecimal(add(this.value, number.getValue()));
   }
 
-  static subtract(number1, number2) {
+  static subtract(number1, number2): string {
     number1 = bigDecimal.validate(number1);
     number2 = bigDecimal.validate(number2);
     return subtract(number1, number2);
@@ -171,7 +170,7 @@ class bigDecimal {
     return new bigDecimal(subtract(this.value, number.getValue()));
   }
 
-  static multiply(number1, number2) {
+  static multiply(number1, number2): string {
     number1 = bigDecimal.validate(number1);
     number2 = bigDecimal.validate(number2);
     return multiply(number1, number2);
@@ -181,7 +180,7 @@ class bigDecimal {
     return new bigDecimal(multiply(this.value, number.getValue()));
   }
 
-  static divide(number1, number2, precision?: number) {
+  static divide(number1, number2, precision?: number): string {
     number1 = bigDecimal.validate(number1);
     number2 = bigDecimal.validate(number2);
     return divide(number1, number2, precision);
@@ -222,7 +221,7 @@ class bigDecimal {
 
   // Powers
 
-  static pow(base: number|string, exponent: number|string, precision: number | undefined = 32) {
+  static pow(base: number|string, exponent: number|string, precision: number = 32): string {
     base = bigDecimal.validate(base);
     exponent = bigDecimal.validate(exponent);
     return pow(base, exponent, precision);
@@ -234,11 +233,11 @@ class bigDecimal {
 
   // Roots
 
-  static get SQRT1_2() {
+  static get SQRT1_2(): string {
     return sqRoot('.5');
   }
 
-  static get SQRT2() {
+  static get SQRT2(): string {
     return sqRoot('2');
   }
 
@@ -268,22 +267,22 @@ class bigDecimal {
   static readonly LOG2E = LOG2E
   static readonly LOG10E = LOG10E
 
-  static log2(number: number|string){
+  static log2(number: number|string): string{
     number = bigDecimal.validate(number);
     return ln2(number)
   }  
 
-  static log10(number: number|string){
+  static log10(number: number|string): string{
     number = bigDecimal.validate(number);
     return log10(number)
   }
 
-  static log1p(number: number|string){
+  static log1p(number: number|string): string{
     number = bigDecimal.validate(number);
     return log(add('1', number))
   }
 
-  static log(number: number|string){
+  static log(number: number|string): string{
     number = bigDecimal.validate(number);
     return log(number)
   }
@@ -304,7 +303,7 @@ class bigDecimal {
   static readonly PI_DIV_2 = PI_DIV_2;
   static readonly PI_DIV_4 = PI_DIV_4;
 
-  static hypot(a: number|string, b: number|string){
+  static hypot(a: number|string, b: number|string): string{
     a = bigDecimal.validate(a);
     b = bigDecimal.validate(b);
 
@@ -401,88 +400,88 @@ class bigDecimal {
   }
 
   // Comparisons
-  static compareTo(number1: number|string, number2: number|string) {
+  static compareTo(number1: number|string, number2: number|string): number {
     number1 = bigDecimal.validate(number1);
     number2 = bigDecimal.validate(number2);
     return compareTo(number1, number2);
   }
 
-  compareTo(number: bigDecimal) {
+  compareTo(number: bigDecimal): number {
     return compareTo(this.value, number.getValue());
   }
 
-  static equals(number1: number|string, number2: number|string){
+  static equals(number1: number|string, number2: number|string): boolean{
     number1 = bigDecimal.validate(number1);
     number2 = bigDecimal.validate(number2);
     return equals(number1, number2);
   }
 
-  equals(number: bigDecimal){
+  equals(number: bigDecimal): boolean{
     return equals(this.value, number.getValue());
   }
 
-  static lt(number1: number|string, number2: number|string){
+  static lt(number1: number|string, number2: number|string): boolean{
     number1 = bigDecimal.validate(number1);
     number2 = bigDecimal.validate(number2);
     return lessThan(number1, number2);
   }
 
-  lt(number: bigDecimal){
+  lt(number: bigDecimal): boolean{
     return lessThan(this.value, number.getValue());
   }
 
-  static leq(number1: number|string, number2: number|string){
+  static leq(number1: number|string, number2: number|string): boolean{
     number1 = bigDecimal.validate(number1);
     number2 = bigDecimal.validate(number2);
     return lessThan(number1, number2, true);
   }
 
-  leq(number: bigDecimal){
+  leq(number: bigDecimal): boolean{
     return lessThan(this.value, number.getValue(), true);
   }
 
-  static gt(number1: number|string, number2: number|string){
+  static gt(number1: number|string, number2: number|string): boolean{
     number1 = bigDecimal.validate(number1);
     number2 = bigDecimal.validate(number2);
     return greaterThan(number1, number2);
   }
 
-  gt(number: bigDecimal){
+  gt(number: bigDecimal): boolean{
     return greaterThan(this.value, number.getValue());
   }
 
-  static geq(number1: number|string, number2: number|string){
+  static geq(number1: number|string, number2: number|string): boolean{
     number1 = bigDecimal.validate(number1);
     number2 = bigDecimal.validate(number2);
     return greaterThan(number1, number2, true);
   }
 
-  geq(number: bigDecimal){
+  geq(number: bigDecimal): boolean{
     return greaterThan(this.value, number.getValue(), true);
   }
 
-  static sign(number: number|string){
+  static sign(number: number|string): number{
     number = bigDecimal.validate(number);
     return sign(number);
   }
 
-  sign(){
+  sign(): number{
     return sign(this.value);
   }
 
   // Misc.
 
-  static min(numbers: string[]){
+  static min(numbers: string[]): string {
     numbers = numbers.map(number => bigDecimal.validate(number));
     return min(numbers);
   }
 
-  static max(numbers: string[]){
+  static max(numbers: string[]): string {
     numbers = numbers.map(number => bigDecimal.validate(number));
     return max(numbers);
   }
 
-  static clamp(number: string, min:string = '0', max:string = '1'){
+  static clamp(number: string, min:string = '0', max:string = '1'): string {
     number = bigDecimal.validate(number);
     min = bigDecimal.validate(min);
     max = bigDecimal.validate(max);
@@ -493,32 +492,32 @@ class bigDecimal {
     return new bigDecimal(clamp(this.value, min.value, max.value));
   }
 
-  static step(number: string, s: string = number){
+  static step(number: string, s: string = number): string{
     number = bigDecimal.validate(number);
     s = bigDecimal.validate(s);
     return step(number, s);
   }
 
-  static lerp(x: string, y: string, a: string = '1'){
+  static lerp(x: string, y: string, a: string = '1'): string{
     x = bigDecimal.validate(x);
     y = bigDecimal.validate(y);
     a = bigDecimal.validate(a);
     return lerp(x, y, a);
   }
 
-  static invlerp(x: string, y: string, a: string = x){
+  static invlerp(x: string, y: string, a: string = x): string{
     x = bigDecimal.validate(x);
     y = bigDecimal.validate(y);
     a = bigDecimal.validate(a);
     return invlerp(x, y, a);
   }
 
-  static stripTrailingZero(number) {
+  static stripTrailingZero(number): string {
     number = bigDecimal.validate(number);
     return stripTrailingZero(number);
   }
   
-  static random(length: number = 32) {
+  static random(length: number = 32): string {
     return random(length);
   }
 

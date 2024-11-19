@@ -1,8 +1,8 @@
 import { multiply } from "./multiply";
 
 describe("multiply", function () {
-  xit("STRESS TEST - should return correct result", function () {
-    let count = 100,
+  it("STRESS TEST - should return correct result", function () {
+    let count = 10000,
       err = 0;
     while (count-- > 0) {
       let dividend = Math.round(
