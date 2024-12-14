@@ -81,45 +81,31 @@ export function divide(dividend: string, divisor: string, precission: number = 8
     // console.log('resultIndex', resultIndex)
     // console.log('intDifference', intDifference)
 
-    if (resultIndex > 0) {
-        if (intDifference > 0) {
-            // console.log('dividendInt', dividendInt)
-            // console.log('divisorInt', (divisorInt * paddingInt))
-
-            if (Math.sign(dividendIndex) == Math.sign(divisorIndex) && dividendInt >= (divisorInt * paddingInt))
-                resultIndex++
-            else if (Math.sign(dividendIndex) >= 0 && dividendInt >= (divisorInt * paddingInt)) resultIndex++;
-        } else {
-            if ((dividendInt * paddingInt) >= divisorInt) resultIndex++;
-        }
-        return roundOff(negativeResult + (result.substring(0, resultIndex) || '0') + '.' + result.substring(resultIndex), precission)
-    }
-
-    if (resultIndex < 0) {
-        if (intDifference > 0) {
-            if (Math.sign(dividendIndex) == Math.sign(divisorIndex) && dividendInt >= (divisorInt * paddingInt))
-                resultIndex++
-            else if (Math.sign(dividendIndex) >= 0 && dividendInt >= (divisorInt * paddingInt)) resultIndex++;
-        } else {
-            if ((dividendInt * paddingInt) >= divisorInt) resultIndex++;
-        }
-        return roundOff(negativeResult + '0.'.padEnd(Math.abs(resultIndex) + 2, '0') + result, precission);
-    }
-
     if (resultIndex == 0) {
-        if (intDifference > 0 && dividendInt >= (divisorInt * paddingInt)) {
-            resultIndex++
-            return roundOff(negativeResult + (result.substring(0, resultIndex) || '0') + '.' + result.substring(resultIndex), precission);
-        }
-        if (intDifference <= 0 && (dividendInt * paddingInt) >= divisorInt) {
-            resultIndex++
-            return roundOff(negativeResult + (result.substring(0, resultIndex) || '0') + '.' + result.substring(resultIndex), precission);
-        }
+        let intBasis = intDifference > 0;
 
-        if (dividendInt == divisorInt) {
+        if (intBasis && dividendInt >= (divisorInt * paddingInt)) {
             resultIndex++
-            return roundOff(negativeResult + (result.substring(0, resultIndex) || '0') + '.' + result.substring(resultIndex), precission);
+        } else if (!intBasis && (dividendInt * paddingInt) >= divisorInt) {
+            resultIndex++
+        } else if (dividendInt == divisorInt) {
+            resultIndex++
         }
         return roundOff(negativeResult + (result.substring(0, resultIndex) || '0') + '.' + result.substring(resultIndex), precission)
     }
+
+    if (intDifference > 0) {
+        if (Math.sign(dividendIndex) == Math.sign(divisorIndex) && dividendInt >= (divisorInt * paddingInt))
+            resultIndex++
+        else if (Math.sign(dividendIndex) >= 0 && dividendInt >= (divisorInt * paddingInt)) resultIndex++;
+    } else {
+        if ((dividendInt * paddingInt) >= divisorInt) resultIndex++;
+    }
+
+    if (resultIndex > 0) {
+        return roundOff(negativeResult + (result.substring(0, resultIndex) || '0') + '.' + result.substring(resultIndex), precission)
+    }
+
+    return roundOff(negativeResult + '0.'.padEnd(Math.abs(resultIndex) + 2, '0') + result, precission);
+
 }
