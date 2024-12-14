@@ -576,12 +576,12 @@ function subtract_negate(number) {
 ;// CONCATENATED MODULE: ./lib/validators.js
 
 
-function validators_validateInteger(number, label) {
+function validateInteger(number, label) {
     if (number.includes('.')) {
         throw Error(`${(label) ? `[${label}]: ` : ''}Non-integers not supported`);
     }
 }
-function validators_validatePositive(number, label) {
+function validatePositive(number, label) {
     if (number[0] == '-') {
         throw Error(`${(label) ? `[${label}]: ` : ''}Negatives not supported`);
     }
@@ -635,43 +635,10 @@ function modulus(n, base = '1', precision = 64) {
 
 
 
-function sigma(n, limit, fn, ...args) {
-    n = n.toString();
-    limit = limit.toString();
-    validateInteger(n);
-    validateInteger(limit);
-    validatePositive(n);
-    validatePositive(limit);
-    let result = '0';
-    while (greaterThan(limit, subtract(n, '1'))) {
-        result = add(result, fn(limit, ...args));
-        limit = subtract(limit, '1');
-    }
-    return result;
-}
-function alternatingSeries(n, limit, fn, _sign = '1') {
-    n = n.toString();
-    limit = limit.toString();
-    _sign = sign(_sign.toString()).toString();
-    if (lessThan(n, '1')) {
-        throw new Error('[alternatingSeries]: Argument n is less than 1');
-    }
-    validateInteger(n);
-    validateInteger(limit);
-    validatePositive(limit);
-    let result = '0';
-    while (true) {
-        const next = multiply(_sign, fn(n));
-        if (lessThan(abs(next), utils_tolerance(limit)))
-            return result;
-        result = add(result, next);
-        _sign = negate(_sign);
-        n = add(n, '1');
-    }
-}
+
 function utils_tolerance(precision) {
     precision = precision.toString();
-    validators_validateInteger(precision.toString());
+    validateInteger(precision.toString());
     if (isExatclyZero(precision))
         return '0';
     if (precision[0] == '-')
@@ -717,7 +684,7 @@ function min(numbers) {
 }
 function max(numbers) {
     if (numbers.length === 0)
-        throw Error('[Min]: Empty array.');
+        throw Error('[max]: Empty array.');
     if (numbers.length === 1)
         return numbers[0];
     return numbers.reduce((prev, curr) => {
@@ -730,7 +697,7 @@ function clamp(n, x = '0', y = '1') {
     return min([y, max([x, n])]);
 }
 function step(number, step = number) {
-    return multiply_multiply(round_roundOff(divide_divide(number, step)), step);
+    return multiply_multiply(round_roundOff(divide_divide(number, step), 0, RoundingModes.FLOOR), step);
 }
 function lerp(x, y, a = '1') {
     return add_add(multiply_multiply(x, subtract_subtract('1', a)), multiply_multiply(y, a));
@@ -742,21 +709,16 @@ function invlerp(x, y, a) {
 ;
 function random(length = 32) {
     length = Math.max(length, 32);
-    const n = crypto.getRandomValues(new Uint32Array(length + 10));
+    const n = crypto.getRandomValues(new Uint32Array(length));
     let digits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
     let r = '.';
-    // let c = 10;
-    // while (c != 0) {
-    //     let i = Math.floor((n[length - c] / 4294967296) * c);
-    //     c--;
-    //     [digits[c], digits[i]] = [digits[i], digits[c]];
-    // }
     for (let i = 0; i < length; i++) {
+        const p = crypto.getRandomValues(new Uint32Array(10));
         let c = 10;
         while (c != 0) {
-            let i = Math.floor((n[length - c] / 4294967296) * c);
+            let i = Math.floor((p[c - 1] / 4294967296) * c);
             c--;
-            [digits[c], digits[i]] = [digits[i], digits[c]];
+            [digits[c - 1], digits[i]] = [digits[i], digits[c - 1]];
         }
         r += digits[Math.floor((n[i] / 4294967296) * 10)];
     }
@@ -898,7 +860,7 @@ function pow(base, exponent, precision = 32, negate = false) {
 }
 ;
 function intPow(base, exponent) {
-    validators_validateInteger(exponent, 'intPow exponent');
+    validateInteger(exponent, 'intPow exponent');
     exponent = abs_abs(exponent);
     let negative = '';
     if (base[0] == '-') {
@@ -920,7 +882,7 @@ function intPow(base, exponent) {
 function nthRoot(x, n, precision = 16) {
     x = x.toString();
     n = n.toString();
-    validators_validateInteger(n, 'nthRoot n');
+    validateInteger(n, 'nthRoot n');
     const initialGuess = () => {
         let _x = BigInt(round_roundOff(x));
         let _n = BigInt(n);
@@ -1067,7 +1029,20 @@ function Euler(precision = 64) {
     }
 }
 function exp(exponent) {
-    return pow(E, exponent, 64);
+    let precision = 32;
+    let result = '1';
+    let n = '1';
+    let f = '1';
+    while (true) {
+        f = multiply_multiply(f, n);
+        const next = stripTrailingZero_stripTrailingZero(divide_divide(intPow(exponent, n), f, precision + parseInt(n)));
+        if (utils_testTolerance(abs_abs(next), precision + parseInt(n))) {
+            return stripTrailingZero_stripTrailingZero(round_roundOff(result, precision));
+        }
+        result = add_add(result, next);
+        n = add_add(n, '1');
+    }
+    // return pow(E, exponent, 64);
 }
 function expm1(exponent) {
     return subtract_subtract(exp(exponent), '1');
@@ -1305,8 +1280,8 @@ function stdDv(numbers) {
 }
 ;
 function factorial(n) {
-    validators_validateInteger(n, 'factorial');
-    validators_validatePositive(n, 'factorial');
+    validateInteger(n, 'factorial');
+    validatePositive(n, 'factorial');
     if (isExatclyZero(n) || isExatclyOne(n)) {
         return '1';
     }
@@ -1320,8 +1295,8 @@ function factorial(n) {
     }
 }
 function subfactorial(n) {
-    validators_validateInteger(n, 'subfactorial');
-    validators_validatePositive(n, 'subfactorial');
+    validateInteger(n, 'subfactorial');
+    validatePositive(n, 'subfactorial');
     if (isExatclyZero(n) || isExatclyOne(n))
         return '1';
     return round_roundOff(divide_divide(factorial(n), E));

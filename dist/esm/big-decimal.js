@@ -593,7 +593,7 @@ function min(numbers) {
 }
 function max(numbers) {
     if (numbers.length === 0)
-        throw Error('[Min]: Empty array.');
+        throw Error('[max]: Empty array.');
     if (numbers.length === 1)
         return numbers[0];
     return numbers.reduce((prev, curr) => {
@@ -606,7 +606,7 @@ function clamp(n, x = '0', y = '1') {
     return min([y, max([x, n])]);
 }
 function step(number, step = number) {
-    return multiply(roundOff(divide(number, step)), step);
+    return multiply(roundOff(divide(number, step), 0, RoundingModes.FLOOR), step);
 }
 function lerp(x, y, a = '1') {
     return add(multiply(x, subtract('1', a)), multiply(y, a));
@@ -616,21 +616,16 @@ function invlerp(x, y, a) {
 }
 function random(length = 32) {
     length = Math.max(length, 32);
-    const n = crypto.getRandomValues(new Uint32Array(length + 10));
+    const n = crypto.getRandomValues(new Uint32Array(length));
     let digits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
     let r = '.';
-    // let c = 10;
-    // while (c != 0) {
-    //     let i = Math.floor((n[length - c] / 4294967296) * c);
-    //     c--;
-    //     [digits[c], digits[i]] = [digits[i], digits[c]];
-    // }
     for (let i = 0; i < length; i++) {
+        const p = crypto.getRandomValues(new Uint32Array(10));
         let c = 10;
         while (c != 0) {
-            let i = Math.floor((n[length - c] / 4294967296) * c);
+            let i = Math.floor((p[c - 1] / 4294967296) * c);
             c--;
-            [digits[c], digits[i]] = [digits[i], digits[c]];
+            [digits[c - 1], digits[i]] = [digits[i], digits[c - 1]];
         }
         r += digits[Math.floor((n[i] / 4294967296) * 10)];
     }
@@ -864,7 +859,20 @@ const PI_DIV_2 = '1.570796326794896619231321691639751442098584699687552910487472
 const PI_DIV_4 = '0.7853981633974483096156608458198757210492923498437764552437361480769541015715522496570087063355292669955370216283205766617734611523876455579313398520321202793625710256754846302763899111557372387325954911072027439164833615321189120584466957913178004772864121417308650871526135816620533484018150622853184311467516515788970437203802302407073135229288410919731475900028326326372051166303460367379853779023582643175914398979882730465293454831529482762796370186155949906873918379714381812228069845457529872824584183406101641607715053487365988061842976755449652359256926348042940732941880961687046169173512830001420317863158902069464428356894474022934092946803671102253062383575366373963427626980699223147308855049890280322554902160086045399534074436928274901296768028374999995932445124877649329332040240796487561148638367270756606305770633361712588154827970427525007844596882216468833020953551542944172868258995633726071888671827898907159705884468984379894454644451330428067016532504819691527989773041050497345238143002663714658197';
 
 function exp(exponent) {
-    return pow(E, exponent, 64);
+    let precision = 32;
+    let result = '1';
+    let n = '1';
+    let f = '1';
+    while (true) {
+        f = multiply(f, n);
+        const next = stripTrailingZero(divide(intPow(exponent, n), f, precision + parseInt(n)));
+        if (testTolerance(abs(next), precision + parseInt(n))) {
+            return stripTrailingZero(roundOff(result, precision));
+        }
+        result = add(result, next);
+        n = add(n, '1');
+    }
+    // return pow(E, exponent, 64);
 }
 function expm1(exponent) {
     return subtract(exp(exponent), '1');
