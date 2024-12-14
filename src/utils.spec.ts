@@ -1,51 +1,6 @@
-import { divide } from "./divide";
-import { multiply } from "./multiply";
-import { alternatingSeries, isAproxOne, isAproxZero, sigma, sign, tolerance } from "./utils";
+import { clamp, invlerp, isAproxOne, isAproxZero, lerp, max, min, sign, step, testTolerance, tolerance } from "./utils";
 
 describe('Utils', function () {
-    // describe('sigma', function () {
-    //     it("0 + 1 + 2 + 3 = 6", function () {
-    //         expect(sigma(0, 3, (n)=>{
-    //             return n
-    //         })).toBe("6")
-    //     });
-    //     it("2(0) + 2(1) + 2(2) + 2(3) = 12", function () {
-    //         expect(sigma(0, 3, (n)=>{
-    //             return multiply(n.toString(), '2')
-    //         })).toBe("12")
-    //     });
-    // });
-    // describe('alternatingSeries', function () {
-    //     it("where 2/(n + 1) < 10^-3, (2/1) - (2/1) + (2/3) ... (2/n) = 1.38130686096364843050453744294519", function () {
-    //         expect(alternatingSeries(1, 3, (n)=>{
-    //             return divide('2', n.toString(), 32)
-    //         })).toBe("1.38130686096364843050453744294519")
-    //     });
-    //     it("Throw error if n is less than 1", function () {
-    //         let n = 0;
-    //         expect(()=>{return alternatingSeries(n, 3, (n)=>{
-    //             return divide('2', n.toString(), 32)
-    //         })}).toThrowError()
-    //     });
-    //     it("Throw error if n is fractional", function () {
-    //         let n = 2.5;
-    //         expect(()=>{return alternatingSeries(n, 3, (n)=>{
-    //             return divide('2', n.toString(), 32)
-    //         })}).toThrowError()
-    //     });
-    //     it("Throw error if limit is fractional", function () {
-    //         let limit = 2.5;
-    //         expect(()=>{return alternatingSeries(1, limit, (n)=>{
-    //             return divide('2', n.toString(), 32)
-    //         })}).toThrowError()
-    //     });
-    //     it("Throw error if limit is negative", function () {
-    //         let limit = -1;
-    //         expect(()=>{return alternatingSeries(1, limit, (n)=>{
-    //             return divide('2', n.toString(), 32)
-    //         })}).toThrowError()
-    //     });
-    // });
     describe('tolerance', function () {
         it("should: tolerance(1) = 0.1", function () {
             expect(tolerance(1)).toBe("0.1")
@@ -135,4 +90,154 @@ describe('Utils', function () {
             expect(sign('-0.000864')).toBe(-1);
         });
     });
+    
+    describe('testTolerance', function () {
+        it("[testTolerance] STRESS TEST - should return 99.99% or more accurate results", function () {
+            let count = 10000,
+                err = 0;
+            while (count-- > 0) {
+                const tolerence = '0.'.padEnd(count + 5, '0') + '1';
+                if(!testTolerance(tolerence, count)){
+                    err++
+                }
+            }
+            const successRate = (10000 - err) / 10000;
+            expect(successRate).toBeGreaterThanOrEqual(0.9999);
+        });
+    });
+    
+    describe('min', function () {
+        it("[min] STRESS TEST - should return 99.99% or more accurate results", function () {
+            let count = 10000,
+                err = 0;
+            while (count-- > 0) {
+                const l = Math.round(Math.min(100, Math.max(Math.ceil(Math.random() * 100), 3)));
+                const records = Array(l).fill(0).map(() => Math.random() * 100000);
+                const testRecords = records.map((val) => val.toString());
+                const expectedMin = Math.min(...records);
+                const testMin = parseFloat(min(testRecords));
+
+                if (isNaN(testMin) || Math.abs(expectedMin - testMin) > 0.00001) {
+                    console.log(`Error of ${Math.abs(expectedMin - testMin)}`);
+                    console.log(`${expectedMin} != ${testMin}`);
+                    err++;
+                }
+            }
+            const successRate = (10000 - err) / 10000;
+            expect(successRate).toBeGreaterThanOrEqual(0.9999);
+        });
+    });
+
+    describe('max', function () {
+        it("[max] STRESS TEST - should return 99.99% or more accurate results", function () {
+            let count = 10000,
+                err = 0;
+            while (count-- > 0) {
+                const l = Math.round(Math.min(100, Math.max(Math.ceil(Math.random() * 100), 3)));
+                const records = Array(l).fill(0).map(() => Math.random() * 100000);
+                const testRecords = records.map((val) => val.toString());
+                const expectedMax = Math.max(...records);
+                const testMax = parseFloat(max(testRecords));
+
+                if (isNaN(testMax) || Math.abs(expectedMax - testMax) > 0.00001) {
+                    console.log(`Error of ${Math.abs(expectedMax - testMax)}`);
+                    console.log(`${expectedMax} != ${testMax}`);
+                    err++;
+                }
+            }
+            const successRate = (10000 - err) / 10000;
+            expect(successRate).toBeGreaterThanOrEqual(0.9999);
+        });
+    });
+
+    describe('clamp', function () {
+        it("[clamp] STRESS TEST - should return 99.99% or more accurate results", function () {
+            let count = 10000,
+                err = 0;
+            while (count-- > 0) {
+                const c = (value, min, max)=>Math.min(max, Math.max(value, min));
+                const minMax = [Math.random() * 1000, Math.random() * 1000].sort();
+                const value = Math.random() * 2000;
+                const expectedClamp = c(value, minMax[0], minMax[1]);
+                const testClamp = parseFloat(clamp(value.toString(), minMax[0].toString(), minMax[1].toString()));
+
+                if (isNaN(testClamp) || Math.abs(expectedClamp - testClamp) > 0.00001) {
+                    console.log(`Error of ${Math.abs(expectedClamp - testClamp)}`);
+                    console.log(`${expectedClamp} != ${testClamp}`);
+                    err++;
+                }
+            }
+            const successRate = (10000 - err) / 10000;
+            expect(successRate).toBeGreaterThanOrEqual(0.9999);
+        });
+    });
+
+    describe('step', function () {
+        it("[step] STRESS TEST - should return 99.99% or more accurate results", function () {
+            let count = 10000,
+                err = 0;
+            while (count-- > 0) {
+                const s = (value, step) => Math.floor(value / step) * step;
+                const n = Math.random() * 100;
+                const value = Math.random() * 2000;
+                const expectedStep = s(value, n);
+                const testStep = parseFloat(step(value.toString(), n.toString()));
+
+                if (isNaN(testStep) || Math.abs(expectedStep - testStep) > 0.00001) {
+                    console.log(`Error of ${Math.abs(expectedStep - testStep)}`);
+                    console.log(`${expectedStep} != ${testStep}`);
+                    err++;
+                }
+            }
+            const successRate = (10000 - err) / 10000;
+            expect(successRate).toBeGreaterThanOrEqual(0.9999);
+        });
+    });
+
+    describe('lerp', function () {
+        it("[lerp] STRESS TEST - should return 99.99% or more accurate results", function () {
+            let count = 10000,
+                err = 0;
+            while (count-- > 0) {
+                const l = (x, y, n) => ((1 - n) * x) + (n * y);
+                const minMax = [Math.random() * 1000, Math.random() * 1000].sort();
+                const value = Math.random();
+                const expectedLerp = l(minMax[0], minMax[1], value);
+                const testLerp = parseFloat(lerp(minMax[0].toString(), minMax[1].toString(), value.toString()));
+
+                if (isNaN(testLerp) || Math.abs(expectedLerp - testLerp) > 0.00001) {
+                    console.log(`Error of ${Math.abs(expectedLerp - testLerp)}`);
+                    console.log(`${expectedLerp} != ${testLerp}`);
+                    err++;
+                }
+            }
+            const successRate = (10000 - err) / 10000;
+            expect(successRate).toBeGreaterThanOrEqual(0.9999);
+        });
+    });
+
+    describe('invlerp', function () {
+        it("[lerp] STRESS TEST - should return 99.99% or more accurate results", function () {
+            let count = 10000,
+                err = 0;
+            while (count-- > 0) {
+                const c = (value)=>Math.min(1, Math.max(value, 0));
+                const l = (x, y, n) => c((n - x)/(y - x));
+
+                const minMax = [Math.random() * 1000, Math.random() * 1000].sort();
+                const value = Math.random() * 1000;
+                const expectedInvlerp = l(minMax[0], minMax[1], value);
+                const testInvlerp = parseFloat(invlerp(minMax[0].toString(), minMax[1].toString(), value.toString()));
+
+                if (isNaN(testInvlerp) || Math.abs(expectedInvlerp - testInvlerp) > 0.00001) {
+                    console.log(`Error of ${Math.abs(expectedInvlerp - testInvlerp)}`);
+                    console.log(`${expectedInvlerp} != ${testInvlerp}`);
+                    err++;
+                }
+            }
+            const successRate = (10000 - err) / 10000;
+            expect(successRate).toBeGreaterThanOrEqual(0.9999);
+        });
+    });
+
 });

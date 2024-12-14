@@ -4,56 +4,9 @@ import { greaterThan, isExatclyOne, isExatclyZero, lessThan } from "./compareTo"
 import { divide } from "./divide";
 import { multiply } from "./multiply";
 import { roundOff } from "./round";
-import { negate, subtract } from "./subtract";
-import { validateInteger, validatePositive } from "./validators";
-
-export function sigma(n: number | string, limit: number | string, fn: (n: number | string, ...args) => any, ...args: any): string {
-
-    n = n.toString();
-    limit = limit.toString();
-
-    validateInteger(n);
-    validateInteger(limit);
-    validatePositive(n);
-    validatePositive(limit);
-
-    let result = '0';
-
-    while (greaterThan(limit, subtract(n, '1'))) {
-        result = add(result, fn(limit, ...args));
-        limit = subtract(limit, '1');
-    }
-
-    return result
-
-}
-
-export function alternatingSeries(n: number | string, limit: number | string, fn: (n: number | string) => any, _sign: number | string = '1'): string {
-
-    n = n.toString();
-    limit = limit.toString();
-    _sign = sign(_sign.toString()).toString();
-
-    if (lessThan(n, '1')) {
-        throw new Error('[alternatingSeries]: Argument n is less than 1');
-    }
-
-    validateInteger(n);
-    validateInteger(limit);
-    validatePositive(limit);
-
-    let result = '0';
-    while (true) {
-
-        const next = multiply(_sign, fn(n))
-
-        if (lessThan(abs(next), tolerance(limit))) return result;
-
-        result = add(result, next);
-        _sign = negate(_sign)
-        n = add(n, '1');
-    }
-}
+import { RoundingModes } from "./roundingModes";
+import { subtract } from "./subtract";
+import { validateInteger } from "./validators";
 
 export function tolerance(precision: number | string) {
     precision = precision.toString();
@@ -100,7 +53,7 @@ export function min(numbers: string[]) {
 }
 
 export function max(numbers: string[]) {
-    if (numbers.length === 0) throw Error('[Min]: Empty array.');
+    if (numbers.length === 0) throw Error('[max]: Empty array.');
     if (numbers.length === 1) return numbers[0];
     return numbers.reduce((prev, curr) => {
         if (greaterThan(prev, curr, true)) return prev;
@@ -113,7 +66,7 @@ export function clamp(n: string, x: string = '0', y: string = '1') {
 }
 
 export function step(number: string, step: string = number) {
-    return multiply(roundOff(divide(number, step)), step);
+    return multiply(roundOff(divide(number, step), 0, RoundingModes.FLOOR), step);
 }
 
 export function lerp(x: string, y: string, a: string = '1') {
@@ -127,24 +80,18 @@ export function invlerp(x: string, y: string, a: string) {
 export function random(length: number = 32) {
     length = Math.max(length, 32);
 
-    const n = crypto.getRandomValues(new Uint32Array(length + 10));
+    const n = crypto.getRandomValues(new Uint32Array(length));
     let digits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
     let r = '.'
-    // let c = 10;
-
-    // while (c != 0) {
-    //     let i = Math.floor((n[length - c] / 4294967296) * c);
-    //     c--;
-    //     [digits[c], digits[i]] = [digits[i], digits[c]];
-    // }
 
     for (let i = 0; i < length; i++) {
+        const p = crypto.getRandomValues(new Uint32Array(10));
         let c = 10;
 
         while (c != 0) {
-            let i = Math.floor((n[length - c] / 4294967296) * c);
+            let i = Math.floor((p[c - 1] / 4294967296) * c);
             c--;
-            [digits[c], digits[i]] = [digits[i], digits[c]];
+            [digits[c - 1], digits[i]] = [digits[i], digits[c - 1]];
         }
         r += digits[Math.floor((n[i] / 4294967296) * 10)];
     }
