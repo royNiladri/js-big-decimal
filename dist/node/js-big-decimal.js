@@ -388,10 +388,10 @@ function compareTo_greaterThan(left, right, orEquals = false) {
 function equals(left, right) {
     return (compareTo(left, right) == 0);
 }
-function isExatclyZero(number) {
+function compareTo_isExatclyZero(number) {
     return /^0[0]*[.]{0,1}[0]*$/.test(number);
 }
-function isExatclyOne(number) {
+function compareTo_isExatclyOne(number) {
     return /^[0]*[1](?:[.]{1}[0]*)?$/.test(number);
 }
 function isEven(number) {
@@ -420,7 +420,7 @@ function multiply_multiply(number1, number2) {
         number2 = number2.substring(1);
         negativeNumber2 = '-';
     }
-    if (isExatclyZero(number1) || isExatclyZero(number2))
+    if (compareTo_isExatclyZero(number1) || compareTo_isExatclyZero(number2))
         return '0';
     number1 = stripTrailingZero_stripTrailingZero(number1);
     number2 = stripTrailingZero_stripTrailingZero(number2);
@@ -454,15 +454,13 @@ function multiply_multiply(number1, number2) {
 ;// CONCATENATED MODULE: ./lib/divide.js
 
 
-
-
 function divide_divide(dividend, divisor, precission = 8) {
     // Return 0 
     if (divisor == '0') {
         return '0' + (!precission) ? '' : 0;
     }
-    if (equals(abs_abs(divisor), '1')) {
-        return multiply_multiply(dividend, divisor);
+    if (abs_abs(divisor) == '1') {
+        return dividend;
     }
     // precission = precission + 2;
     let negativeDividend = '';
@@ -473,7 +471,16 @@ function divide_divide(dividend, divisor, precission = 8) {
     let resultIndex = 0;
     const findNegativeOffset = /^(?:[0]+)(?:[.])([0]+)(?:\d+)/;
     const trimStart = /^(?:[0]+)([^0.]*)/;
-    const trimEnd = /((?:[.][0])?[0]*)$/;
+    const trimEnd = (n) => {
+        while (n[n.length - 1] == '0') {
+            if (n[n.length - 1] == '.') {
+                n = n.substring(0, n.length - 1);
+                break;
+            }
+            n = n.substring(0, n.length - 1);
+        }
+        return n;
+    };
     //check for negatives
     if (dividend[0] == '-') {
         dividend = dividend.substring(1);
@@ -488,7 +495,7 @@ function divide_divide(dividend, divisor, precission = 8) {
     if (negativeDividend !== negativeDivisor)
         negativeResult = '-';
     if (dividend.includes('.')) {
-        dividend = dividend.replace(trimEnd, "");
+        dividend = trimEnd(dividend);
         if (dividend.includes('.')) {
             if (findNegativeOffset.test(dividend))
                 dividendIndex = -(dividend.replace(findNegativeOffset, '$1').length);
@@ -502,7 +509,7 @@ function divide_divide(dividend, divisor, precission = 8) {
             dividendIndex = dividend.length;
     }
     if (divisor.includes('.')) {
-        divisor = divisor.replace(trimEnd, "");
+        divisor = trimEnd(divisor);
         if (divisor.includes('.')) {
             if (findNegativeOffset.test(divisor))
                 divisorIndex = -(divisor.replace(findNegativeOffset, '$1').length);
@@ -526,49 +533,35 @@ function divide_divide(dividend, divisor, precission = 8) {
     let result = ((dividendInt * precisionInt) / divisorInt).toString();
     // console.log('resultIndex', resultIndex)
     // console.log('intDifference', intDifference)
-    if (resultIndex > 0) {
-        if (intDifference > 0) {
-            // console.log('dividendInt', dividendInt)
-            // console.log('divisorInt', (divisorInt * paddingInt))
-            if (Math.sign(dividendIndex) == Math.sign(divisorIndex) && dividendInt >= (divisorInt * paddingInt))
-                resultIndex++;
-            else if (Math.sign(dividendIndex) >= 0 && dividendInt >= (divisorInt * paddingInt))
-                resultIndex++;
-        }
-        else {
-            if ((dividendInt * paddingInt) >= divisorInt)
-                resultIndex++;
-        }
-        return round_roundOff(negativeResult + (result.substring(0, resultIndex) || '0') + '.' + result.substring(resultIndex), precission);
-    }
-    if (resultIndex < 0) {
-        if (intDifference > 0) {
-            if (Math.sign(dividendIndex) == Math.sign(divisorIndex) && dividendInt >= (divisorInt * paddingInt))
-                resultIndex++;
-            else if (Math.sign(dividendIndex) >= 0 && dividendInt >= (divisorInt * paddingInt))
-                resultIndex++;
-        }
-        else {
-            if ((dividendInt * paddingInt) >= divisorInt)
-                resultIndex++;
-        }
-        return round_roundOff(negativeResult + '0.'.padEnd(Math.abs(resultIndex) + 2, '0') + result, precission);
-    }
     if (resultIndex == 0) {
-        if (intDifference > 0 && dividendInt >= (divisorInt * paddingInt)) {
+        let intBasis = intDifference > 0;
+        if (intBasis && dividendInt >= (divisorInt * paddingInt)) {
             resultIndex++;
-            return round_roundOff(negativeResult + (result.substring(0, resultIndex) || '0') + '.' + result.substring(resultIndex), precission);
         }
-        if (intDifference <= 0 && (dividendInt * paddingInt) >= divisorInt) {
+        else if (!intBasis && (dividendInt * paddingInt) >= divisorInt) {
             resultIndex++;
-            return round_roundOff(negativeResult + (result.substring(0, resultIndex) || '0') + '.' + result.substring(resultIndex), precission);
         }
-        if (dividendInt == divisorInt) {
+        else if (dividendInt == divisorInt) {
             resultIndex++;
-            return round_roundOff(negativeResult + (result.substring(0, resultIndex) || '0') + '.' + result.substring(resultIndex), precission);
         }
         return round_roundOff(negativeResult + (result.substring(0, resultIndex) || '0') + '.' + result.substring(resultIndex), precission);
     }
+    if (intDifference > 0) {
+        if (Math.sign(dividendIndex) == Math.sign(divisorIndex) && dividendInt >= (divisorInt * paddingInt))
+            resultIndex++;
+        else if (Math.sign(dividendIndex) >= 0 && dividendInt >= (divisorInt * paddingInt))
+            resultIndex++;
+        else if (resultIndex < 0 && dividendInt >= (divisorInt * paddingInt))
+            resultIndex++;
+    }
+    else {
+        if ((dividendInt * paddingInt) >= divisorInt)
+            resultIndex++;
+    }
+    if (resultIndex > 0) {
+        return round_roundOff(negativeResult + (result.substring(0, resultIndex) || '0') + '.' + result.substring(resultIndex), precission);
+    }
+    return trimEnd(round_roundOff(negativeResult + '0.'.padEnd(Math.abs(resultIndex) + 2, '0') + result, precission));
 }
 
 ;// CONCATENATED MODULE: ./lib/subtract.js
@@ -604,7 +597,7 @@ function validateIsInRange(number, label) {
     }
 }
 function validateDivideByZero(number, label) {
-    if (isExatclyZero(number)) {
+    if (compareTo_isExatclyZero(number)) {
         throw Error(`${(label) ? `[${label}]: ` : ''}Cannot divide by 0`);
     }
 }
@@ -646,7 +639,7 @@ function modulus(n, base = '1', precision = 64) {
 function utils_tolerance(precision) {
     precision = precision.toString();
     validateInteger(precision.toString());
-    if (isExatclyZero(precision))
+    if (compareTo_isExatclyZero(precision))
         return '0';
     if (precision[0] == '-')
         return '1'.padEnd(Number(abs_abs(precision)) + 1, '0');
@@ -654,24 +647,24 @@ function utils_tolerance(precision) {
 }
 function isAproxZero(number, precision = 8) {
     precision = Math.max(1, precision);
-    number = abs_abs(number.toString());
+    number = abs(number.toString());
     if (isExatclyZero(number))
         return true;
-    if (compareTo_lessThan(number, utils_tolerance(precision - 1), true))
+    if (lessThan(number, utils_tolerance(precision - 1), true))
         return true;
     return false;
 }
 function isAproxOne(number, percision = 8) {
     percision = Math.max(1, percision);
-    number = abs_abs(number);
+    number = abs(number);
     if (isExatclyOne(number))
         return true;
-    if (compareTo_lessThan(abs_abs(subtract_subtract('1', number)), utils_tolerance(percision - 1), true))
+    if (lessThan(abs(subtract('1', number)), utils_tolerance(percision - 1), true))
         return true;
     return false;
 }
-function sign(number) {
-    if (isExatclyZero(number))
+function utils_sign(number) {
+    if (compareTo_isExatclyZero(number))
         return 0;
     return (number[0] == '-') ? -1 : 1;
 }
@@ -783,13 +776,13 @@ function random(length = 32) {
  * ```
  */
 function pow(base, exponent, precision = 32, negate = false) {
-    if (isExatclyZero(exponent)) {
+    if (compareTo_isExatclyZero(exponent)) {
         return '1';
     }
-    if (!exponent.includes('-') && isExatclyOne(exponent)) {
+    if (!exponent.includes('-') && compareTo_isExatclyOne(exponent)) {
         return base;
     }
-    if (isExatclyZero(base) && exponent.includes('-') && isExatclyOne(abs_abs(exponent))) {
+    if (compareTo_isExatclyZero(base) && exponent.includes('-') && compareTo_isExatclyOne(abs_abs(exponent))) {
         throw Error('0^(-1) is undefined');
     }
     const finalize = (result) => {
@@ -870,6 +863,7 @@ function intPow(base, exponent) {
     validateInteger(exponent, 'intPow exponent');
     exponent = abs_abs(exponent);
     let negative = '';
+    exponent = abs_abs(exponent);
     if (base[0] == '-') {
         base = base.substring(1);
         negative = (isEven(exponent)) ? '' : '-';
@@ -954,30 +948,38 @@ function bisectionRoot(x, n, g, precision = 32) {
         i++;
     }
 }
-function inverseSqRoot(number) {
-    number = number.toString();
-    let n = abs(number);
-    let guess = '1';
+function inverseSqRoot(x, precision = 32) {
+    const initialGuess = () => {
+        let _x = BigInt(round_roundOff(x));
+        let _guess = 1n;
+        while (_x > 1n) {
+            _x = _x >> 1n;
+            _guess = _guess << 1n;
+        }
+        return _guess.toString();
+    };
+    x = abs_abs(x);
+    let guess = initialGuess();
     let difference = '0';
-    let previousDifference = n;
+    let lastDifference = x;
     let i = 0;
-    while (i < 10) {
-        let newGuess = roundOff(multiply(guess, subtract('1.5', roundOff(multiply(divide(number, '2', 33), pow(guess, '2', 33)), 33))), 33);
-        difference = abs(subtract(guess, newGuess));
-        if (greaterThan(difference, previousDifference)) {
-            return stripTrailingZero(roundOff(guess, 32 + 1));
+    while (true) {
+        let newGuess = round_roundOff(multiply_multiply(guess, subtract_subtract('1.5', round_roundOff(multiply_multiply(multiply_multiply(x, '.5'), multiply_multiply(guess, guess)), precision + 8))), precision + 4);
+        difference = abs_abs(subtract_subtract(guess, newGuess));
+        if (compareTo_greaterThan(difference, lastDifference)) {
+            return stripTrailingZero_stripTrailingZero(round_roundOff(bisectionRoot(x, '2', newGuess, precision + i), precision));
         }
-        if (lessThan(difference, tolerance(32 - 1))) {
-            return stripTrailingZero(roundOff(guess, 32 + 1));
+        if (utils_testTolerance(difference, precision)) {
+            return stripTrailingZero_stripTrailingZero(round_roundOff(guess, precision));
         }
-        previousDifference = difference;
+        lastDifference = difference;
         guess = newGuess;
         i++;
     }
 }
-function sqRoot(base, precision = 32) {
+function pow_sqRoot(x, precision = 32) {
     precision = Math.max(precision, 32);
-    return stripTrailingZero_stripTrailingZero(nthRoot(base, '2', precision));
+    return stripTrailingZero_stripTrailingZero(round_roundOff(multiply_multiply(x, inverseSqRoot(x, precision + 4)), precision));
 }
 function cbRoot(base, precision = 32) {
     precision = Math.max(precision, 32);
@@ -985,7 +987,7 @@ function cbRoot(base, precision = 32) {
 }
 function root4(base, precision = 32) {
     precision = Math.max(precision, 32);
-    return stripTrailingZero(sqRoot(sqRoot(base, precision + 4), precision));
+    return stripTrailingZero(pow_sqRoot(pow_sqRoot(base, precision + 4), precision));
 }
 function root5(base, precision = 32) {
     precision = Math.max(precision, 32);
@@ -999,223 +1001,19 @@ function root10(base, precision = 32) {
 ;// CONCATENATED MODULE: ./lib/constants.js
 const E = '2.7182818284590452353602874713526624977572470936999595749669676277240766303535475945713821785251664274274663919320030599218174135966290435729003342952605956307381323286279434907632338298807531952510190115738341879307021540891499348841675092447614606680822648001684774118537423454424371075390777449920695517027618386062613313845830007520449338265602976067371132007093287091274437470472306969772093101416928368190255151086574637721112523897844250569536967707854499699679468644549059879316368892300987931277361782154249992295763514822082698951936680331825288693984964651058209392398294887933203625094431173012381970684161403970198376793206832823764648042953118023287825098194558153017567173613320698112509961818815930416903515988885193458072738667385894228792284998920868058257492796104841984443634632449684875602336248270419786232090021609902353043699418491463140934317381436405462531520961836908887070167683964243781405927145635490613031072085103837505101157477041718986106873969655212671546889570350354021234078498193343210682';
 const LN2 = '0.6931471805599453094172321214581765680755001343602552541206800094933936219696947156058633269964186875420014810205706857336855202357581305570326707516350759619307275708283714351903070386238916734711233501153644979552391204751726815749320651555247341395258829504530070953263666426541042391578149520437404303855008019441706416715186447128399681717845469570262716310645461502572074024816377733896385506952606683411372738737229289564935470257626520988596932019650585547647033067936544325476327449512504060694381471046899465062201677204245245296126879465461931651746813926725041038025462596568691441928716082938031727143677826548775664850856740776484514644399404614226031930967354025744460703080960850474866385231381816767514386674766478908814371419854942315199735488037516586127535291661000710535582498794147295092931138971559982056543928717000721808576102523688921324497138932037843935308877482597017155910708823683627589842589185353024363421436706118923678919237231467232172053401649256872747782344535347648114941864238677677441';
+const LN2_L = '0.6931471805599453094172321214581765680755001343602552541206800094933936219696947156058633269964186875420014810205706857336855202357581305570326707516350759619307275708283714351903070386238916734711233501153644979552391204751726815749320651555247341395258829504530070953263666426541042391578149520437404303855008019441706416715186447128399681717845469570262716310645461502572074024816377733896385506952606683411372738737229289564935470257626520988596932019650585547647033067936544325476327449512504060694381471046899465062201677204245245296126879465461931651746813926725041038025462596568691441928716082938031727143677826548775664850856740776484514644399404614226031930967354025744460703080960850474866385231381816767514386674766478908814371419854942315199735488037516586127535291661000710535582498794147295092931138971559982056543928717000721808576102523688921324497138932037843935308877482597017155910708823683627589842589185353024363421436706118923678919237231467232172053401649256872747782344535347648114941864238677677441';
 const LOG2E = '1.4426950408889634073599246810018921374266459541529859341354494069311092191811850798855266228935063444969975183096525442555931016871683596427206621582234793362745373698847184936307013876635320155338943189166648376431286154240474784222894979047950915303513385880549688658930969963680361105110756308441454272158283449418919339085777157900441712802468483413745226951823690112390940344599685399061134217228862780291580106300619767624456526059950737532406256558154759381783052397255107248130771562675458075781713301935730061687619373729826758974156238179835671034434897506807055180884865613868329177321829349139684310593454022025186369345262692150955971910022196792243214334244941790714551184993859212216753653113007746327672064612337411082119137944333984805793109128776096702003757589981588518061267880997609562525078410248470569007687680584613278654747820278086594620609107490153248199697305790152723247872987409812541000334486875738223647164945447537067167595899428099818267834901316666335348036789869446887091166604973537292585';
+const LOG2E_L = '1.4426950408889634073599246810018921374266459541529859341354494069311092191811850798855266228935063444969975183096525442555931016871683596427206621582234793362745373698847184936307013876635320155338943189166648376431286154240474784222894979047950915303513385880549688658930969963680361105110756308441454272158283449418919339085777157900441712802468483413745226951823690112390940344599685399061134217228862780291580106300619767624456526059950737532406256558154759381783052397255107248130771562675458075781713301935730061687619373729826758974156238179835671034434897506807055180884865613868329177321829349139684310593454022025186369345262692150955971910022196792243214334244941790714551184993859212216753653113007746327672064612337411082119137944333984805793109128776096702003757589981588518061267880997609562525078410248470569007687680584613278654747820278086594620609107490153248199697305790152723247872987409812541000334486875738223647164945447537067167595899428099818267834901316666335348036789869446887091166604973537292585';
 const LN10 = '2.3025850929940456840179914546843642076011014886287729760333279009675726096773524802359972050895982983419677840422862486334095254650828067566662873690987816894829072083255546808437998948262331985283935053089653777326288461633662222876982198867465436674744042432743651550489343149393914796194044002221051017141748003688084012647080685567743216228355220114804663715659121373450747856947683463616792101806445070648000277502684916746550586856935673420670581136429224554405758925724208241314695689016758940256776311356919292033376587141660230105703089634572075440370847469940168269282808481184289314848524948644871927809676271275775397027668605952496716674183485704422507197965004714951050492214776567636938662976979522110718264549734772662425709429322582798502585509785265383207606726317164309505995087807523710333101197857547331541421808427543863591778117054309827482385045648019095610299291824318237525357709750539565187697510374970888692180205189339507238539205144634197265287286965110862571492198849978748873771345686209167058';
 const LOG10E = '0.4342944819032518276511289189166050822943970058036665661144537831658646492088707747292249493384317483187061067447663037336416792871589639065692210646628122658521270865686703295933708696588266883311636077384905142844348666768646586085135561482123487653435434357317253835622281395603048646652366095539377356176323431916710991411597894962993512457934926357655469077671082419150479910989674900103277537653570270087328550951731440674697951899513594088040423931518868108402544654089797029863286828762624144013457043546132920600712605104028367125954846287707861998992326748439902348171535934551079475492552482577820679220140931468164467381030560475635720408883383209488996522717494541331791417640247407505788767860971099257547730046048656049515610057985741340272675201439247917970859047931285212493341197329877226463885350226083881626316463883553685501768460295286399391633510647555704050513182342988874882120643595023818902643317711537382203362634416478397146001858396093006317333986134035135741787144971453076492968331392399810609';
 const PI = '3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679821480865132823066470938446095505822317253594081284811174502841027019385211055596446229489549303819644288109756659334461284756482337867831652712019091456485669234603486104543266482133936072602491412737245870066063155881748815209209628292540917153643678925903600113305305488204665213841469519415116094330572703657595919530921861173819326117931051185480744623799627495673518857527248912279381830119491298336733624406566430860213949463952247371907021798609437027705392171762931767523846748184676694051320005681271452635608277857713427577896091736371787214684409012249534301465495853710507922796892589235420199561121290219608640344181598136297747713099605187072113499999983729780499510597317328160963185950244594553469083026425223082533446850352619311881710100031378387528865875332083814206171776691473035982534904287554687311595628638823537875937519577818577805321712268066130019278766111959092164201989380952572010654858632788';
 const PI2 = '6.2831853071795864769252867665590057683943387987502116419498891846156328125724179972560696506842341359642961730265646132941876892191011644634507188162569622349005682054038770422111192892458979098607639288576219513318668922569512964675735663305424038182912971338469206972209086532964267872145204982825474491740132126311763497630418419256585081834307287357851807200226610610976409330427682939038830232188661145407315191839061843722347638652235862102370961489247599254991347037715054497824558763660238982596673467248813132861720427898927904494743814043597218874055410784343525863535047693496369353388102640011362542905271216555715426855155792183472743574429368818024499068602930991707421015845593785178470840399122242580439217280688363196272595495426199210374144226999999967459560999021194634656321926371900489189106938166052850446165066893700705238623763420200062756775057731750664167628412343553382946071965069808575109374623191257277647075751875039155637155610643424536132260038557532223918184328403978761905144021309717265576';
-const PI_DIV_2 = '1.5707963267948966192313216916397514420985846996875529104874722961539082031431044993140174126710585339910740432566411533235469223047752911158626797040642405587251420513509692605527798223114744774651909822144054878329667230642378241168933915826356009545728242834617301743052271633241066968036301245706368622935033031577940874407604604814146270458576821839462951800056652652744102332606920734759707558047165286351828797959765460930586909663058965525592740372311899813747836759428763624456139690915059745649168366812203283215430106974731976123685953510899304718513852696085881465883761923374092338347025660002840635726317804138928856713788948045868185893607342204506124767150732747926855253961398446294617710099780560645109804320172090799068148873856549802593536056749999991864890249755298658664080481592975122297276734541513212611541266723425176309655940855050015689193764432937666041907103085888345736517991267452143777343655797814319411768937968759788909288902660856134033065009639383055979546082100994690476286005327429316394';
-const PI_DIV_4 = '0.7853981633974483096156608458198757210492923498437764552437361480769541015715522496570087063355292669955370216283205766617734611523876455579313398520321202793625710256754846302763899111557372387325954911072027439164833615321189120584466957913178004772864121417308650871526135816620533484018150622853184311467516515788970437203802302407073135229288410919731475900028326326372051166303460367379853779023582643175914398979882730465293454831529482762796370186155949906873918379714381812228069845457529872824584183406101641607715053487365988061842976755449652359256926348042940732941880961687046169173512830001420317863158902069464428356894474022934092946803671102253062383575366373963427626980699223147308855049890280322554902160086045399534074436928274901296768028374999995932445124877649329332040240796487561148638367270756606305770633361712588154827970427525007844596882216468833020953551542944172868258995633726071888671827898907159705884468984379894454644451330428067016532504819691527989773041050497345238143002663714658197';
-
-;// CONCATENATED MODULE: ./lib/logarithm.js
-
-
-
-
-
-
-
-
-
-
-
-
-function Euler(precision = 64) {
-    precision = Math.max(16, precision);
-    let result = '1';
-    let n = '1';
-    let f = '1';
-    while (true) {
-        f = multiply(f, n);
-        const next = divide('1', f, precision + 3);
-        if (testTolerance(abs(next), precision)) {
-            return stripTrailingZero(roundOff(result, precision));
-        }
-        result = add(result, next);
-        n = add(n, '1');
-    }
-}
-function exp(exponent) {
-    let precision = 32;
-    let result = '1';
-    let n = '1';
-    let f = '1';
-    while (true) {
-        f = multiply_multiply(f, n);
-        const next = stripTrailingZero_stripTrailingZero(divide_divide(intPow(exponent, n), f, precision + parseInt(n)));
-        if (utils_testTolerance(abs_abs(next), precision + parseInt(n))) {
-            return stripTrailingZero_stripTrailingZero(round_roundOff(result, precision));
-        }
-        result = add_add(result, next);
-        n = add_add(n, '1');
-    }
-    // return pow(E, exponent, 64);
-}
-function expm1(exponent) {
-    return subtract_subtract(exp(exponent), '1');
-}
-function ln(x = '2') {
-    validateGTZero(x, 'ln');
-    if (equals(x, '1')) {
-        return '0'; // ln(1) = 0
-    }
-    const term = stripTrailingZero_stripTrailingZero(divide_divide(subtract_subtract(x, '1'), add_add(x, '1'), 68));
-    const f = stripTrailingZero_stripTrailingZero(intPow(term, '2'));
-    let t = stripTrailingZero_stripTrailingZero(intPow(term, '1'));
-    let result = '0';
-    let i = 0;
-    while (true) {
-        i++;
-        let iteration = subtract_subtract(multiply_multiply('2', i.toString()), '1');
-        let next = stripTrailingZero_stripTrailingZero(round_roundOff(multiply_multiply(divide_divide('1', iteration, 64 + 2), t), 1024 + 4));
-        if (utils_testTolerance(next, 64)) {
-            return stripTrailingZero_stripTrailingZero(round_roundOff(multiply_multiply('2', add_add(result, next)), 64));
-        }
-        t = stripTrailingZero_stripTrailingZero(round_roundOff(multiply_multiply(t, f), 64 + 2));
-        result = add_add(result, next);
-    }
-}
-function ln2(x = '2') {
-    validateGTZero(x, 'ln2');
-    let result = '0';
-    while (compareTo_greaterThan(x, '2', true)) {
-        x = stripTrailingZero_stripTrailingZero(divide_divide(x, '2', 68));
-        result = add_add(result, '1');
-    }
-    return round_roundOff(add_add(result, divide_divide(ln(x), LN2, 68)), 64);
-}
-function log(base) {
-    return round_roundOff(multiply_multiply(ln2(base), LN2), 64);
-}
-function log10(base) {
-    return round_roundOff(divide_divide(ln(base), LN10, 64 + 2), 64);
-}
-
-;// CONCATENATED MODULE: ./lib/trig.js
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// Hypotenuse 
-function hypot(a, b) {
-    return sqRoot(add_add(intPow(a, '2'), add_add(intPow(b, '2'))));
-}
-// Sine functions
-function sin(x) {
-    if (compareTo_greaterThan(abs_abs(x), PI)) {
-        x = modulus(x, PI, 64);
-    }
-    let result = '0';
-    let n = '1'; // Series iteration
-    let f = '1'; // Factorial product
-    let s = '-1'; // Alternating Sign
-    while (true) {
-        const N = subtract_subtract(multiply_multiply(n, '2'), '1'); // Next real term in series (even terms cancel)
-        f = multiply_multiply(f, N);
-        const next = multiply_multiply(s, divide_divide(intPow(x, N), f, 68));
-        if (utils_testTolerance(abs_abs(next), 64)) {
-            result = add_add(result, next);
-            return stripTrailingZero_stripTrailingZero(isAproxZero(result) ? '0' : isAproxOne(result) ? multiply_multiply('1', sign(result).toString()) : result);
-        }
-        result = add_add(result, next);
-        f = multiply_multiply(f, multiply_multiply(n, '2')); // Iterate once to synchronize Factorial
-        n = add_add(n, '1');
-        s = subtract_negate(s);
-    }
-}
-function asin(x) {
-    validateIsInRange(x, 'asin');
-    if (isExatclyOne(abs_abs(x)))
-        return round_roundOff(((sign(x) == 1) ? PI_DIV_2 : subtract_negate(PI_DIV_2)), 64);
-    if (isExatclyZero(abs_abs(x)))
-        return '0';
-    let result = '0';
-    let n = '1';
-    let p = '1';
-    let k = '1';
-    while (true) {
-        const N = multiply_multiply(n, '2');
-        const R = add_add(N, '1');
-        p = multiply_multiply(p, N);
-        k = multiply_multiply(k, subtract_subtract(N, '1'));
-        let next = divide_divide(multiply_multiply(k, intPow(x, R)), multiply_multiply(p, R), 68);
-        if (utils_testTolerance(next, 64)) {
-            result = add_add(result, next);
-            return stripTrailingZero_stripTrailingZero(round_roundOff(add_add(result, x), 64));
-        }
-        result = add_add(result, next);
-        n = add_add(n, '1');
-    }
-}
-function sinh(x) {
-    return stripTrailingZero_stripTrailingZero(round_roundOff(subtract_subtract(divide_divide(exp(x), '2', 68), divide_divide(exp(subtract_negate(x)), '2', 68)), 64));
-}
-// Cosine functions
-function cos(x) {
-    if (compareTo_greaterThan(abs_abs(x), PI)) {
-        x = modulus(add_add(x, PI_DIV_2), PI, 64);
-    }
-    return sin(x);
-}
-function acos(x) {
-    validateIsInRange(x, 'acos');
-    return stripTrailingZero_stripTrailingZero(round_roundOff(subtract_subtract(PI_DIV_2, asin(x)), 64));
-}
-function cosh(x) {
-    return stripTrailingZero_stripTrailingZero(round_roundOff(divide_divide(add_add(exp(x), exp(subtract_negate(x))), '2', 68), 64));
-}
-// Tangant functions
-function tan(x) {
-    return stripTrailingZero_stripTrailingZero(round_roundOff(divide_divide(sin(x), cos(x), 68), 64));
-}
-function atan(x) {
-    if (compareTo_greaterThan(abs_abs(x), '1')) {
-        return stripTrailingZero_stripTrailingZero(subtract_subtract(PI_DIV_2, atan(divide_divide('1', x, 68))));
-    }
-    let result = '0';
-    let n = '0';
-    while (true) {
-        let N = multiply_multiply('2', n);
-        let next = divide_divide(multiply_multiply(intPow('-1', n), intPow(x, add_add(N, '1'))), add_add(N, '1'), 68);
-        if (utils_testTolerance(abs_abs(next), 64)) {
-            return stripTrailingZero_stripTrailingZero(round_roundOff(add_add(result, next), 64));
-        }
-        result = add_add(result, next);
-        n = add_add(n, '1');
-    }
-}
-function atan2(y, x) {
-    let offset = '0';
-    if (isExatclyZero(x) && isExatclyZero(y)) {
-        return '0';
-    }
-    if (isExatclyZero(x) && compareTo_greaterThan(y, '0')) {
-        return stripTrailingZero_stripTrailingZero(round_roundOff(PI_DIV_2, 64));
-    }
-    if (isExatclyZero(x) && compareTo_lessThan(y, '0')) {
-        return stripTrailingZero_stripTrailingZero(round_roundOff(subtract_negate(PI_DIV_2), 64));
-    }
-    if (compareTo_lessThan(x, '0')) {
-        offset = (compareTo_greaterThan(y, '0', true)) ? PI : subtract_negate(PI);
-    }
-    return stripTrailingZero_stripTrailingZero(round_roundOff(add_add(atan(divide_divide(y, x, 68)), offset), 64));
-}
-function tanh(x) {
-    return stripTrailingZero_stripTrailingZero(round_roundOff(divide_divide(sinh(x), cosh(x), 68), 64));
-}
+const constants_PI_DIV_2_H = '1.5707963267948966192313216916397514420985846996875529104874722961539082031431044993140174126710585339910740432566411533235469223047752911158626797040642405587251420513509692605527798223114744774651909822144054878329667230642378241168933915826356009545728242834617301743052271633241066968036301245706368622935033031577940874407604604814146270458576821839462951800056652652744102332606920734759707558047165286351828797959765460930586909663058965525592740372311899813747836759428763624456139690915059745649168366812203283215430106974731976123685953510899304718513852696085881465883761923374092338347025660002840635726317804138928856713788948045868185893607342204506124767150732747926855253961398446294617710099780560645109804320172090799068148873856549802593536056749999991864890249755298658664080481592975122297276734541513212611541266723425176309655940855050015689193764432937666041907103085888345736517991267452143777343655797814319411768937968759788909288902660856134033065009639383055979546082100994690476286005327429316394';
+const PI_DIV_2_M = '1.57079632679489661923132169163975144209858469968755291048747229615390820314310449931401741267105853399107404325664115332354692230477529111586267970406424055872514205135096926055277982231147447746519098221440548783296672306423782411689339158263560095457282428346173017430522716332410669680363012457063686229350330315779408744076046048141462704585768218394629518000566526527441023326069207347597075580471652863518287979597654609305869096630589655255927403723118998137478367594287636244561396909150597456491683668122';
+const PI_DIV_2_L = '1.57079632679489661923132169163975144209858469968755291048747229615390820314310449931401741267105853399107404325664115332354692230';
+const constants_PI_DIV_4 = '0.7853981633974483096156608458198757210492923498437764552437361480769541015715522496570087063355292669955370216283205766617734611523876455579313398520321202793625710256754846302763899111557372387325954911072027439164833615321189120584466957913178004772864121417308650871526135816620533484018150622853184311467516515788970437203802302407073135229288410919731475900028326326372051166303460367379853779023582643175914398979882730465293454831529482762796370186155949906873918379714381812228069845457529872824584183406101641607715053487365988061842976755449652359256926348042940732941880961687046169173512830001420317863158902069464428356894474022934092946803671102253062383575366373963427626980699223147308855049890280322554902160086045399534074436928274901296768028374999995932445124877649329332040240796487561148638367270756606305770633361712588154827970427525007844596882216468833020953551542944172868258995633726071888671827898907159705884468984379894454644451330428067016532504819691527989773041050497345238143002663714658197';
 
 ;// CONCATENATED MODULE: ./lib/statistics.js
-
 
 
 
@@ -1283,30 +1081,344 @@ function stdDv(numbers) {
     validateArray(numbers, 'stdDv');
     if (numbers.length === 1)
         return '0';
-    return sqRoot(variance(numbers));
+    return pow_sqRoot(variance(numbers));
 }
 ;
-function factorial(n) {
+const factorialMemmory = ['0', '1'];
+function statistics_factorial(n) {
     validateInteger(n, 'factorial');
     validatePositive(n, 'factorial');
-    if (isExatclyZero(n) || isExatclyOne(n)) {
+    if (compareTo_isExatclyZero(n) || compareTo_isExatclyOne(n)) {
         return '1';
     }
-    let result = n;
+    if (factorialMemmory[n])
+        return factorialMemmory[n];
+    const memmory = (factorialMemmory.length - 1).toString();
+    let i = BigInt(memmory);
+    let result = BigInt(factorialMemmory[memmory]);
     while (true) {
-        if (isExatclyOne(n))
-            return result;
-        let next = subtract_subtract(n, '1');
-        result = multiply_multiply(result, next);
-        n = next;
+        if (i.toString() == n)
+            return result.toString();
+        i++;
+        result = result * i;
+        if (!factorialMemmory[i.toString()])
+            factorialMemmory[i.toString()] = result.toString();
     }
 }
 function subfactorial(n) {
     validateInteger(n, 'subfactorial');
     validatePositive(n, 'subfactorial');
-    if (isExatclyZero(n) || isExatclyOne(n))
+    if (compareTo_isExatclyZero(n) || compareTo_isExatclyOne(n))
         return '1';
-    return round_roundOff(divide_divide(factorial(n), E));
+    return round_roundOff(divide_divide(statistics_factorial(n), E));
+}
+
+;// CONCATENATED MODULE: ./lib/logarithm.js
+
+
+
+
+
+
+
+
+
+
+
+
+
+function Euler(precision = 64) {
+    precision = Math.max(16, precision);
+    let result = '1';
+    let n = '1';
+    let f = '1';
+    while (true) {
+        f = factorial(n);
+        const next = divide('1', f, precision + 3);
+        if (testTolerance(abs(next), precision)) {
+            return stripTrailingZero(roundOff(result, precision));
+        }
+        result = add(result, next);
+        n = add(n, '1');
+    }
+}
+function exp(exponent, precision = 32) {
+    exponent = stripTrailingZero_stripTrailingZero(exponent);
+    if (compareTo_isExatclyZero(exponent))
+        return '1';
+    if (!exponent.includes('.')) {
+        let intExp = intPow(E, exponent);
+        if (exponent[0] == '-')
+            intExp = divide_divide('1', intExp, precision);
+        return stripTrailingZero_stripTrailingZero(round_roundOff(intExp, precision));
+    }
+    let result = '1';
+    let n = '1';
+    let f = '1';
+    while (true) {
+        f = statistics_factorial(n);
+        const next = stripTrailingZero_stripTrailingZero(divide_divide(intPow(exponent, n), f, precision + parseInt(n)));
+        if (utils_testTolerance(abs_abs(next), precision + parseInt(n))) {
+            return stripTrailingZero_stripTrailingZero(round_roundOff(add_add(result, next), precision));
+        }
+        result = add_add(result, next);
+        n = add_add(n, '1');
+    }
+}
+function expm1(exponent) {
+    return subtract_subtract(exp(exponent), '1');
+}
+function ln(x = '2') {
+    validateGTZero(x, 'ln');
+    if (stripTrailingZero_stripTrailingZero(x) == '1') {
+        return '0'; // ln(1) = 0
+    }
+    // Reduce x to range [1,2)
+    let m = BigInt(x.split('.')[0]);
+    let p = 1n;
+    let k = 0n;
+    while (m > 1n) {
+        m = m >> 1n;
+        p = p << 1n;
+        k = k + 1n;
+    }
+    x = divide_divide(x, p.toString(), 68);
+    const term = stripTrailingZero_stripTrailingZero(divide_divide(subtract_subtract(x, '1'), add_add(x, '1'), 68));
+    const f = stripTrailingZero_stripTrailingZero(multiply_multiply(term, term));
+    let t = term;
+    let result = '0';
+    let i = 1n;
+    while (true) {
+        let next = stripTrailingZero_stripTrailingZero(round_roundOff(multiply_multiply(divide_divide('1', i.toString(), 68 + 4), t), 68));
+        if (utils_testTolerance(next, 68)) {
+            return stripTrailingZero_stripTrailingZero(round_roundOff(add_add(multiply_multiply(k.toString(), LN2_L), multiply_multiply('2', add_add(result, next))), 64));
+        }
+        i = i + 2n;
+        t = stripTrailingZero_stripTrailingZero(round_roundOff(multiply_multiply(t, f), 68 + 2));
+        result = add_add(result, next);
+    }
+}
+function ln2(x = '2') {
+    validateGTZero(x, 'ln2');
+    if (compareTo_isExatclyOne(x)) {
+        return '0'; // ln(1) = 0
+    }
+    let result = '0';
+    while (compareTo_greaterThan(x, '2', true)) {
+        x = stripTrailingZero_stripTrailingZero(divide_divide(x, '2', 68));
+        result = add_add(result, '1');
+    }
+    if (compareTo_isExatclyOne(x))
+        return result;
+    return stripTrailingZero_stripTrailingZero(round_roundOff(add_add(result, divide_divide(ln(x), LN2, 68)), 64));
+}
+function log(base) {
+    return ln(base);
+}
+function log10(base) {
+    return round_roundOff(divide_divide(ln(base), LN10, 68), 64);
+}
+
+;// CONCATENATED MODULE: ./lib/trig.js
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Hypotenuse 
+function hypot(a, b) {
+    return pow_sqRoot(add_add(intPow(a, '2'), add_add(intPow(b, '2'))));
+}
+// Sine functions
+function sin(x, precision = 64) {
+    // const p = roundOff(multiply(PI, '2'), 132);
+    if (compareTo_greaterThan(abs_abs(x), PI2)) {
+        x = modulus(x, PI2, precision + 64);
+    }
+    let result = x;
+    let n = '1'; // Series iteration
+    let s = '-1';
+    let r = x;
+    while (true) {
+        r = round_roundOff(multiply_multiply(multiply_multiply(r, x), x), precision + 16);
+        const N = add_add(multiply_multiply(n, '2'), '1'); // Next real term in series (even terms cancel)
+        const next = round_roundOff(multiply_multiply(s, divide_divide(r, statistics_factorial(N), precision + 12)), precision + 8);
+        if (utils_testTolerance(abs_abs(next), precision + 4)) {
+            result = add_add(result, next);
+            return stripTrailingZero_stripTrailingZero(round_roundOff(result, precision));
+        }
+        result = add_add(result, next);
+        n = add_add(n, '1');
+        s = subtract_negate(s);
+    }
+}
+// export function asin(x: string) {
+//     validateIsInRange(x, 'asin');
+//     if (isExatclyOne(abs(x))) return roundOff(((sign(x) == 1) ? PI_DIV_2_H : negate(PI_DIV_2_H)), 64);
+//     if (isExatclyZero(abs(x))) return '0';
+//     let result = '0';
+//     let n = '1';
+//     let p = '1';
+//     let k = '1';
+//     while (true) {
+//         const N = multiply(n, '2');
+//         const R = add(N, '1');
+//         p = multiply(p, N);
+//         k = multiply(k, subtract(N, '1'));
+//         let next = divide(multiply(k, intPow(x, R)), multiply(p, R), 68);
+//         // let next = divide(multiply(factorial(N), intPow(x, R)), multiply(multiply(intPow('2', N), intPow(factorial(n), '2')), R), 68);
+//         if (testTolerance(next, 64)) {
+//             result = add(result, next);
+//             return stripTrailingZero(roundOff(add(result, x), 64));
+//         }
+//         result = add(result, next);
+//         n = add(n, '1');
+//     }
+// }
+function asin(x) {
+    validateIsInRange(x, 'asin');
+    if (compareTo_isExatclyOne(abs_abs(x)))
+        return round_roundOff(((utils_sign(x) == 1) ? constants_PI_DIV_2_H : subtract_negate(constants_PI_DIV_2_H)), 64);
+    if (compareTo_isExatclyZero(abs_abs(x)))
+        return '0';
+    let result = '0';
+    let n = '1';
+    let u = '1';
+    let v = '1';
+    while (true) {
+        const N = multiply_multiply(n, '2');
+        const R = add_add(N, '1');
+        u = multiply_multiply(u, N);
+        v = multiply_multiply(v, subtract_subtract(N, '1'));
+        let next = divide_divide(multiply_multiply(v, intPow(x, R)), multiply_multiply(u, R), 68);
+        if (utils_testTolerance(next, 64)) {
+            result = add_add(result, next);
+            return stripTrailingZero_stripTrailingZero(round_roundOff(add_add(result, x), 64));
+        }
+        result = add_add(result, next);
+        if (compareTo_greaterThan(abs_abs(x), '.8'))
+            return atan(divide_divide(x, pow_sqRoot(subtract_subtract('1', multiply_multiply(x, x)), 68), 68));
+        n = add_add(n, '1');
+    }
+}
+function asinEnhanced(x, theta = '0') {
+    console.warn(`[arcsine]: Value of ${x} is slow to calculate. Switching to alternative Newton approximation.`);
+    let lower = '-' + roundOff(PI_DIV_2_H, 68);
+    let upper = roundOff(PI_DIV_2_H, 68);
+    let step = roundOff(PI_DIV_4, 68);
+    let currentSin = sin(theta, 68);
+    let previousDifference = subtract(x, currentSin);
+    while (true) {
+        let difference = stripTrailingZero(subtract(x, currentSin));
+        // previousTheta = theta;
+        if (testTolerance(abs(difference), 64)) {
+            return stripTrailingZero(roundOff(theta, 64));
+        }
+        if (lessThan(abs(previousDifference), abs(difference))) {
+            if (greaterThan(difference, '0')) {
+                lower = theta;
+            }
+            else {
+                upper = theta;
+            }
+            theta = divide(add(lower, upper), '2', 68);
+        }
+        else {
+            const cosTheta = sqRoot(multiply(subtract('1', currentSin), add('1', currentSin)), 68);
+            if (greaterThan(abs(cosTheta), tolerance(8))) {
+                theta = add(theta, divide(difference, cosTheta, 68));
+            }
+            else {
+                theta = add(theta, multiply(step, sign(difference).toString()));
+            }
+        }
+        if (testTolerance(abs(difference), 64)) {
+            return stripTrailingZero(roundOff(theta, 64));
+        }
+        currentSin = sin(theta, 128);
+        step = multiply(abs(difference), '.5');
+        previousDifference = difference;
+    }
+}
+function sinh(x) {
+    const e = exp(x);
+    return stripTrailingZero_stripTrailingZero(round_roundOff(multiply_multiply(subtract_subtract(e, divide_divide('1', e, 68)), '.5'), 64));
+    // return stripTrailingZero(roundOff(subtract(divide(exp(x), '2', 68), divide(exp(negate(x)), '2', 68)), 64));
+}
+// Cosine functions
+function cos(x, precision = 64) {
+    x = add_add(x, PI_DIV_2_L);
+    if (compareTo_greaterThan(abs_abs(x), PI)) {
+        x = modulus(x, PI, precision + 4);
+    }
+    return sin(x, precision);
+}
+function acos(x) {
+    validateIsInRange(x, 'acos');
+    return stripTrailingZero_stripTrailingZero(round_roundOff(subtract_subtract(constants_PI_DIV_2_H, asin(x)), 64));
+}
+function cosh(x) {
+    return stripTrailingZero_stripTrailingZero(round_roundOff(divide_divide(add_add(exp(x), exp(subtract_negate(x))), '2', 68), 64));
+}
+// Tangant functions
+function tan(x) {
+    const sinTheta = sin(x, 68);
+    const cosTheta = pow_sqRoot(multiply_multiply(subtract_subtract('1', sinTheta), add_add('1', sinTheta)), 68);
+    return stripTrailingZero_stripTrailingZero(round_roundOff(divide_divide(sinTheta, cosTheta, 68), 64));
+}
+function atan(x) {
+    if (compareTo_greaterThan(abs_abs(x), '1')) {
+        return stripTrailingZero_stripTrailingZero(round_roundOff(subtract_subtract(PI_DIV_2_L, atan(divide_divide('1', x, 68))), 64));
+    }
+    let i = 1;
+    while (compareTo_greaterThan(abs_abs(x), '.01')) {
+        x = divide_divide(x, add_add('1', pow_sqRoot(add_add('1', multiply_multiply(x, x)), 72)), 68);
+        i = i << 1;
+    }
+    const q = multiply_multiply(x, x);
+    let result = '0';
+    let p = x;
+    let n = 1n;
+    let s = '1';
+    while (true) {
+        let next = divide_divide(multiply_multiply(s, p), n.toString(), 68);
+        if (utils_testTolerance(abs_abs(next), 64)) {
+            return stripTrailingZero_stripTrailingZero(round_roundOff(multiply_multiply((i).toString(), add_add(result, next)), 64));
+        }
+        result = add_add(result, next);
+        n = n + 2n;
+        p = multiply_multiply(p, q);
+        s = subtract_negate(s);
+    }
+}
+function atan2(y, x) {
+    let offset = '0';
+    if (compareTo_isExatclyZero(x) && compareTo_isExatclyZero(y)) {
+        return '0';
+    }
+    if (compareTo_isExatclyZero(x) && compareTo_greaterThan(y, '0')) {
+        return stripTrailingZero_stripTrailingZero(round_roundOff(constants_PI_DIV_2_H, 64));
+    }
+    if (compareTo_isExatclyZero(x) && compareTo_lessThan(y, '0')) {
+        return stripTrailingZero_stripTrailingZero(round_roundOff(subtract_negate(constants_PI_DIV_2_H), 64));
+    }
+    if (compareTo_lessThan(x, '0')) {
+        offset = (compareTo_greaterThan(y, '0', true)) ? PI : subtract_negate(PI);
+    }
+    return stripTrailingZero_stripTrailingZero(round_roundOff(add_add(atan(divide_divide(y, x, 68)), offset), 64));
+}
+function tanh(x) {
+    return stripTrailingZero_stripTrailingZero(round_roundOff(divide_divide(sinh(x), cosh(x), 68), 64));
 }
 
 ;// CONCATENATED MODULE: ./lib/big-decimal.js
@@ -1523,17 +1635,17 @@ class bigDecimal {
     }
     // Roots
     static get SQRT1_2() {
-        return sqRoot('.5');
+        return pow_sqRoot('.5');
     }
     static get SQRT2() {
-        return sqRoot('2');
+        return pow_sqRoot('2');
     }
     static sqRoot(number) {
         number = bigDecimal.validate(number);
-        return sqRoot(number);
+        return pow_sqRoot(number);
     }
     sqRoot() {
-        return new bigDecimal(sqRoot(this.value));
+        return new bigDecimal(pow_sqRoot(this.value));
     }
     static cbRoot(number) {
         number = bigDecimal.validate(number);
@@ -1575,8 +1687,8 @@ class bigDecimal {
     // Trig
     static PI = PI;
     static PI2 = PI2;
-    static PI_DIV_2 = PI_DIV_2;
-    static PI_DIV_4 = PI_DIV_4;
+    static PI_DIV_2 = constants_PI_DIV_2_H;
+    static PI_DIV_4 = constants_PI_DIV_4;
     static hypot(a, b) {
         a = bigDecimal.validate(a);
         b = bigDecimal.validate(b);
@@ -1646,7 +1758,7 @@ class bigDecimal {
     }
     static factorial(number) {
         number = bigDecimal.validate(number);
-        return factorial(number);
+        return statistics_factorial(number);
     }
     static subfactorial(number) {
         number = bigDecimal.validate(number);
@@ -1703,10 +1815,10 @@ class bigDecimal {
     }
     static sign(number) {
         number = bigDecimal.validate(number);
-        return sign(number);
+        return utils_sign(number);
     }
     sign() {
-        return sign(this.value);
+        return utils_sign(this.value);
     }
     // Misc.
     static min(numbers) {
