@@ -12,7 +12,7 @@ import { cbRoot, pow, sqRoot } from "./pow";
 import { clamp, invlerp, lerp, max, min, random, sign, step } from "./utils";
 import { acos, asin, atan, atan2, cos, cosh, hypot, sin, sinh, tan, tanh } from "./trig";
 import { log, ln2, log10, exp, expm1 } from "./logarithm";
-import { E, LN10, LN2, LOG2E, LOG10E, PI, PI2, PI_DIV_2, PI_DIV_4 } from "./constants";
+import { E, LN10, LN2, LOG2E, LOG10E, PI, PI2, PI_DIV_2_H, PI_DIV_4 } from "./constants";
 import { factorial, mean, median, mode, stdDv, subfactorial, variance } from "./statistics";
 
 class bigDecimal {
@@ -300,7 +300,7 @@ class bigDecimal {
   // Trig
   static readonly PI = PI;
   static readonly PI2 = PI2;
-  static readonly PI_DIV_2 = PI_DIV_2;
+  static readonly PI_DIV_2 = PI_DIV_2_H;
   static readonly PI_DIV_4 = PI_DIV_4;
 
   static hypot(a: number|string, b: number|string): string{
