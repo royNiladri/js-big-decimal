@@ -1,6 +1,4 @@
 import { abs } from './abs';
-import { equals } from './compareTo';
-import { multiply } from './multiply';
 import { roundOff } from './round';
 
 export function divide(dividend: string, divisor: string, precission: number = 8) {
@@ -10,8 +8,8 @@ export function divide(dividend: string, divisor: string, precission: number = 8
         return '0' + (!precission) ? '' : '.' + new Array(precission).join('0');
     }
 
-    if (equals(abs(divisor), '1')) {
-        return multiply(dividend, divisor);
+    if (abs(divisor) == '1') {
+        return dividend;
     }
 
     // precission = precission + 2;
@@ -24,7 +22,16 @@ export function divide(dividend: string, divisor: string, precission: number = 8
 
     const findNegativeOffset = /^(?:[0]+)(?:[.])([0]+)(?:\d+)/;
     const trimStart = /^(?:[0]+)([^0.]*)/;
-    const trimEnd = /((?:[.][0])?[0]*)$/;
+    const trimEnd = (n: string) => {
+        while (n[n.length - 1] == '0') {
+            if(n[n.length - 1] == '.'){
+                n = n.substring(0, n.length - 1);
+                break;
+            }
+			n = n.substring(0, n.length - 1);
+		}
+        return n;
+    }
 
     //check for negatives
     if (dividend[0] == '-') {
@@ -42,7 +49,7 @@ export function divide(dividend: string, divisor: string, precission: number = 8
     if (negativeDividend !== negativeDivisor) negativeResult = '-';
 
     if (dividend.includes('.')) {
-        dividend = dividend.replace(trimEnd, "");
+        dividend = trimEnd(dividend)
         if (dividend.includes('.')) {
             if (findNegativeOffset.test(dividend))
                 dividendIndex = -(dividend.replace(findNegativeOffset, '$1').length)
@@ -54,7 +61,7 @@ export function divide(dividend: string, divisor: string, precission: number = 8
     }
 
     if (divisor.includes('.')) {
-        divisor = divisor.replace(trimEnd, "");
+        divisor = trimEnd(divisor)
         if (divisor.includes('.')) {
             if (findNegativeOffset.test(divisor))
                 divisorIndex = -(divisor.replace(findNegativeOffset, '$1').length)
@@ -97,15 +104,17 @@ export function divide(dividend: string, divisor: string, precission: number = 8
     if (intDifference > 0) {
         if (Math.sign(dividendIndex) == Math.sign(divisorIndex) && dividendInt >= (divisorInt * paddingInt))
             resultIndex++
-        else if (Math.sign(dividendIndex) >= 0 && dividendInt >= (divisorInt * paddingInt)) resultIndex++;
+        else if (Math.sign(dividendIndex) >= 0 && dividendInt >= (divisorInt * paddingInt))
+            resultIndex++
+        else if (resultIndex < 0 && dividendInt >= (divisorInt * paddingInt)) resultIndex++;
     } else {
         if ((dividendInt * paddingInt) >= divisorInt) resultIndex++;
     }
 
     if (resultIndex > 0) {
-        return roundOff(negativeResult + (result.substring(0, resultIndex) || '0') + '.' + result.substring(resultIndex), precission)
+        return roundOff(negativeResult + (result.substring(0, resultIndex) || '0') + '.' + result.substring(resultIndex), precission);
     }
 
-    return roundOff(negativeResult + '0.'.padEnd(Math.abs(resultIndex) + 2, '0') + result, precission);
+    return trimEnd(roundOff(negativeResult + '0.'.padEnd(Math.abs(resultIndex) + 2, '0') + result, precission));
 
 }
