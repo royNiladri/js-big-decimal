@@ -158,6 +158,8 @@ export function intPow(base: string, exponent: string) {
 
     let negative = '';
 
+    exponent = abs(exponent);
+
     if (base[0] == '-') {
         base = base.substring(1);
         negative = (isEven(exponent)) ? '' : '-';
@@ -274,30 +276,41 @@ export function bisectionRoot(x: string, n: string, g: string, precision = 32) {
 
 }
 
-export function inverseSqRoot(number: string) {
-    number = number.toString();
+export function inverseSqRoot(x: string, precision = 32) {
 
-    let n = abs(number);
+    const initialGuess = () => {
+        let _x = BigInt(roundOff(x));
+        let _guess = 1n;
 
-    let guess = '1';
+        while (_x > 1n) {
+            _x = _x >> 1n
+            _guess = _guess << 1n;
+        }
+
+        return _guess.toString();
+    }
+
+    x = abs(x);
+
+    let guess = initialGuess();
     let difference = '0'
-    let previousDifference = n
+    let lastDifference = x
     let i = 0;
 
-    while (i < 10) {
-        let newGuess = roundOff(multiply(guess, subtract('1.5', roundOff(multiply(divide(number, '2', 33), pow(guess, '2', 33)), 33))), 33)
+    while (true) {
+        let newGuess = roundOff(multiply(guess, subtract('1.5', roundOff(multiply(multiply(x, '.5'), multiply(guess, guess)), precision + 8))), precision + 4)
 
         difference = abs(subtract(guess, newGuess))
 
-        if (greaterThan(difference, previousDifference)) {
-            return stripTrailingZero(roundOff(guess, 32 + 1))
+        if (greaterThan(difference, lastDifference)) {
+            return stripTrailingZero(roundOff(bisectionRoot(x, '2', newGuess, precision + i), precision));
         }
 
-        if (lessThan(difference, tolerance(32 - 1))) {
-            return stripTrailingZero(roundOff(guess, 32 + 1))
+        if (testTolerance(difference, precision)) {
+            return stripTrailingZero(roundOff(guess, precision))
         }
 
-        previousDifference = difference;
+        lastDifference = difference;
         guess = newGuess;
 
         i++;
@@ -305,9 +318,9 @@ export function inverseSqRoot(number: string) {
 
 }
 
-export function sqRoot(base: string, precision = 32) {
+export function sqRoot(x: string, precision = 32) {
     precision = Math.max(precision, 32);
-    return stripTrailingZero(nthRoot(base, '2', precision));
+    return stripTrailingZero(roundOff(multiply(x, inverseSqRoot(x, precision + 4)), precision));
 }
 
 export function cbRoot(base: string, precision = 32) {
