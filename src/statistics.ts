@@ -1,5 +1,5 @@
 import { add } from "./add";
-import { compareTo, isExatclyOne, isExatclyZero, isOdd } from "./compareTo";
+import { compareTo, equals, isExatclyOne, isExatclyZero, isOdd } from "./compareTo";
 import { E } from "./constants";
 import { divide } from "./divide";
 import { multiply } from "./multiply";
@@ -75,6 +75,8 @@ export function stdDv(numbers: string[]) {
     return sqRoot(variance(numbers));
 };
 
+export const factorialMemmory: string[] = ['0', '1'];
+
 export function factorial(n: string): string {
     validateInteger(n, 'factorial');
     validatePositive(n, 'factorial');
@@ -83,15 +85,18 @@ export function factorial(n: string): string {
         return '1';
     }
 
-    let result = n;
+    if (factorialMemmory[n]) return factorialMemmory[n];
+
+    const memmory = (factorialMemmory.length - 1).toString();
+    let i = BigInt(memmory);
+    let result = BigInt(factorialMemmory[memmory]);
 
     while (true) {
+        if (i.toString() == n) return result.toString();
 
-        if (isExatclyOne(n)) return result;
-
-        let next = subtract(n, '1');
-        result = multiply(result, next);
-        n = next;
+        i++;
+        result = result * i
+        if (!factorialMemmory[i.toString()]) factorialMemmory[i.toString()] = result.toString();
     }
 }
 

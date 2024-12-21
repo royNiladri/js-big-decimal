@@ -33,7 +33,7 @@ describe("Statistics", function () {
     });
 
     describe('Statistics Stress Tests', function () {
-        xit("[mean] STRESS TEST - should return 99.99% or more accurate results", function () {
+        it("[mean] STRESS TEST - should return 99.99% or more accurate results", function () {
             let count = 10000,
                 err = 0;
             while (count-- > 0) {
@@ -53,7 +53,7 @@ describe("Statistics", function () {
             expect(successRate).toBeGreaterThanOrEqual(0.9999);
         });
 
-        xit("[median] STRESS TEST - should return 99.99% or more accurate results", function () {
+        it("[median] STRESS TEST - should return 99.99% or more accurate results", function () {
             let count = 10000,
                 err = 0;
             while (count-- > 0) {
@@ -82,7 +82,7 @@ describe("Statistics", function () {
             expect(successRate).toBeGreaterThanOrEqual(0.9999);
         });
 
-        xit("[mode] STRESS TEST - should return 99.99% or more accurate results", function () {
+        it("[mode] STRESS TEST - should return 99.99% or more accurate results", function () {
             let count = 10000,
                 err = 0;
             while (count-- > 0) {
@@ -116,7 +116,7 @@ describe("Statistics", function () {
             expect(successRate).toBeGreaterThanOrEqual(0.9999);
         });
 
-        xit("[variance] STRESS TEST - should return 99.99% or more accurate results", function () {
+        it("[variance] STRESS TEST - should return 99.99% or more accurate results", function () {
             let count = 10000,
                 err = 0;
             while (count-- > 0) {
@@ -143,7 +143,7 @@ describe("Statistics", function () {
             expect(successRate).toBeGreaterThanOrEqual(0.9999);
         });
 
-        xit("[stdDv] STRESS TEST - should return 99.99% or more accurate results", function () {
+        it("[stdDv] STRESS TEST - should return 99.99% or more accurate results", function () {
             let count = 10000,
                 err = 0;
             while (count-- > 0) {
