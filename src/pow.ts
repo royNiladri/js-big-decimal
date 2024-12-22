@@ -9,6 +9,7 @@ import { add } from "./add";
 import { testTolerance, tolerance } from "./utils";
 import { RoundingModes } from "./roundingModes";
 import { validateInteger } from "./validators";
+import { ln2 } from "./logarithm";
 
 /**
  * Calculates the power of a given base raised to an integer exponent
@@ -277,43 +278,34 @@ export function bisectionRoot(x: string, n: string, g: string, precision = 32) {
 }
 
 export function inverseSqRoot(x: string, precision = 32) {
+    x = abs(x);
 
     const initialGuess = () => {
         let _x = BigInt(roundOff(x));
-        let _guess = 1n;
+        let n = 1n;
 
-        while (_x > 1n) {
-            _x = _x >> 1n
-            _guess = _guess << 1n;
+        while (_x > 2n) {
+            _x = _x >> 1n;
+            n = n + 1n;
         }
-
-        return _guess.toString();
+        return stripTrailingZero(pow('2', '-' + stripTrailingZero(divide(n.toString(), '2', precision + 8)), precision + 8));
     }
 
-    x = abs(x);
-
-    let guess = initialGuess();
-    let difference = '0'
-    let lastDifference = x
-    let i = 0;
+    let guess = (greaterThan(x, '2'))?initialGuess(): '1';
+    let difference = '0';
+    // let lastDifference = x;
 
     while (true) {
         let newGuess = roundOff(multiply(guess, subtract('1.5', roundOff(multiply(multiply(x, '.5'), multiply(guess, guess)), precision + 8))), precision + 4)
 
         difference = abs(subtract(guess, newGuess))
 
-        if (greaterThan(difference, lastDifference)) {
-            return stripTrailingZero(roundOff(bisectionRoot(x, '2', newGuess, precision + i), precision));
-        }
-
         if (testTolerance(difference, precision)) {
             return stripTrailingZero(roundOff(guess, precision))
         }
 
-        lastDifference = difference;
+        // lastDifference = difference;
         guess = newGuess;
-
-        i++;
     }
 
 }
@@ -330,7 +322,7 @@ export function cbRoot(base: string, precision = 32) {
 
 export function root4(base: string, precision = 32) {
     precision = Math.max(precision, 32);
-    return stripTrailingZero(sqRoot(sqRoot(base, precision + 4), precision));
+    return stripTrailingZero(nthRoot(base, '4', precision));
 }
 
 export function root5(base: string, precision = 32) {
