@@ -8,10 +8,6 @@ export function divide(dividend: string, divisor: string, precission: number = 8
         return '0' + (!precission) ? '' : '.' + new Array(precission).join('0');
     }
 
-    if (abs(divisor) == '1') {
-        return dividend;
-    }
-
     // precission = precission + 2;
     let negativeDividend: string = '';
     let negativeDivisor: string = '';
@@ -47,6 +43,10 @@ export function divide(dividend: string, divisor: string, precission: number = 8
     }
 
     if (negativeDividend !== negativeDivisor) negativeResult = '-';
+
+    if (divisor == '1') {
+        return negativeResult + dividend;
+    }
 
     if (dividend.includes('.')) {
         dividend = trimEnd(dividend)
@@ -115,6 +115,6 @@ export function divide(dividend: string, divisor: string, precission: number = 8
         return roundOff(negativeResult + (result.substring(0, resultIndex) || '0') + '.' + result.substring(resultIndex), precission);
     }
 
-    return trimEnd(roundOff(negativeResult + '0.'.padEnd(Math.abs(resultIndex) + 2, '0') + result, precission));
+    return roundOff(negativeResult + '0.'.padEnd(Math.abs(resultIndex) + 2, '0') + result, precission);
 
 }
