@@ -1,11 +1,11 @@
 export declare function hypot(a: string, b: string): string;
 export declare function sin(x: string, precision?: number): string;
-export declare function asin(x: string): any;
+export declare function asin(x: string): string;
 export declare function sinh(x: string): string;
 export declare function cos(x: string, precision?: number): string;
 export declare function acos(x: string): string;
 export declare function cosh(x: string): string;
 export declare function tan(x: string): string;
-export declare function atan(x: string): any;
+export declare function atan(x: string): string;
 export declare function atan2(y: string, x: string): string;
 export declare function tanh(x: string): string;
