@@ -1,7 +1,7 @@
 import { abs } from "./abs";
 import { add } from "./add";
 import { greaterThan, isExatclyOne, isExatclyZero, lessThan } from "./compareTo";
-import { PI, PI2, PI_DIV_2_H, PI_DIV_2_L, PI_DIV_4 } from "./constants";
+import { PI, PI2, PI3_DIV_2_L, PI_DIV_2_H, PI_DIV_2_L, PI_DIV_4 } from "./constants";
 import { divide } from "./divide";
 import { exp } from "./logarithm";
 import { modulus } from "./modulus";
@@ -48,79 +48,80 @@ export function sin(x: string, precision = 64) {
 }
 
 export function asin(x: string) {
+    x = stripTrailingZero(x);
     validateIsInRange(x, 'asin');
     if (isExatclyOne(abs(x))) return roundOff(((sign(x) == 1) ? PI_DIV_2_H : negate(PI_DIV_2_H)), 64);
     if (isExatclyZero(abs(x))) return '0';
+    return atan(divide(x, sqRoot(subtract('1', roundOff(multiply(x,x), 76)), 72), 68));
+    // let result = '0';
+    // let n = '1';
+    // let u = '1';
+    // let v = '1';
+    // while (true) {
 
-    let result = '0';
-    let n = '1';
-    let u = '1';
-    let v = '1';
-    while (true) {
+    //     const N = multiply(n, '2');
+    //     const R = add(N, '1');
 
-        const N = multiply(n, '2');
-        const R = add(N, '1');
+    //     u = multiply(u, N);
+    //     v = multiply(v, subtract(N, '1'));
 
-        u = multiply(u, N);
-        v = multiply(v, subtract(N, '1'));
+    //     let next = divide(multiply(v, intPow(x, R)), multiply(u, R), 68);
 
-        let next = divide(multiply(v, intPow(x, R)), multiply(u, R), 68);
+    //     if (testTolerance(next, 64)) {
+    //         result = add(result, next);
+    //         return stripTrailingZero(roundOff(add(result, x), 64));
+    //     }
 
-        if (testTolerance(next, 64)) {
-            result = add(result, next);
-            return stripTrailingZero(roundOff(add(result, x), 64));
-        }
+    //     result = add(result, next);
 
-        result = add(result, next);
+    //     if (greaterThan(abs(x), '.8')) return atan(divide(x, sqRoot(subtract('1', multiply(x,x)), 72), 68));
+    //     n = add(n, '1');
 
-        if (greaterThan(abs(x), '.8')) return atan(divide(x, sqRoot(subtract('1', multiply(x,x)), 68), 68))
-        n = add(n, '1');
-
-    }
+    // }
 }
 
-function asinEnhanced(x: string, theta = '0') {
-    console.warn(`[arcsine]: Value of ${x} is slow to calculate. Switching to alternative Newton approximation.`);
+// function asinEnhanced(x: string, theta = '0') {
+//     console.warn(`[arcsine]: Value of ${x} is slow to calculate. Switching to alternative Newton approximation.`);
 
-    let lower = '-' + roundOff(PI_DIV_2_H, 68);
-    let upper = roundOff(PI_DIV_2_H, 68);
-    let step = roundOff(PI_DIV_4, 68);
-    let currentSin = sin(theta, 68);
-    let previousDifference = subtract(x, currentSin);
+//     let lower = '-' + roundOff(PI_DIV_2_H, 68);
+//     let upper = roundOff(PI_DIV_2_H, 68);
+//     let step = roundOff(PI_DIV_4, 68);
+//     let currentSin = sin(theta, 68);
+//     let previousDifference = subtract(x, currentSin);
 
-    while (true) {
-        let difference = stripTrailingZero(subtract(x, currentSin));
+//     while (true) {
+//         let difference = stripTrailingZero(subtract(x, currentSin));
 
-        if (testTolerance(abs(difference), 64)) {
-            return stripTrailingZero(roundOff(theta, 64))
-        }
+//         if (testTolerance(abs(difference), 64)) {
+//             return stripTrailingZero(roundOff(theta, 64))
+//         }
 
-        if (lessThan(abs(previousDifference), abs(difference))) {
-            if (greaterThan(difference, '0')) {
-                lower = theta;
-            } else {
-                upper = theta;
-            }
-            theta = divide(add(lower, upper), '2', 68);
-        } else {
-            const cosTheta = sqRoot(multiply(subtract('1', currentSin), add('1', currentSin)), 68);
-            if (greaterThan(abs(cosTheta), tolerance(8))) {
-                theta = add(theta, divide(difference, cosTheta, 68));
-            } else {
-                theta = add(theta, multiply(step, sign(difference).toString()));
-            }
-        }
+//         if (lessThan(abs(previousDifference), abs(difference))) {
+//             if (greaterThan(difference, '0')) {
+//                 lower = theta;
+//             } else {
+//                 upper = theta;
+//             }
+//             theta = divide(add(lower, upper), '2', 68);
+//         } else {
+//             const cosTheta = sqRoot(multiply(subtract('1', currentSin), add('1', currentSin)), 68);
+//             if (greaterThan(abs(cosTheta), tolerance(8))) {
+//                 theta = add(theta, divide(difference, cosTheta, 68));
+//             } else {
+//                 theta = add(theta, multiply(step, sign(difference).toString()));
+//             }
+//         }
 
-        if (testTolerance(abs(difference), 64)) {
-            return stripTrailingZero(roundOff(theta, 64));
-        }
+//         if (testTolerance(abs(difference), 64)) {
+//             return stripTrailingZero(roundOff(theta, 64));
+//         }
 
-        currentSin = sin(theta, 128);
-        step = multiply(abs(difference), '.5');
-        previousDifference = difference;
-    }
+//         currentSin = sin(theta, 128);
+//         step = multiply(abs(difference), '.5');
+//         previousDifference = difference;
+//     }
 
-}
+// }
 
 export function sinh(x: string) {
     const e = exp(x);
@@ -131,16 +132,18 @@ export function sinh(x: string) {
 // Cosine functions
 
 export function cos(x: string, precision = 64) {
-    x = add(x, PI_DIV_2_L);
-    if (greaterThan(abs(x), PI)) {
-        x = modulus(x, PI, precision + 4);
-    }
+    let negative = '';
+    x = modulus(x, PI2, precision + 4);
+    if(lessThan(PI_DIV_2_L, abs(x), true) && lessThan(abs(x), PI3_DIV_2_L)) negative = '-';
 
-    return sin(x, precision);
+    const s = sin(x, precision + 4);
+    return negative + sqRoot(multiply(subtract('1', s), add('1', s)), 68);
 }
 
 export function acos(x: string) {
+    x = stripTrailingZero(x);
     validateIsInRange(x, 'acos');
+    // return stripTrailingZero(roundOff(multiply('2', atan(sqRoot(divide(subtract('1', x), add('1', x), 72), 68))), 64));
     return stripTrailingZero(roundOff(subtract(PI_DIV_2_H, asin(x)), 64));
 }
 
@@ -151,20 +154,16 @@ export function cosh(x: string) {
 // Tangant functions
 
 export function tan(x: string) {
-    const sinTheta = sin(x, 68);
-    const cosTheta = sqRoot(multiply(subtract('1', sinTheta), add('1', sinTheta)), 68);
-    return stripTrailingZero(roundOff(divide(sinTheta, cosTheta, 68), 64));
+    const {s, c} = cosAndSin(x, 68);
+    return stripTrailingZero(roundOff(divide(s, c, 68), 64));
 }
 
 export function atan(x: string) {
-    if (greaterThan(abs(x), '1')) {
-        return stripTrailingZero(roundOff(subtract(PI_DIV_2_L, atan(divide('1', x, 68))), 64));
-    }
 
     let i = 1;
 
-    while(greaterThan(abs(x),'.01')){
-        x = divide(x, add('1', sqRoot(add('1', multiply(x,x)), 72)), 68);
+    while(greaterThan(abs(x),'.05')){
+        x = divide(x, add('1', sqRoot(add('1', roundOff(multiply(x,x), 76)), 72)), 68);
         i = i << 1;
     }
     
@@ -174,13 +173,13 @@ export function atan(x: string) {
     let n = 1n;
     let s = '1';
     while (true) {
-        let next = divide(multiply(s, p), n.toString(), 68)
+        let next = divide(roundOff(multiply(s, p), 72), n.toString(), 68)
         if (testTolerance(abs(next), 64)) {
             return stripTrailingZero(roundOff(multiply((i).toString(), add(result, next)), 64));
         }
         result = add(result, next);
         n = n + 2n;
-        p = multiply(p, q);
+        p = roundOff(multiply(p, q), 76);
         s = negate(s);
     }
 }
@@ -210,4 +209,15 @@ export function atan2(y: string, x: string) {
 
 export function tanh(x: string) {
     return stripTrailingZero(roundOff(divide(sinh(x), cosh(x), 68), 64));
+}
+
+function cosAndSin(x: string, precision = 64) {
+    let negative = '';
+    x = modulus(x, PI2, precision + 4);
+    if(lessThan(PI_DIV_2_L, abs(x), true) && lessThan(abs(x), PI3_DIV_2_L)) negative = '-';
+
+    const s = sin(x, precision + 4);
+    const c = negative + sqRoot(multiply(subtract('1', s), add('1', s)), 68);
+
+    return {s,c}
 }
