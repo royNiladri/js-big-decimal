@@ -4,91 +4,18 @@ import { multiply } from './multiply';
 import { negate, subtract } from './subtract';
 import { RoundingModes } from './roundingModes';
 import { abs } from './abs';
+import { validateDivideByZero } from './validators';
+import { stripTrailingZero } from './stripTrailingZero';
 
-
-// export function modulus(dividend: number | string, divisor: number | string) {
-//     if (divisor == 0) {
-//         throw new Error('Cannot divide by 0');
-//     }
-
-//     dividend = dividend.toString();
-//     divisor = divisor.toString();
-
-//     validate(dividend);
-//     validate(divisor);
-
-//     let sign = '';
-//     if (dividend[0] == '-') {
-//         sign = '-';
-//         dividend = dividend.substr(1);
-//     }
-//     if (divisor[0] == '-') {
-//         divisor = divisor.substr(1);
-//     }
-
-//     let result = subtract(dividend, multiply(divisor, roundOff(divide(dividend, divisor), 0, RoundingModes.FLOOR)));
-//     return sign + result;
-// }
-
-// function validate(oparand: string) {
-//     if (oparand.indexOf('.') != -1) { // oparand.includes('.') could also work here
-//         throw new Error('Modulus of non-integers not supported');
-//     }
-// }
-
-
-// For technical purposes, this is actually Remainder, and not Modulus (Euclidean division).
-// Could seperate the Modulus equation into its own function,
-// then use it within the Remainder function after proper negation.
-// Proper neation only depends on the sign of the dividend, where the result takes the sign
-// of the divident, and ignores the sign of the divisor. For this effect, the absolute values of
-// each oparand is used, then the original sign of the divident dictates 
-// nagation of the result to negative or not.
-
-
-// To ensure backwards compatibility, the new Modulus function could be named 'modulusE',
-// where 'E' denotes 'Euclidean' in 'Euclidean division'.
-
-// Sugested changes are bellow
-
-export function modulusE(n: number | string, base: number | string = '1', percision: number | undefined = undefined) {
-    if (base == 0) {
-        throw new Error('Cannot divide by 0');
-    }
-
-    n = n.toString();
-    base = base.toString();
-
-    validate(n);
-    validate(base);
-
-    return subtract(n, multiply(base, roundOff(divide(n, base, percision), 0, RoundingModes.FLOOR)));
+export function modulusE(n: string, base: string = '1', precision: number = 64) {
+    validateDivideByZero(base, 'modulus');
+    return stripTrailingZero(roundOff(subtract(n, multiply(base, roundOff(divide(n, base, precision + 1), 0, RoundingModes.FLOOR))), precision));
 }
 
-export function modulus(dividend: number | string, divisor: number | string, percision: number | undefined = undefined) {
-    if (divisor == 0) {
-        throw new Error('Cannot divide by 0');
-    }
-
-    dividend = dividend.toString();
-    divisor = divisor.toString();
-
-    validate(dividend);
-    validate(divisor);
-
-    let sign = false;
-    if (dividend[0] == '-') { // or dividend.includes('-')
-        sign = true;
-    }
-
-    const result = modulusE(abs(dividend), abs(divisor), percision);
-    return (sign) ? negate(result) : result;
-}
-
-function validate(oparand: string) {
-    if (oparand.indexOf('.') != -1) { // or oparand.includes('.')
-        throw new Error('Modulus of non-integers not supported');
-    }
+export function modulus(n: string, base: string = '1', precision: number = 64) {
+    validateDivideByZero(base, 'modulus');
+    const result = modulusE(abs(n), abs(base), precision);
+    return stripTrailingZero((n.includes('-')) ? negate(result) : result);
 }
 
 

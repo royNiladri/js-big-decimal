@@ -15,6 +15,8 @@
     "compile:watch": "chokidar \"src/**/*.ts\" -c \"npm run compile\"",
     "dist": "gulp dist",
     "dist:watch": "chokidar \"lib/**/*.js\" -c \"npm run dist\"",
+    "start-min": "npm-run-all -s --parallel compile dist",
+    "start-min:watch": "npm-run-all -s --parallel compile:watch dist:watch",
     "start": "npm-run-all -s --parallel compile:watch test:watch dist:watch",
     "toc": "doctoc --title \"## Contents\" ./README.md"
   },

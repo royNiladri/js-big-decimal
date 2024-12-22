@@ -1,4 +1,4 @@
-import { compareTo } from "./compareTo";
+import { compareTo, equals, greaterThan, lessThan } from "./compareTo";
 
 describe("compareTo", function () {
   it("should be defined", function () {
@@ -66,4 +66,45 @@ describe("compareTo", function () {
   it("should: -0, 0 = 0", function () {
     expect(compareTo("-0", "0")).toBe(0);
   });
+
+  describe('Wrapper functions', function () {
+    describe('lessThan', function () {
+      it("should: -1 < 0 is true", function () {
+        expect(lessThan("-1", "0")).toBeTruthy()
+      });
+      it("should: 0 < 0 is false", function () {
+        expect(lessThan("0", "0")).toBeFalsy()
+      });
+      it("should: -1 =< 0 is true", function () {
+        expect(lessThan("-1", "0", true)).toBeTruthy()
+      });
+      it("should: 0 =< 0 is true", function () {
+        expect(lessThan("0", "0", true)).toBeTruthy()
+      });
+    });
+    describe('greaterThan', function () {
+      it("should: 1 > 0 is true", function () {
+        expect(greaterThan("1", "0")).toBeTruthy()
+      });
+      it("should: 0 < 0 is false", function () {
+        expect(greaterThan("0", "0")).toBeFalsy()
+      });
+      it("should: -1 >= 0 is true", function () {
+        expect(greaterThan("1", "0", true)).toBeTruthy()
+      });
+      it("should: 0 >= 0 is true", function () {
+        expect(greaterThan("0", "0", true)).toBeTruthy()
+      });
+    });
+    describe('equals', function () {
+      it("should: 1 = 0 is false", function () {
+        expect(equals("1", "0")).toBeFalsy()
+      });
+      it("should: 0 = 0 is true", function () {
+        expect(equals("0", "0")).toBeTruthy()
+      });
+    });
+  });
 });
+
+

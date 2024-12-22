@@ -1,8 +1,8 @@
 import { multiply } from "./multiply";
 
 describe("multiply", function () {
-  xit("STRESS TEST - should return correct result", function () {
-    let count = 100,
+  it("STRESS TEST - should return correct result", function () {
+    let count = 10000,
       err = 0;
     while (count-- > 0) {
       let dividend = Math.round(
@@ -14,7 +14,7 @@ describe("multiply", function () {
       //if(divisor==0)
       //continue;
       let jsOut = dividend * divisor;
-      let myOut = parseFloat(multiply(dividend, divisor));
+      let myOut = parseFloat(multiply(dividend.toString(), divisor.toString()));
       if (Math.abs(jsOut - myOut) > 0.001) {
         //console.log(`${dividend}/${divisor} = ${jsOut} != ${myOut}`);
         err++;

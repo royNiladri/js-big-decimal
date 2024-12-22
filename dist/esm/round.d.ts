@@ -5,4 +5,4 @@ import { RoundingModes } from './roundingModes';
  * @param n precision
  * @param mode Rounding Mode
  */
-export declare function roundOff(input: number | string | bigint, n?: number, mode?: RoundingModes): string;
+export declare function roundOff(input: string, n?: number, mode?: RoundingModes): string;

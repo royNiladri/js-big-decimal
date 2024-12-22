@@ -64,3 +64,4 @@ deploy_rsa.pub
 /*.stackdump
 
 lib
+src/testing.html

@@ -1,1 +1,1 @@
-export declare function multiply(number1: any, number2: any): string;
+export declare function multiply(number1: string, number2: string): string;

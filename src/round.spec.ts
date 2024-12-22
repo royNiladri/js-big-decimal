@@ -251,6 +251,58 @@ describe("round", function () {
     });
   });
 
+  describe("test rounding mode UNNECESSARY", function () {
+    it("should round(5.5, 1, UNNECESSARY) = 5.5", function () {
+      expect(roundOff("5.5", 1, RoundingModes.UNNECESSARY)).toBe("5.5");
+    });
+    it("should round(6.5, 1, UNNECESSARY) = 6.5", function () {
+      expect(roundOff("6.5", 1, RoundingModes.UNNECESSARY)).toBe("6.5");
+    });
+    it("should round(2.6, 1, UNNECESSARY) = 2.6", function () {
+      expect(roundOff("2.6", 1, RoundingModes.UNNECESSARY)).toBe("2.6");
+    });
+    it("should round(1.15, 2, UNNECESSARY) = 1.15", function () {
+      expect(roundOff("1.15", 2, RoundingModes.UNNECESSARY)).toBe("1.15");
+    });
+    it("should round(1.15, 3, UNNECESSARY) = 1.15", function () {
+      expect(roundOff("1.15", 3, RoundingModes.UNNECESSARY)).toBe("1.15");
+    });
+    it("should round(23000.00, -3, UNNECESSARY) = 23000.00", function () {
+      expect(roundOff("23000.00", -3, RoundingModes.UNNECESSARY)).toBe("23000.00");
+    });
+    it("should round(23000.00, -2, UNNECESSARY) = 23000.00", function () {
+      expect(roundOff("23000.00", -2, RoundingModes.UNNECESSARY)).toBe("23000.00");
+    });
+    it("should round(23000.00, 0, UNNECESSARY) = 23000.00", function () {
+      expect(roundOff("23000.00", 0, RoundingModes.UNNECESSARY)).toBe("23000.00");
+    });
+    it("should round(745, 0, UNNECESSARY) = 745", function () {
+      expect(roundOff("745", 0, RoundingModes.UNNECESSARY)).toBe("745");
+    });
+
+    describe('Errors and Exceptions', function () {
+      it("round(0.3487, 2, UNNECESSARY) should throw error", function () {
+        expect(() => roundOff("0.3487", 2, RoundingModes.UNNECESSARY)).toThrowError();
+      });
+      it("round(245.53158, 3, UNNECESSARY) should throw error", function () {
+        expect(() => roundOff("245.53158", 3, RoundingModes.UNNECESSARY)).toThrowError();
+      });
+      it("round(3654, -2, UNNECESSARY) should throw error", function () {
+        expect(() => roundOff("3654", -2, RoundingModes.UNNECESSARY)).toThrowError();
+      });
+      it("round(3600.74, -2, UNNECESSARY) should throw error", function () {
+        expect(() => roundOff("3600.74", -2, RoundingModes.UNNECESSARY)).toThrowError();
+      });
+      it("round(23000.01, 0, UNNECESSARY) should throw error", function () {
+        expect(() => roundOff("23000.01", 0, RoundingModes.UNNECESSARY)).toThrowError();
+      });
+      it("round(745, 0, UNNECESSARY) should throw error", function () {
+        expect(() => roundOff("745.1", 0, RoundingModes.UNNECESSARY)).toThrowError();
+      });
+    });
+
+  });
+
   describe("test rounding mode HALF_EVEN - default", function () {
     it("should round(5.5, 0) = 6", function () {
       expect(roundOff("5.5", 0)).toBe("6");

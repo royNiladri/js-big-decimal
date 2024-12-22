@@ -1,1 +1,2 @@
-export declare function modulus(dividend: number | string, divisor: number | string): string;
+export declare function modulusE(n: string, base?: string, precision?: number): string;
+export declare function modulus(n: string, base?: string, precision?: number): string;

@@ -40,8 +40,14 @@
     - [subtract(minuend, subtrahend)](#subtractminuend-subtrahend)
     - [multiply(multiplicand, multiplier)](#multiplymultiplicand-multiplier)
     - [divide(dividend, divisor, precision)](#dividedividend-divisor-precision)
+    - [pow(base, exponent)](#powbase-exponent)
+    - [sqRoot(number)](#sqRootnumber)
+    - [cbRoot(number)](#cbRootnumber)
     - [modulus(dividend, divisor)](#modulusdividend-divisor)
-- [Support the developers :heart: :star: :money_with_wings:](#support-the-developers-heart-star-money_with_wings)
+    - [exp(exponent)](#expexponent)
+    - [factorial(number)](#factorialnumber)
+  - [Roadmap (Planned Features)](#roadmap)
+  - [Support the developers :heart: :star: :money_with_wings:](#support-the-developers-heart-star-money_with_wings)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -144,7 +150,19 @@ Round also supports the following rounding modes (These are same as that of Java
 * `HALF_DOWN` - Rounding mode to round towards "nearest neighbor" unless both neighbors are equidistant, in which case round down.
 * `HALF_EVEN` - Rounding mode to round towards the "nearest neighbor" unless both neighbors are equidistant, in which case, round towards the even neighbor.
 * `HALF_UP` - Rounding mode to round towards "nearest neighbor" unless both neighbors are equidistant, in which case round up.
-* `UNNECESSARY` (!Not Implemented!)- Rounding mode to assert that the requested operation has an exact result, hence no rounding is necessary.
+* `UNNECESSARY` - Rounding mode to assert that the requested operation has an exact result, hence no rounding is necessary. If rounding is found to be necessary, an error is thrown.
+  <details>
+  <summary> More about the behavior</summary>
+  <br/>
+
+  > For example, `bigDecimal.round("123.78", 2, "UNNECESSARY")` will return `"123.78"` because the exact value is within the `precision` limit of `2` decimal places, while `bigDecimal.round("123.789", 2, "UNNECESSARY")` will throw an error beacuse it exceeds the limit and rounding is necessary.
+  <br/>
+  <br/>
+  Same applies to negative `precision` values, such as `bigDecimal.round("17400", -2, "UNNECESSARY")` returning `"17400"`, and `bigDecimal.round("17480", -2, "UNNECESSARY")` or `bigDecimal.round("17400.0001", -2, "UNNECESSARY")` throwing an error.
+  <br/>
+
+  </details>
+  <br/>
 * `UP` - Rounding mode to round away from zero.
 
 Extensive description of the modes can be found at [Rounding Modes](https://docs.oracle.com/javase/8/docs/api/java/math/RoundingMode.html)
@@ -278,6 +296,43 @@ var n2 = new bigDecimal('4');
 var quotient = n1.divide(n2); // quotient = new bigDecimal('11.25')
 ```
 
+### pow(base, exponent)
+Raise a base number to it's exponent. Either component can be a real number, positive or negative. Exponents, where `1 > exponent > 0`, will return the root of the base.
+```javascript
+var power = bigDecimal.pow('6', '3'); // power = '216'
+```
+
+Alternately, use the instance property. It returns the result as new `bigDecimal`.
+```javascript
+var base = new bigDecimal('6');
+var exponent = new bigDecimal('3');
+var power = base.divide(exponent); // power = new bigDecimal('216')
+```
+
+### sqRoot(number)
+Get the square root of a given number.
+```javascript
+var sqrt = bigDecimal.sqRoot('81',); // sqrt = '9'
+```
+
+Alternately, use the instance property. It returns the result as new `bigDecimal`.
+```javascript
+var n = new bigDecimal('81');
+var cbrt = n.sqRoot(); // sqrt = new bigDecimal('9')
+```
+
+### cbRoot(number)
+Get the cube root of a given number.
+```javascript
+var cbrt = bigDecimal.cbRoot('27',); // sqrt = '3'
+```
+
+Alternately, use the instance property. It returns the result as new `bigDecimal`.
+```javascript
+var n = new bigDecimal('27');
+var sqrt = n.cbRoot(); // sqrt = new bigDecimal('3')
+```
+
 ### modulus(dividend, divisor)
 Get the modulus of two numbers, i.e., remainder when the dividend is divided by the divisor. Note that both divisor and dividend need to be integers.
 ```javascript
@@ -289,7 +344,47 @@ var n1 = new bigDecimal('45');
 var n2 = new bigDecimal('4');
 var remainder = n1.modulus(n2); // remainder = new bigDecimal('1')
 ```
-Further, the result takes the sign of the dividend and the sign of the divisor is ignored. Note that this behaviour is the same as in Java and JavaScript.
+Further, the result takes the sign of the dividend and the sign of the divisor is ignored. Note that this behaviour is the same as in Java and JavaScript. For Euclidian Division seen in C++ and Python, use `bigDecimal.modulusE()`.
+
+### exp(exponent)
+Get the exponentiation of E, where E is Euler's constant calculated to 32 decimal places of percision. Returns the power of E raised to the given exponent.
+```javascript
+var exp = bigDecimal.exp('5'); // exp = '54.5981500331...'
+```
+Alternately, to get Euler's constant calculated to 32 decimal places of percision, use the static property `bigDecimal.E`.
+```javascript
+var e = bigDecimal.E; // e = '2.71828182845904523536028747135266'
+```
+
+### factorial(number)
+Get the factorial(n! notation) of a given number. Note, the number can only be a positive integer.
+```javascript
+var factorial = bigDecimal.factorial('5'); // factorial = '120'
+```
+
+# Roadmap (Planned Features)
+
+In discovery phase:
+
+- Locale aware pretty value
+
+The features listed below are being considered as possible additions in future revisions.
+
+- PI constant
+- Hypotenuse
+- Sign (returns the sign of a number)
+
+The following are less likely to be implemented, but are still being considered.
+
+- NthRoot
+- Sin and Inverse Sin
+- Cosin and Inverse Cosin
+- Tan, Inverse Tan, and Tan2
+- Log(base 10)
+- Log(base 2)
+- Natural Log(base E)
+- Sigma (Read more: [Summation](https://en.wikipedia.org/wiki/Summation))
+
 
 # Support the developers :heart: :star: :money_with_wings:
 If this library helps you in your organization, you can show some love by giving the repo a star or support by making a nominal monetary contribution.

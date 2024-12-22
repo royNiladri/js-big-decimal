@@ -1,94 +1,120 @@
-import { add, trim } from './add';
+import { abs } from './abs';
 import { roundOff } from './round';
 
-export function divide(dividend, divisor, precission = 8) {
-    if (divisor == 0) {
-        throw new Error('Cannot divide by 0');
+export function divide(dividend: string, divisor: string, precission: number = 8) {
+
+    // Return 0 
+    if (divisor == '0') {
+        return '0' + (!precission) ? '' : '.' + new Array(precission).join('0');
     }
 
-    dividend = dividend.toString();
-    divisor = divisor.toString();
+    // precission = precission + 2;
+    let negativeDividend: string = '';
+    let negativeDivisor: string = '';
+    let negativeResult: string = '';
+    let dividendIndex = dividend.length;
+    let divisorIndex = divisor.length;
+    let resultIndex = 0;
 
-    // remove trailing zeros in decimal ISSUE#18
-    dividend = dividend.replace(/(\.\d*?[1-9])0+$/g, "$1").replace(/\.0+$/, "");
-    divisor = divisor.replace(/(\.\d*?[1-9])0+$/g, "$1").replace(/\.0+$/, "");
-
-    if (dividend == 0)
-        return '0';
-
-    let neg = 0;
-    if (divisor[0] == '-') {
-        divisor = divisor.substring(1);
-        neg++;
+    const findNegativeOffset = /^(?:[0]+)(?:[.])([0]+)(?:\d+)/;
+    const trimStart = /^(?:[0]+)([^0.]*)/;
+    const trimEnd = (n: string) => {
+        while (n[n.length - 1] == '0') {
+            if(n[n.length - 1] == '.'){
+                n = n.substring(0, n.length - 1);
+                break;
+            }
+			n = n.substring(0, n.length - 1);
+		}
+        return n;
     }
+
+    //check for negatives
     if (dividend[0] == '-') {
         dividend = dividend.substring(1);
-        neg++;
+        negativeDividend = '-'
+        dividendIndex--;
     }
 
-    var pt_dvsr = divisor.indexOf('.') > 0 ? divisor.length - divisor.indexOf('.') - 1 : -1;
-
-    divisor = trim(divisor.replace('.', ''));
-    if (pt_dvsr >= 0) {
-        let pt_dvnd = dividend.indexOf('.') > 0 ? dividend.length - dividend.indexOf('.') - 1 : -1;
-
-        if (pt_dvnd == -1) {
-            dividend = trim(dividend + (new Array(pt_dvsr + 1)).join('0'));
-        } else {
-            if (pt_dvsr > pt_dvnd) {
-                dividend = dividend.replace('.', '');
-                dividend = trim(dividend + (new Array(pt_dvsr - pt_dvnd + 1)).join('0'));
-            } else if (pt_dvsr < pt_dvnd) {
-                dividend = dividend.replace('.', '');
-                let loc = dividend.length - pt_dvnd + pt_dvsr;
-                dividend = trim(dividend.substring(0, loc) + '.' + dividend.substring(loc));
-            } else if (pt_dvsr == pt_dvnd) {
-                dividend = trim(dividend.replace('.', ''));
-            }
-        }
+    if (divisor[0] == '-') {
+        divisor = divisor.substring(1);
+        negativeDivisor = '-';
+        divisorIndex--;
     }
 
-    let prec = 0, dl = divisor.length, rem = '0', quotent = '';
-    let dvnd = (dividend.indexOf('.') > -1 && dividend.indexOf('.') < dl) ? dividend.substring(0, dl + 1) : dividend.substring(0, dl);
-    dividend = (dividend.indexOf('.') > -1 && dividend.indexOf('.') < dl) ? dividend.substring(dl + 1) : dividend.substring(dl);
-    
-    if (dvnd.indexOf('.') > -1) {
-        let shift = dvnd.length - dvnd.indexOf('.') - 1;
-        dvnd = dvnd.replace('.', '');
-        if (dl > dvnd.length) {
-            shift += dl - dvnd.length;
-            dvnd = dvnd + (new Array(dl - dvnd.length + 1)).join('0');
-        }
-        prec = shift;
-        quotent = '0.' + (new Array(shift)).join('0');
+    if (negativeDividend !== negativeDivisor) negativeResult = '-';
 
+    if (divisor == '1') {
+        return negativeResult + dividend;
     }
 
-    precission = precission + 2;
-
-    while (prec <= precission) {
-        let qt = 0;
-        while (parseInt(dvnd) >= parseInt(divisor)) {
-            dvnd = add(dvnd, '-' + divisor);
-            qt++;
-        }
-        quotent += qt;
-
-        if (!dividend) {
-            if (!prec)
-                quotent += '.';
-            prec++;
-            dvnd = dvnd + '0';
-        } else {
-            if (dividend[0] == '.') {
-                quotent += '.';
-                prec++;
-                dividend = dividend.substring(1);
-            }
-            dvnd = dvnd + dividend.substring(0, 1);
-            dividend = dividend.substring(1);
-        }
+    if (dividend.includes('.')) {
+        dividend = trimEnd(dividend)
+        if (dividend.includes('.')) {
+            if (findNegativeOffset.test(dividend))
+                dividendIndex = -(dividend.replace(findNegativeOffset, '$1').length)
+            else if (dividend[0] == '0')
+                dividendIndex = dividend.indexOf('.') - 1
+            else dividendIndex = dividend.indexOf('.');
+            dividend = dividend.substring(0, dividend.indexOf('.')) + dividend.substring(dividend.indexOf('.') + 1);
+        } else dividendIndex = dividend.length;
     }
 
-    return ((neg == 1) ? '-' : '') + trim(roundOff(quotent, precission - 2));
+    if (divisor.includes('.')) {
+        divisor = trimEnd(divisor)
+        if (divisor.includes('.')) {
+            if (findNegativeOffset.test(divisor))
+                divisorIndex = -(divisor.replace(findNegativeOffset, '$1').length)
+            else if (divisor[0] == '0')
+                divisorIndex = divisor.indexOf('.') - 1
+            else divisorIndex = divisor.indexOf('.');
+            divisor = divisor.substring(0, divisor.indexOf('.')) + divisor.substring(divisor.indexOf('.') + 1);
+        } else divisorIndex = divisor.length;
+    }
+
+    resultIndex = dividendIndex - divisorIndex;
+
+    const dividendInt = BigInt(dividend);
+    const divisorInt = BigInt(divisor);
+    const precisionInt = BigInt('1'.padEnd(Math.max(dividend.length, divisor.length) + precission + 2, '0'));
+
+    dividend = dividend.replace(trimStart, "$1");
+    divisor = divisor.replace(trimStart, "$1");
+
+    const intDifference = dividend.length - divisor.length;
+    const paddingInt = BigInt('1'.padEnd(Math.abs(intDifference) + 1, '0'));
+
+    let result = ((dividendInt * precisionInt) / divisorInt).toString();
+    // console.log('resultIndex', resultIndex)
+    // console.log('intDifference', intDifference)
+
+    if (resultIndex == 0) {
+        let intBasis = intDifference > 0;
+
+        if (intBasis && dividendInt >= (divisorInt * paddingInt)) {
+            resultIndex++
+        } else if (!intBasis && (dividendInt * paddingInt) >= divisorInt) {
+            resultIndex++
+        } else if (dividendInt == divisorInt) {
+            resultIndex++
+        }
+        return roundOff(negativeResult + (result.substring(0, resultIndex) || '0') + '.' + result.substring(resultIndex), precission)
+    }
+
+    if (intDifference > 0) {
+        if (Math.sign(dividendIndex) == Math.sign(divisorIndex) && dividendInt >= (divisorInt * paddingInt))
+            resultIndex++
+        else if (Math.sign(dividendIndex) >= 0 && dividendInt >= (divisorInt * paddingInt))
+            resultIndex++
+        else if (resultIndex < 0 && dividendInt >= (divisorInt * paddingInt)) resultIndex++;
+    } else {
+        if ((dividendInt * paddingInt) >= divisorInt) resultIndex++;
+    }
+
+    if (resultIndex > 0) {
+        return roundOff(negativeResult + (result.substring(0, resultIndex) || '0') + '.' + result.substring(resultIndex), precission);
+    }
+
+    return roundOff(negativeResult + '0.'.padEnd(Math.abs(resultIndex) + 2, '0') + result, precission);
+
 }
