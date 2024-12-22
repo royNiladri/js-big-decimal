@@ -33,19 +33,19 @@ export function exp(exponent: string, precision: number = 32) {
 
     if (isExatclyZero(exponent)) return '1';
 
-    if (!exponent.includes('.')) {
-        let intExp = intPow(E, exponent);
-        if (exponent[0] == '-') intExp = divide('1', intExp, precision);
-        return stripTrailingZero(roundOff(intExp, precision));
-    }
+    // if (!exponent.includes('.')) {
+    //     let intExp = intPow(E, exponent);
+    //     if (exponent[0] == '-') intExp = divide('1', intExp, precision);
+    //     return stripTrailingZero(roundOff(intExp, precision));
+    // }
 
     let result = '1';
     let n = '1';
     let f = '1';
     while (true) {
         f = factorial(n);
-        const next = stripTrailingZero(divide(intPow(exponent, n), f, precision + parseInt(n)))
-        if (testTolerance(abs(next), precision + parseInt(n))) {
+        const next = stripTrailingZero(divide(intPow(exponent, n), f, precision + 4))
+        if (testTolerance(abs(next), precision + 4)) {
             return stripTrailingZero(roundOff(add(result, next), precision));
         }
         result = add(result, next);
