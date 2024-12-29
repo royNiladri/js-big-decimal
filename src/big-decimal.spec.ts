@@ -293,7 +293,6 @@ describe("BIG-DECIMAL", function () {
     });
 
     it("should produce -23.678-67.34=-91.018", function () {
-      let bigDecimal1 = new bigDecimal("-23.678");
       expect(
         new bigDecimal("-23.678").add(new bigDecimal("-67.34")).getValue()
       ).toBe(new bigDecimal("-91.018").getValue());

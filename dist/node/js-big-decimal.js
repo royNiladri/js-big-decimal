@@ -706,8 +706,10 @@ var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 !function() {
 var exports = __webpack_exports__;
+var __webpack_unused_export__;
 
-Object.defineProperty(exports, "__esModule", ({ value: true }));
+__webpack_unused_export__ = ({ value: true });
+__webpack_unused_export__ = void 0;
 var add_1 = __webpack_require__(217);
 var abs_1 = __webpack_require__(165);
 var round_1 = __webpack_require__(350);
@@ -921,9 +923,11 @@ var bigDecimal = /** @class */ (function () {
     bigDecimal.RoundingModes = roundingModes_1.RoundingModes;
     return bigDecimal;
 }());
+__webpack_unused_export__ = bigDecimal;
 exports["default"] = bigDecimal;
 
 }();
+__webpack_exports__ = __webpack_exports__["default"];
 /******/ 	return __webpack_exports__;
 /******/ })()
 ;

@@ -225,4 +225,6 @@ class bigDecimal {
     return new bigDecimal(stripTrailingZero(this.value));
   }
 }
+
+export { bigDecimal };
 export default bigDecimal;

@@ -748,5 +748,5 @@ var bigDecimal = /** @class */ (function () {
     return bigDecimal;
 }());
 
-export { bigDecimal as default };
+export { bigDecimal, bigDecimal as default };
 //# sourceMappingURL=big-decimal.js.map
