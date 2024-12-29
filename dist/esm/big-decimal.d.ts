@@ -33,4 +33,5 @@ declare class bigDecimal {
     static stripTrailingZero(number: any): any;
     stripTrailingZero(): bigDecimal;
 }
+export { bigDecimal };
 export default bigDecimal;

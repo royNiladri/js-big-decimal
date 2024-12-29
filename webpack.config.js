@@ -12,8 +12,11 @@ module.exports = {
     output: {
         filename: "bundle.js",
         path: WEB ? path.resolve(__dirname, "dist/web") : path.resolve(__dirname, "dist/node"),
-        library: "bigDecimal",
-        libraryTarget: WEB ? "var" : "umd",
+        library: {
+            name: "bigDecimal",
+            type: WEB ? "var" : "umd",
+            export: "default"
+        },
         filename: PROD ? "js-big-decimal.min.js" : "js-big-decimal.js"
     },
     resolve: {
