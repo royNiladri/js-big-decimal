@@ -103,7 +103,7 @@ console.log(n2.getValue()); // "12345.6789"
 Allows setting the BigDecimal to a new value.
 ```js
 var n = new bigDecimal('123');
-n.setvalue('567');
+n.setValue('567');
 console.log(n.getValue()); // 567
 ```
 
